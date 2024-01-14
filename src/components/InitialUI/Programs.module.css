@@ -1,0 +1,60 @@
+.program{
+    display: flex;
+    flex-direction: column;
+    gap: 5rem;
+    padding-top: 3rem;
+    /* background-color: rgb(85, 88, 88); */
+    /* border:1px solid red; */
+}
+.programsheader{
+    display: flex;
+    gap:5rem;
+    font-weight: bold;
+    font-size: 3rem;
+    justify-content: center;
+    color: #fff;
+    text-transform: uppercase;
+    font-style: italic;
+}
+.programcategory{
+    display: flex;
+    gap:1rem;
+    /* padding-left: 2rem;
+    padding-right: 2rem; */
+    /* border:1px solid red; */
+}
+.category{
+    display: flex;
+    flex-direction: column;
+    background-color: grey;
+    padding: 2rem;
+    gap:1rem;
+    color: #fff;
+    justify-content: space-between;
+
+}
+.category>:nth-child(1){
+    width: 2rem;
+    height: 2rem;fill: white;
+}
+.category>:nth-child(2){
+   font-size: 1rem;
+   font-weight: bold;
+}
+.category>:nth-child(3){
+  font-size:0.9rem;
+  line-height: 25px;
+}
+.joinnow{
+    display: flex;
+    align-items: center;
+    gap:2rem;
+
+}
+.joinnow>img{
+    width: 1rem;;
+}
+.category:hover{
+    background:var(--planCard);
+    cursor: pointer;
+}

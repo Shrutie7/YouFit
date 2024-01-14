@@ -1,0 +1,26 @@
+.header{
+    display: flex;
+    justify-content: space-between;
+}
+.logo{
+    height:3rem;
+    width:12rem;
+}
+.menu{
+    list-style: none;
+    display: flex;
+    gap:2rem;
+    color: #fff;
+padding-top: 0.5rem;
+
+}
+.menu>li{
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 600;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.menu>li:hover{
+    cursor: pointer;
+    color: var(--primaryclr);
+}

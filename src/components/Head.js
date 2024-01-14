@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import search from "../icons/search.png";
 import usericon from "../icons/usericon.png";
 import alert from "../icons/alert.png";
@@ -9,6 +9,8 @@ import { useKeycloak } from "@react-keycloak/web";
 
 const Head = () => {
   const { keycloak, initialized } = useKeycloak();
+
+  
   const handlelogout=() => {
     keycloak.logout({ redirectUri: `${window.location.origin}/` });
 
