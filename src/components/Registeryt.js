@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import regimg1 from "../icons/regi1.jpg";
 import regimg2 from "../icons/regi2.jpg";
 import regimg3 from "../icons/regi3.jpg";
@@ -8,7 +8,7 @@ import axiosInstance from "../services/LocalAxiosInstance";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import Carousel from "./Carousel";
-import { handleReactSelectCss } from '../commonmodules/ReactSelectCss'
+import { handleReactSelectCss } from "../commonmodules/ReactSelectCss";
 import { Addrowerror } from "../commonmodules/Addrowerror";
 import Select from "react-select";
 const Registeryt = () => {
@@ -21,68 +21,128 @@ const Registeryt = () => {
   const slides = [regimg1, regimg2, regimg3, regimg4];
   const nav = useNavigate();
 
-
-//   {
-//     "username":"2341234",
-//     "firstName":"Killua",
-//     "lastName":"Zoldyck",
-//     "emailId":"kzdyck@gmail.com",
-//     "gender":"Male",
-//     "password":"Kzdyck@411",
-//     "confirmPassword":"Kzdyck@411",
-//     "roleId":4, //based on type of user registration 
-//     "parentUserId":3, //based on gym selection and trainer selection
-//     "locationId":3 //based on user selection of location
-// }
+  //   {
+  //     "username":"2341234",
+  //     "firstName":"Killua",
+  //     "lastName":"Zoldyck",
+  //     "emailId":"kzdyck@gmail.com",
+  //     "gender":"Male",
+  //     "password":"Kzdyck@411",
+  //     "confirmPassword":"Kzdyck@411",
+  //     "roleId":4, //based on type of user registration
+  //     "parentUserId":3, //based on gym selection and trainer selection
+  //     "locationId":3 //based on user selection of location
+  // }
 
   let sms = {
-    personalNo: "",
+    userName: "",
     firstName: "",
     lastName: "",
     gender: "",
     emailId: "",
     password: "",
     confirmPassword: "",
-    roleId:""
+    roleId: "4",
+    parentUserId:"",
+    locationId:""
   };
+
+  let locationdaata = {
+    state: "",
+    city: "",
+    location: "",
+    locationId: "",
+    gymName:"",
+    ownerId:""
+  };
+
+  const [locationdata, setlocationdata] = useState({ ...locationdaata });
   const [data, setData] = useState({ ...sms });
   const lableMandatoryData = [
-    "personalNo",
+    "userName",
     "firstName",
     "lastName",
     "gender",
     "emailId",
     "password",
     "confirmPassword",
-    "roleId"
+    "roleId",
+    "locationId"
   ];
   const handlechange = (e, name) => {
     let l = { ...data };
     l[name] = e.target.value;
     setData({ ...l });
   };
-  function handlegender(e){
-    let l={...data}
+  function handlegender(e) {
+    let l = { ...data };
     // l.gender=e.value
-    l.gender=e.label
-    setData({...l})
+    l.gender = e.label;
+    setData({ ...l });
+  }
 
-}
+  function handlelocation(e, name) {
+    let l = { ...locationdata };
 
-const handleradio = (e) => {
-  const te = { ...data };
-  console.log(e.target.value);
-te.roleId = e.target.value;
-  setData(te);
-};
+    l[name] = e.value;
 
-  const genderoption = [{value:"male",label:"Male"},{value:"female",label:"Female"},{value:"other",label:"Other"}];
+    if(name==="location"){
+      l[name] = e.label;
+      l.locationId = e.value;
+
+      let l2= {...data};
+      l2.locationId = e.value;
+      setData({...l2})
+    }
+    setlocationdata({ ...l });
+  }
+  function handlegymaddress(e) {
+    let l = { ...locationdata };
+
+    l.ownerId = e.value;
+    l.gymName=e.label;
+
+    let l2 = {...data}
+    l2.parentUserId=e.value;
+    setData({...l2})
+
+    
+
+    setlocationdata({ ...l });
+  }
+
+  const handleradio = (e,name) => {
+    const te = { ...data };
+
+    te.roleId = e.target.value;
+
+    if(name==="user"||name==="owner"){
+      te.parentUserId = ""
+    }
+    setData(te);
+  };
+
+  const genderoption = [
+    { value: "male", label: "Male" },
+    { value: "female", label: "Female" },
+    { value: "other", label: "Other" },
+  ];
+
+  const [options2, setoptions2] = useState([]);
+  const [options3, setoptions3] = useState([]);
+  const [options4, setoptions4] = useState([]);
+  const [options5, setoptions5] = useState([]);
   const handleselect = (e) => {
     let l = { ...data };
     l.gender = e.value;
     setData({ ...l });
   };
+
   let createuserurl = "users/create";
+  let stateurl = "location/state";
+  let cityurl = "location/city";
+  let locationaddressurl = "location/address";
+  let gymaddressurl = "location/gymaddress";
   async function postMainData(gdata) {
     let res = Addrowerror(lableMandatoryData, data);
     if (res?.length > 0) {
@@ -96,13 +156,13 @@ te.roleId = e.target.value;
     } else {
       const dat = { ...gdata };
 
-      console.log(dat);
+      // console.log(dat);
       try {
         const res = await axiosInstance.post(createuserurl, dat);
 
         if (res?.status === 200) {
           if (res?.data?.status) {
-            console.log("user created");
+            // console.log("user created");
             setData({ ...sms });
             toast("🦄 User created Successfully", {
               position: "top-right",
@@ -127,9 +187,172 @@ te.roleId = e.target.value;
       } catch (err) {}
     }
   }
+  const getcity = async () => {
+    try {
+      const res = await axiosInstance.post(cityurl, { state: locationdata.state });
+
+      if (res.status === 200) {
+        if (res.data.status) {
+          let l = res.data.data.citylist.map((d) => ({
+            value: d.city,
+            label: d.city,
+          }));
+          setoptions3([...l]);
+        } else {
+          // const l = { ...modalpopupdata };
+          //         l.show=true
+          //         l.errormsg=res.data.message
+          //         l.logout=false
+          //         setmodalpopupdata({...l})
+        }
+      } else if (res.response.status === 401) {
+        // const l = { ...modalpopupdata };
+        // l.show=true
+        // l.errormsg="Session Expired. Please login again..."
+        // l.logout=true
+        // setmodalpopupdata({...l})
+      } else {
+        // const l = { ...modalpopupdata };
+        // l.show=true
+        // l.errormsg="Unable to Connect.Please try again later"
+        // l.logout=false
+        // setmodalpopupdata({...l})
+      }
+    } catch (err) {
+      // const l = { ...modalpopupdata };
+      // l.show=true
+      // l.errormsg="Unable to Connect.Please try again later"
+      // l.logout=false
+      // setmodalpopupdata({...l})
+    }
+  };
+
+  const getlocation = async () => {
+    try {
+      const res = await axiosInstance.post(locationaddressurl, { state: locationdata.state,city:locationdata.city });
+
+      if (res.status === 200) {
+        if (res.data.status) {
+          let l = res.data.data.addressList.map((d) => ({
+            value: d.locationId,
+            label: d.locationAddress,
+          }));
+          setoptions4([...l]);
+        } else {
+          // const l = { ...modalpopupdata };
+          //         l.show=true
+          //         l.errormsg=res.data.message
+          //         l.logout=false
+          //         setmodalpopupdata({...l})
+        }
+      } else if (res.response.status === 401) {
+        // const l = { ...modalpopupdata };
+        // l.show=true
+        // l.errormsg="Session Expired. Please login again..."
+        // l.logout=true
+        // setmodalpopupdata({...l})
+      } else {
+        // const l = { ...modalpopupdata };
+        // l.show=true
+        // l.errormsg="Unable to Connect.Please try again later"
+        // l.logout=false
+        // setmodalpopupdata({...l})
+      }
+    } catch (err) {
+      // const l = { ...modalpopupdata };
+      // l.show=true
+      // l.errormsg="Unable to Connect.Please try again later"
+      // l.logout=false
+      // setmodalpopupdata({...l})
+    }
+  };
+  const getGymAddress = async () => {
+    try {
+      const res = await axiosInstance.post(gymaddressurl, { location_id:locationdata.locationId});
+
+      if (res.status === 200) {
+        if (res.data.status) {
+          let l = res.data.data.gymAddressList.map((d) => ({
+            value: d.ownerId,
+            label: d.gymName,
+          }));
+          setoptions5([...l]);
+        } else {
+          // const l = { ...modalpopupdata };
+          //         l.show=true
+          //         l.errormsg=res.data.message
+          //         l.logout=false
+          //         setmodalpopupdata({...l})
+        }
+      } else if (res.response.status === 401) {
+        // const l = { ...modalpopupdata };
+        // l.show=true
+        // l.errormsg="Session Expired. Please login again..."
+        // l.logout=true
+        // setmodalpopupdata({...l})
+      } else {
+        // const l = { ...modalpopupdata };
+        // l.show=true
+        // l.errormsg="Unable to Connect.Please try again later"
+        // l.logout=false
+        // setmodalpopupdata({...l})
+      }
+    } catch (err) {
+      // const l = { ...modalpopupdata };
+      // l.show=true
+      // l.errormsg="Unable to Connect.Please try again later"
+      // l.logout=false
+      // setmodalpopupdata({...l})
+    }
+  };
+  const getstate = async () => {
+    try {
+      const res = await axiosInstance.get(stateurl);
+
+      if (res.status === 200) {
+        if (res.data.status) {
+          let l = res.data.data.stateList.map((d) => ({
+            value: d.stateName,
+            label: d.stateName
+          }));
+          // console.log(res)
+          setoptions2([...l]);
+        } else {
+          // const l = { ...modalpopupdata };
+          //         l.show=true
+          //         l.errormsg=res.data.message
+          //         l.logout=false
+          //         setmodalpopupdata({...l})
+        }
+      } else if (res.response.status === 401) {
+        // const l = { ...modalpopupdata };
+        // l.show=true
+        // l.errormsg="Session Expired. Please login again..."
+        // l.logout=true
+        // setmodalpopupdata({...l})
+      } else {
+        // const l = { ...modalpopupdata };
+        // l.show=true
+        // l.errormsg="Unable to Connect.Please try again later"
+        // l.logout=false
+        // setmodalpopupdata({...l})
+      }
+    } catch (err) {
+      // const l = { ...modalpopupdata };
+      // l.show=true
+      // l.errormsg="Unable to Connect.Please try again later"
+      // l.logout=false
+      // setmodalpopupdata({...l})
+    }
+  };
+
+  useEffect(() => {
+    // getcity();
+    getstate();
+  }, []);
 
   return (
-    <div className="h-screen">
+    <div className="h-full">
       <div className="mx-auto">
         <div className="flex ">
           {/* <div className="text-white font-bold text-2xl -mt-10 mr-6">YOUBLOG</div> */}
@@ -144,7 +367,7 @@ te.roleId = e.target.value;
               </div>
             </div>
 
-            <div className="w-full lg:w-7/12 bg-white dark:bg-zinc-800 p-5 rounded-lg lg:rounded-l-none">
+            <div className="w-full lg:w-7/12  bg-white dark:bg-zinc-800 p-5 rounded-lg lg:rounded-l-none">
               <h3 className="py-4 text-2xl text-center text-gray-800 dark:text-white">
                 Create an Account!
               </h3>
@@ -158,7 +381,7 @@ te.roleId = e.target.value;
                       First Name
                     </label>
                     <input
-                      className="w-full px-3 py-2 text-sm leading-tight text-gray-700 dark:text-black border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+                      className="bg-white w-full px-3 py-2 text-sm leading-tight text-gray-700 dark:text-black border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
                       id="firstName"
                       type="text"
                       placeholder="First Name"
@@ -180,7 +403,7 @@ te.roleId = e.target.value;
                       Last Name
                     </label>
                     <input
-                      className="w-full px-3 py-2 text-sm leading-tight text-gray-700 dark:text-black border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+                      className="bg-white w-full px-3 py-2 text-sm leading-tight text-gray-700 dark:text-black border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
                       id="lastName"
                       type="text"
                       placeholder="Last Name"
@@ -195,36 +418,54 @@ te.roleId = e.target.value;
                     />
                   </div>
                   <div className="md:ml-2">
-                    <label
+                    {/* <label
                       className="block mb-2 text-sm font-semibold text-gray-700 dark:text-white"
                       htmlFor="lastName"
                     >
                       Gender
                     </label>
-                    {/* <input
-                      className="w-full px-3 py-2 text-sm leading-tight text-gray-700 dark:text-black border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
-                      id="gender"
-                      type="text"
-                      placeholder="Gender"
-                      value={data.gender}
-                      name="gender"
-                      onChange={(e) => handlechange(e, "gender")}
-                    /> */}
                
 
                     <Select
-                     id="gender"
-                     name="gender"
-                     placeholder="Gender"
-                    styles={(mandatoryData.includes("gender") && !data.gender) ? handleReactSelectCss("normal", true):handleReactSelectCss("normal", false)}
-              
-                    onChange={(e) => handlegender(e)}
-                    value={data?.gender?[{"value":data.gender,"label":data.gender}]:[]}
-                    // value={selectdraft?.id?[{"value":selectdraft.id,"label":selectdraft.desc}]:[]}
-                    menuPortalTarget={document.body}
-                    menuPosition={"fixed"}
-                    options={genderoption}
-                  ></Select>
+                      id="gender"
+                      name="gender"
+                      placeholder="Gender"
+                      styles={
+                        mandatoryData.includes("gender") && !data.gender
+                          ? handleReactSelectCss("normal", true)
+                          : handleReactSelectCss("normal", false)
+                      }
+                      onChange={(e) => handlegender(e)}
+                      value={
+                        data?.gender
+                          ? [{ value: data.gender, label: data.gender }]
+                          : []
+                      }
+                      // value={selectdraft?.id?[{"value":selectdraft.id,"label":selectdraft.desc}]:[]}
+                      menuPortalTarget={document.body}
+                      menuPosition={"fixed"}
+                      options={genderoption}
+                    ></Select> */}
+                         <label
+                      className="block mb-2 text-sm font-semibold text-gray-700 dark:text-white"
+                      htmlFor="NickName"
+                    >
+                      Nick Name
+                    </label>
+                    <input
+                      className="bg-white w-full px-3 py-2 mb-3 text-sm leading-tight text-gray-700 dark:text-black border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+                      id="userName"
+                      style={
+                        mandatoryData.includes("userName") && !data.username
+                          ? { border: "2px solid red" }
+                          : {}
+                      }
+                      type="text"
+                      placeholder="Nick Name"
+                      name="userName"
+                      value={data.userName}
+                      onChange={(e) => handlechange(e, "userName")}
+                    />
                   </div>
                 </div>
                 <div className="mb-4">
@@ -235,7 +476,7 @@ te.roleId = e.target.value;
                     Email
                   </label>
                   <input
-                    className="w-full px-3 py-2 mb-3 text-sm leading-tight text-gray-700 dark:text-black border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+                    className="bg-white w-full px-3 py-2 mb-3 text-sm leading-tight text-gray-700 dark:text-black border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
                     id="emailId"
                     style={
                       mandatoryData.includes("emailId") && !data.emailId
@@ -260,8 +501,8 @@ te.roleId = e.target.value;
                     <input
                       className={
                         data.password === ""
-                          ? " relative w-full z-0 px-3 py-2 mb-3 text-sm leading-tight text-gray-700 dark:text-black border-red-500 rounded shadow appearance-none focus:outline-none focus:shadow-outline"
-                          : "relative w-full  z-0 px-3 py-2 mb-3 text-sm leading-tight text-gray-700 dark:text-black  rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+                          ? " bg-white relative w-full z-0 px-3 py-2 mb-3 text-sm leading-tight text-gray-700 dark:text-black border-red-500 rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+                          : "bg-white relative w-full  z-0 px-3 py-2 mb-3 text-sm leading-tight text-gray-700 dark:text-black  rounded shadow appearance-none focus:outline-none focus:shadow-outline"
                       }
                       style={
                         mandatoryData.includes("password") && !data.password
@@ -297,7 +538,7 @@ te.roleId = e.target.value;
                       Confirm Password
                     </label>
                     <input
-                      className="w-full px-3 py-2 mb-3 text-sm leading-tight text-gray-700 dark:text-black border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+                      className="bg-white w-full px-3 py-2 mb-3 text-sm leading-tight text-gray-700 dark:text-black border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
                       id="confirmPassword"
                       type="password"
                       style={
@@ -312,123 +553,230 @@ te.roleId = e.target.value;
                       onChange={(e) => handlechange(e, "confirmPassword")}
                     />
                   </div>
-                  <div className="md:ml-2">
+              
+               
+                    <div className="md:ml-2">
                     <label
                       className="block mb-2 text-sm font-semibold text-gray-700 dark:text-white"
-                      htmlFor="personalNo"
+                      htmlFor="lastName"
                     >
-                      Personal No
+                      Gender
                     </label>
-                    <input
-                      className="w-full px-3 py-2 mb-3 text-sm leading-tight text-gray-700 dark:text-black border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
-                      id="personalNo"
-                      style={
-                        mandatoryData.includes("personalNo") && !data.personalNo
-                          ? { border: "2px solid red" }
-                          : {}
+               
+
+                    <Select
+                      id="gender"
+                      name="gender"
+                      placeholder="Gender"
+                      styles={
+                        mandatoryData.includes("gender") && !data.gender
+                          ? handleReactSelectCss("normal", true)
+                          : handleReactSelectCss("normal", false)
                       }
-                      type="text"
-                      placeholder="Personal No"
-                      name="personalNo"
-                      value={data.personalNo}
-                      onChange={(e) => handlechange(e, "personalNo")}
-                    />
+                      onChange={(e) => handlegender(e)}
+                      value={
+                        data?.gender
+                          ? [{ value: data.gender, label: data.gender }]
+                          : []
+                      }
+                      // value={selectdraft?.id?[{"value":selectdraft.id,"label":selectdraft.desc}]:[]}
+                      menuPortalTarget={document.body}
+                      menuPosition={"fixed"}
+                      options={genderoption}
+                    ></Select>
                   </div>
+                 
                 </div>
 
                 <div className="mb-4 md:flex md:justify-between relative z-0">
                   <div className="flex gap-2">
-                    <input type="radio" name="roleId" id = "roleId" onClick={(e)=>handleradio(e)} value={4}/>
+                    <input
+                      type="radio"
+                      defaultChecked
+                      name="roleId"
+                      // id="roleId"
+                      onClick={(e) => handleradio(e,"user")}
+                      value={4}
+                    />
                     <label className="text-white font-semibold text-sm">
                       Request User Register
                     </label>
                   </div>
                   <div className="flex gap-2">
-                    <input type="radio" name="roleId" id = "roleId" onClick={(e)=>handleradio(e)} value={3}/>
+                    <input
+                      type="radio"
+                      name="roleId"
+                      // id="roleId"
+                      onClick={(e) => handleradio(e,"trainer")}
+                      value={3}
+                    />
                     <label className="text-white font-semibold text-sm">
                       Request Trainer Register
                     </label>
                   </div>
                   <div className="flex gap-2">
-                    <input type="radio" name="roleId" onClick={(e)=>handleradio(e)} value={2}/>
+                    <input
+                      type="radio"
+                      name="roleId"
+                      onClick={(e) => handleradio(e,"owner")}
+                      value={2}
+                    />
                     <label className="text-white font-semibold text-sm">
                       Request Owner Register
                     </label>
                   </div>
                 </div>
 
-                {/* <div className="mb-4 md:flex md:justify-between relative z-0">
+
+                <div className={parseInt(data.roleId)===parseInt(3) ?"mb-4 md:flex gap-7 relative z-0" :"mb-4 md:flex justify-between relative z-0"}>
                   <div className="flex flex-col">
-                  <label
+                    <label
                       className="block mb-2 text-sm font-semibold text-gray-700 dark:text-white"
                       htmlFor="city"
                     >
-                      City
+                      State
                     </label>
-               
 
                     <Select
-                     id="gender"
-                     name="gender"
-                     placeholder="City"
-                    styles={(mandatoryData.includes("gender") && !data.gender) ? handleReactSelectCss("small", true):handleReactSelectCss("small", false)}
-              
-                    onChange={(e) => handlegender(e)}
-                    value={data?.gender?[{"value":data.gender,"label":data.gender}]:[]}
-                    // value={selectdraft?.id?[{"value":selectdraft.id,"label":selectdraft.desc}]:[]}
-                    menuPortalTarget={document.body}
-                    menuPosition={"fixed"}
-                    options={genderoption}
-                  ></Select>
+                      id="state"
+                      name="state"
+                      placeholder="State"
+                      // styles={(mandatoryData.includes("state") && !data.gender) ? handleReactSelectCss("small", true):handleReactSelectCss("small", false)}
+                      styles={handleReactSelectCss("large", false)}
+                      onChange={(e) => handlelocation(e, "state")}
+                      value={
+                        locationdata?.state
+                          ? [
+                              {
+                                value: locationdata.state,
+                                label: locationdata.state,
+                              },
+                            ]
+                          : []
+                      }
+                      // value={selectdraft?.id?[{"value":selectdraft.id,"label":selectdraft.desc}]:[]}
+                      menuPortalTarget={document.body}
+                      menuPosition={"fixed"}
+                      options={options2}
+                    ></Select>
                   </div>
                   <div className="flex flex-col">
-                  <label
+                    <label
                       className="block mb-2 text-sm font-semibold text-gray-700 dark:text-white"
                       htmlFor="state"
                     >
-                      State
+                      City
                     </label>
-             
-               
 
                     <Select
-                     id="gender"
-                     name="gender"
-                     placeholder="State"
-                    styles={(mandatoryData.includes("gender") && !data.gender) ? handleReactSelectCss("small", true):handleReactSelectCss("small", false)}
-              
-                    onChange={(e) => handlegender(e)}
-                    value={data?.gender?[{"value":data.gender,"label":data.gender}]:[]}
-                    // value={selectdraft?.id?[{"value":selectdraft.id,"label":selectdraft.desc}]:[]}
-                    menuPortalTarget={document.body}
-                    menuPosition={"fixed"}
-                    options={genderoption}
-                  ></Select>
+                      id="city"
+                      name="city"
+                      placeholder="City"
+                      // styles={
+                      //   mandatoryData.includes("gender") && !data.gender
+                      //     ? handleReactSelectCss("small", true)
+                      //     : handleReactSelectCss("small", false)
+                      // }
+                      styles={parseInt(data.roleId)===parseInt(3) ? handleReactSelectCss("small", false): handleReactSelectCss("large", false)}
+                      onChange={(e) => handlelocation(e,"city")}
+                      value={
+                        locationdata?.city
+                          ? [
+                              {
+                                value: locationdata.city,
+                                label: locationdata.city,
+                              },
+                            ]
+                          : []
+                      }
+                      // value={selectdraft?.id?[{"value":selectdraft.id,"label":selectdraft.desc}]:[]}
+                      menuPortalTarget={document.body}
+                      menuPosition={"fixed"}
+                      onMenuOpen={()=>getcity()}
+                      options={options3}
+                    ></Select>
                   </div>
                   <div className="flex flex-col">
-                  <label
+                    <label
                       className="block mb-2 text-sm font-semibold text-gray-700 dark:text-white"
                       htmlFor="location"
                     >
                       Location
                     </label>
-                  
 
                     <Select
-                     id="gender"
-                     name="gender"
-                     placeholder="Location"
-                    styles={(mandatoryData.includes("gender") && !data.gender) ? handleReactSelectCss("small", true):handleReactSelectCss("small", false)}
-              
-                    onChange={(e) => handlegender(e)}
-                    value={data?.gender?[{"value":data.gender,"label":data.gender}]:[]}
-                    // value={selectdraft?.id?[{"value":selectdraft.id,"label":selectdraft.desc}]:[]}
-                    menuPortalTarget={document.body}
-                    menuPosition={"fixed"}
-                    options={genderoption}
-                  ></Select>
+                      id="location"
+                      name="location"
+                      placeholder="Location"
+                      // styles={
+                      //   mandatoryData.includes("gender") && !data.gender
+                      //     ? handleReactSelectCss("small", true)
+                      //     : handleReactSelectCss("small", false)
+                      // }
+
+                      styles={parseInt(data.roleId)===parseInt(3) ? handleReactSelectCss("small", false):mandatoryData.includes("locationId") && !data.locationId
+                           ? handleReactSelectCss("large", true):handleReactSelectCss("large", false)}
+                      onChange={(e) => handlelocation(e,"location")}
+                      value={
+                     
+                        locationdata.location
+                          ? [
+                              {
+                                value: locationdata.locationId,
+                                label: locationdata.location,
+                              },
+                            ]
+                          : []
+                      
+                      }
+                      // value={selectdraft?.id?[{"value":selectdraft.id,"label":selectdraft.desc}]:[]}
+                      menuPortalTarget={document.body}
+                      menuPosition={"fixed"}
+                      onMenuOpen={()=>getlocation()}
+                      options={options4}
+                    ></Select>
                   </div>
-                </div> */}
+
+                  {parseInt(data.roleId)===parseInt(3)?<div className="flex flex-col">
+                    <label
+                      className="block mb-2 text-sm font-semibold text-gray-700 dark:text-white"
+                      htmlFor="location"
+                    >
+                      Gym Address
+                    </label>
+
+                    <Select
+                      id="gymAddress"
+                      name="gymAddress"
+                      placeholder="Gym Address"
+                      // styles={
+                      //   mandatoryData.includes("gender") && !data.gender
+                      //     ? handleReactSelectCss("small", true)
+                      //     : handleReactSelectCss("small", false)
+                      // }
+
+                      styles={handleReactSelectCss("large", false)}
+                      onChange={(e) => handlegymaddress(e)}
+                      value={
+                     
+                       locationdata.ownerId
+                          ? [
+                              {
+                                value: locationdata.ownerId,
+                                label: locationdata.gymName,
+                              },
+                            ]
+                          : []
+                      
+                      }
+                      // value={selectdraft?.id?[{"value":selectdraft.id,"label":selectdraft.desc}]:[]}
+                      menuPortalTarget={document.body}
+                      menuPosition={"fixed"}
+                      onMenuOpen={()=>getGymAddress()}
+                      options={options5}
+                    ></Select>
+                  </div>:<></>}
+                </div>
                 <div className="mb-6 text-center">
                   <button
                     className="w-full px-4 py-2 font-bold text-white bg-zinc-900 rounded-full hover:bg-blue-700 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800 focus:outline-none focus:shadow-outline"
@@ -436,6 +784,7 @@ te.roleId = e.target.value;
                     onClick={() => {
                       postMainData(data);
                     }}
+                    // onClick={()=>console.log(data)}
                   >
                     Register Account
                   </button>
@@ -447,13 +796,16 @@ te.roleId = e.target.value;
 								Forgot Password?
 							</a> */}
                 </div>
-                <div className="text-center text-lg text-zinc-800 dark:text-white align-baseline hover:text-black hover:underline hover:cursor-pointer" onClick={()=>nav("/portal")}>
+                <div
+                  className="text-center text-lg text-zinc-800 dark:text-white align-baseline hover:text-black hover:underline hover:cursor-pointer"
+                  onClick={() => nav("/portal")}
+                >
                   {/* <a
                     className="inline-block text-lg text-zinc-800 dark:text-white align-baseline hover:text-black hover:underline"
                     href={window.location.origin}
                   > */}
-                    {/* {window.location.origin} */}
-                    Already have an account? Login!
+                  {/* {window.location.origin} */}
+                  Already have an account? Login!
                   {/* </a> */}
                 </div>
               </form>

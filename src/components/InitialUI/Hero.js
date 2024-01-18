@@ -6,26 +6,24 @@ import heroimgback from "../../assets/hero_image_back.png";
 import heart from "../../assets/heart.png";
 import calories from "../../assets/calories.png";
 import { useNavigate } from "react-router-dom";
-import {motion} from "framer-motion"
+import { motion } from "framer-motion";
 
 const Hero = () => {
   const nav = useNavigate();
-  const transition = {type:'spring',duration:3}
+  const transition = { type: "spring", duration: 3 };
+  const mobile = window.innerWidth<=768 ? true:false
   return (
     <div className={hr.hero}>
-    <div className={`${"blur"} ${hr.blurh}`}></div>
+      <div className={`${"blur"} ${hr.blurh}`}></div>
       <div className={hr.leftH}>
         <Header />
         {/* best ad */}
         <div className={hr.bestad}>
           <motion.div
-          initial={{left:'230px'}}
-          whileInView={{left:'8px'}}
-          transition={{...transition,type:'tween'}}
-          >
-
-
-          </motion.div>
+            initial={{ left: mobile?"165px":"230px" }}
+            whileInView={{ left: "8px" }}
+            transition={{ ...transition, type: "tween" }}
+          ></motion.div>
           <span>The best group of fitness clubs</span>
         </div>
         {/* hero heading */}
@@ -67,36 +65,44 @@ const Hero = () => {
         </div>
       </div>
       <div className={hr.rightH}>
-      <div className={hr.btncont}>
-      <button className={hr.btn} onClick={()=>nav("/register")}>Register</button>
-        <button className={hr.btn} onClick={()=>nav("/portal")}>Login</button>
-      </div>
-
+        <div className={hr.btncont}>
+          <button className={hr.btn} onClick={() => nav("/register")}>
+            Register
+          </button>
+          <button className={hr.btn} onClick={() => nav("/portal")}>
+            Login
+          </button>
+        </div>
 
         <motion.div
-        initial={{right:"-1rem"}}
-        transition={transition}
-        whileInView={{right:"4rem"}}
-         className={hr.heartrate}>
+          initial={{ right: "-1rem" }}
+          transition={transition}
+          whileInView={{ right: "4rem" }}
+          className={hr.heartrate}
+        >
           <img src={heart} alt="heart" />
           <span>Heart Rate</span>
           <span>116 bpm</span>
         </motion.div>
-{/* hero images */}
+        {/* hero images */}
         <img src={heroimg} alt="heroimg" className={hr.heroimg} />
-        <img src={heroimgback} alt="heroimgback" className={hr.heroimgback} />
-      
-      {/* calories */}
-      <div className={hr.calories}>
-      <img src={calories} alt="calories" />
-      <div>
-      <span>Calories Burnt</span>
-      <span>220 kcal</span>
+        <motion.img
+          initial={{ right: "11rem" }}
+          whileInView={{ right: "20rem" }}
+          transition={transition}
+          src={heroimgback}
+          alt="heroimgback"
+          className={hr.heroimgback}
+        />
 
-      </div>
-   
-      </div>
-      
+        {/* calories */}
+        {/* <div className={hr.calories}>
+          <img src={calories} alt="calories" />
+          <div>
+            <span>Calories Burnt</span>
+            <span>220 kcal</span>
+          </div>
+        </div> */}
       </div>
     </div>
   );

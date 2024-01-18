@@ -1,36 +1,86 @@
 import React, { useEffect, useState } from "react";
 import { useKeycloak } from "@react-keycloak/web";
 import keyclock from "../keycloak/Keycloak";
-import {useSelector} from "react-redux";
-import Home from "../components/Home"
-import Head from "../components/Head";
+import {useDispatch, useSelector} from "react-redux";
+import Home from "../components/Home";
+import { keycloakSessionreducer } from "../store/KeycloakSession";
+import { addLoginReducer } from "../store/LoginDetails";
+import axiosInstance from "../services/LocalAxiosInstance";
+import { useLocation, useNavigate } from "react-router-dom";
+// import Head from "../components/Head";
 
 const YtcloneLogin = () => {
 //     let keyclcksession = useSelector((e) =>
 //     e.keycloakSession?.data?.sessionId ? e.keycloakSession.data.sessionId : ""
 //   );
   const { keycloak, initialized } = useKeycloak();
-  let userjson ={
-    username:"",
-    emailId:"",
-    password:""
-  }
-  const [userDetails,setuserDetails] = useState({...userjson})
+  const loc = useLocation();
+  const nav = useNavigate();
+  let keyclcksession = useSelector((e) =>
+  e.keycloakSession?.data?.sessionId ? e.keycloakSession.data.sessionId : ""
+);
+
+const dispatch = useDispatch();
+  console.log(keycloak?.idTokenParsed?.email)
+
   const [tokenavailability, settokenavailability] = useState(false);
 
-  
-//   const handleSubmit = async (event) => {
-//     try {
-//       await keycloak.login({...userDetails.emailId,...userDetails.password});
-//     } catch (error) {
-//       console.error("Failed to log in", error);
-//     }
-//   };
+const logindetailsurl = "users/getuser";
 
 //   if (!initialized) {
 //     return <div>Loading...</div>;
 //   }
 //   {keycloak.authenticated?<YtcloneLogin/>:<></>}
+
+const logindetailsapi = async (logindetailsurl,emailId,navpath) => {
+  // setloaded(true)
+  const res = await axiosInstance.post(logindetailsurl, {
+    emailId: emailId
+  });
+
+  try {
+    if (res.status === 200) {
+      if (res.data.status) {
+        let l = res.data.data;
+
+        console.log(l)
+        dispatch(keycloakSessionreducer({ sessionId: keycloak.sessionId }));
+        dispatch(addLoginReducer({ ...res.data.data }));
+        nav(navpath);
+      } else {
+   
+        // const l = { ...err };
+        // // setloaded(false)
+        // setshow(true);
+        // setnavpath("/");
+        // setmodalType("errormodal");
+        // l.message = res.data.message;
+        // seterrcode(l.message);
+        // setlogout(true);
+      
+      }
+    } else if (res?.response.status === 401) {
+      // seterrcode(Errmsg["err002"]);
+
+      // setshow(true);
+      // setlogout(true);
+      // setnavpath("/");
+
+      // setmodalType("errormodal");
+    } else {
+      // seterrcode(Errmsg["err001"]);
+      // setlogout(true);
+      // setshow(true);
+      // setmodalType("errormodal");
+    }
+  } catch (err) {
+  
+    // seterrcode(Errmsg["err001"]);
+    // setlogout(true);
+    // setshow(true);
+    // setmodalType("errormodal");
+  }
+};
 
 
 const data = async () => {
@@ -41,24 +91,26 @@ const data = async () => {
       settokenavailability(true);
     }
     console.log(res)
-    // if(keyclcksession===keycloak.sessionId || ){
-    // if (
-    //   (keycloak.authenticated && loc.pathname === "/") ||
-    //   (keycloak.authenticated && keyclcksession !== keycloak.sessionId) ||
-    //   (keycloak.authenticated && keyclcksession === "")
-    // ) {
-    //   logindetailsapi(
-    //     logindetailsurl,
-    //     keycloak?.idTokenParsed?.preferred_username.toUpperCase(),
-    //     "dashboard"
-    //   );
+   
+    if (
+      (keycloak.authenticated && loc.pathname === "/") ||
+      (keycloak.authenticated && keyclcksession !== keycloak.sessionId) ||
+      (keycloak.authenticated && keyclcksession === "")
+    ) {
+      logindetailsapi(
+        logindetailsurl,
+        keycloak?.idTokenParsed?.email,
+      "home"
+      );
 
-    // } else if (keycloak?.authenticated) {
-    //   logindetailsapi(
-    //     logindetailsurl,
-    //     keycloak?.idTokenParsed?.preferred_username.toUpperCase(),
-    //     loc.pathname
-    //   );
+    } else if (keycloak?.authenticated) {
+      logindetailsapi(
+        logindetailsurl,
+        keycloak?.idTokenParsed?.email,
+        loc.pathname
+      
+      );
+    }
 
       // let permissionvaluesarr = loginjson.permissionsList.map((d) => {
       //   return d.permissions.map((d1) => d1.permissionId);
@@ -71,7 +123,6 @@ const data = async () => {
   };
 
   useEffect(() => {
-    // settokenavailability(false)
     data();
   }, [keycloak.authenticated]);
 

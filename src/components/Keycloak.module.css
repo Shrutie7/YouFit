@@ -1,0 +1,16 @@
+.main{
+    --primary-hue: 210;
+    --gray-hue: 240;
+    --color-primary: rgba(0, 0, 0, 0.852);
+    --color-primary-variant: hsl(var(--primary-hue), 100%, 65%);
+    --color-secondary:  #f48915;;
+    --color-gray-100: hsl(var(--gray-hue), 47%, 94%);
+    --color-gray-200: hsl(var(--gray-hue), 26%, 75%);
+    --color-gray-300: hsl(var(--gray-hue), 24%, 64%);
+    --color-gray-400: hsl(var(--gray-hue), 16%, 41%);
+    --color-gray-500: gray;
+    --color-gray-600: hsl(var(--gray-hue), 48%, 15%);
+    --container-width-lg: 80%;
+    --container-width-md: 90%;
+    --transition: all 500ms ease;
+}

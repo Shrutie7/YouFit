@@ -8,11 +8,11 @@ export const handleReactSelectCss = (name,error, type) => {
     var reactslctw = "";
     switch (name) {
       case "normal": {
-        reactslctw = "160px";
+        reactslctw = "12rem";
         break;
       }
       case "small": {
-        reactslctw = "140px";
+        reactslctw = "9rem";
         break;
       }
       case "xmsmall": {
@@ -24,7 +24,7 @@ export const handleReactSelectCss = (name,error, type) => {
         break;
       }
       case "large": {
-        reactslctw = "280px";
+        reactslctw = "13rem";
         break;
       }
       case "xlarge": {
@@ -57,7 +57,7 @@ export const handleReactSelectCss = (name,error, type) => {
         outline: "none",
         paddingLeft: "5px",
         paddingRight: "5px",
-        color: "#0D4459",
+        color: "black",
         // boxShadow: "inset 0 0 0.2vh 0.1vh rgb(0, 0, 0, 0.6)",
       }),
       menuPortal: (provided) => ({ ...provided, zIndex: 9999 }),
@@ -76,6 +76,7 @@ export const handleReactSelectCss = (name,error, type) => {
           border: "2px solid black  !important",
           backgroundColor: "#fff",
           borderRadius: "8px",
+          color:"black"
         };
       },
       menuList: (styles) => {
@@ -93,6 +94,7 @@ export const handleReactSelectCss = (name,error, type) => {
           cursor: "pointer",
           fontWeight: "500",
           fontSize: "16px",
+          color:"black",
   
           "&:hover": {
             backgroundColor: state.isSelected ? "#B7D6F2" : "#EBF4F8",
@@ -100,7 +102,7 @@ export const handleReactSelectCss = (name,error, type) => {
           },
           backgroundColor:
             state.isFocused | state.isSelected ? "#B7D6F2" : "white",
-          color: state.isFocused | state.isSelected ? "#0D4459" : "#white",
+          // color: state.isFocused | state.isSelected ? "#0D4459" : "#white",
           fontWeight: "500",
         };
       },

@@ -114,6 +114,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    color: black;
 }
 .btn:hover{
     cursor: pointer;
@@ -198,4 +199,77 @@ color: var(--gray);
     width: 22rem;
     height: 30rem;
     left: 0;
+}
+@media screen and (max-width: 768px){
+    .hero{
+        display:flex;
+        flex-direction: column;
+    }
+    .blurh{
+        width: 14rem;
+    }
+    .bestad{
+        margin-top: 0;
+        font-size: small;
+        align-self: center;
+        transform: scale(0.8);
+    }
+    .herotext{
+        font-size: xx-large;
+        align-items: center;
+        justify-content: center;
+    }
+    .herotext>div:nth-of-type(3){
+font-size: small;
+font-weight: 200;
+letter-spacing: 1px;
+text-align: center;
+    }
+    .herobuttons{
+        justify-content: center;
+    }
+    .figures>div>span:nth-of-type(1){
+font-size: large;
+    }
+    .figures>div>span:nth-of-type(2){
+font-size: small;
+    }
+    .rightH{
+        position: relative;
+        background: none;
+
+    }
+    .heartrate{
+        left: 1rem;
+        top:2rem;
+    }
+    /* .calories{
+        position: relative;
+        top: 5rem;
+        left: 2rem;
+    }
+
+    .calories>img{
+        width: 2rem;
+    }
+    .calories>div>:nth-child(2){
+        color: #fff;
+        font-size: 1rem;
+    } */
+    .heroimg{
+        position: relative;
+        width: 15rem;
+        left: 7rem;
+        top: 4rem;
+        align-self: center;
+    }
+    .heroimgback{
+        width: 15rem;
+        left: 2rem;
+top:0rem;
+z-index: -1;
+    }
+    .btncont{
+        flex-direction: column;
+    }
 }
