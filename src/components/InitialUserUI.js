@@ -6,6 +6,7 @@ import { handleReactSelectCss } from "../commonmodules/ReactSelectCss";
 import Select from "react-select";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
+import { CircularProgress } from "@material-ui/core";
 const InitialUserUI = ({setnavflag,navflag}) => {
   let trainerurl = "/users/trainerlist";
   let gymaddressurl = "location/gymaddress";
@@ -24,7 +25,7 @@ const InitialUserUI = ({setnavflag,navflag}) => {
   const [formdata, setformdata] = useState({ ...formjson });
   const loginDetails = useSelector((e) => e.logindetails.data);
   console.log(loginDetails);
-
+const[flag,setflag] = useState(false);
 
   
   const submitfun = async () => {
@@ -40,7 +41,7 @@ const InitialUserUI = ({setnavflag,navflag}) => {
     localjson.locationId = parseInt(loginDetails.locationDetails.locationId);
 
     console.log(localjson)
-
+    setflag(true);
     try {
       const res = await axiosInstance.post(submiturl, localjson);
 
@@ -50,7 +51,7 @@ const InitialUserUI = ({setnavflag,navflag}) => {
           // setnavflag(true)
           toast("🦄 User Updated Successfully", {
             position: "top-right",
-            autoClose: 5000,
+            autoClose: 3000,
             hideProgressBar: false,
             closeOnClick: true,
             pauseOnHover: true,
@@ -90,6 +91,7 @@ const InitialUserUI = ({setnavflag,navflag}) => {
       // l.logout=false
       // setmodalpopupdata({...l})
     }
+    setflag(false);
   };
 
   console.log(loginDetails);
@@ -291,13 +293,18 @@ const InitialUserUI = ({setnavflag,navflag}) => {
           onClick={()=>submitfun()}
           >
             Submit
+            &nbsp;&nbsp;&nbsp;
+                    {
+                      flag ?<CircularProgress color="inherit" size={"20px"}></CircularProgress>:<></>
+                    }
+
           </button>
         </div>
       </div>
 
       <ToastContainer
         position="top-right"
-        autoClose={5000}
+        autoClose={3000}
         hideProgressBar={false}
         newestOnTop={false}
         closeOnClick

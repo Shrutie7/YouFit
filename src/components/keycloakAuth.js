@@ -19,6 +19,7 @@ import Navbar from "../components/Navbar"
 import Footer from "../components/Footer"
 import Checkout from "../pages/plans/Checkout";
 import Feed from "../pages/feed/Feed";
+import Setting  from "../pages/settings/Setting";
 
 const keycloakAuth = () => {
   return (
@@ -38,6 +39,7 @@ const keycloakAuth = () => {
         <Route path="feedback/*" element={<Contact />} />
         <Route path="gallery/*" element={<Gallery />} />
         <Route path ="feed/*" element={<Feed/>}/>
+        <Route path ="settings/*" element={<Setting/>}/>
 
         <Route path="plans/*" element={<Plans />} />
         <Route path = "plans/checkout" element={<Checkout />} />
