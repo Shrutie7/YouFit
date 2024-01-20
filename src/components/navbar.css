@@ -18,7 +18,7 @@ nav {
 .navtocontainer {
   height: 100%;
   display: flex;
-  width:90vw;
+  width:95vw;
   justify-content: space-between;
   align-items: center;
   position: relative;

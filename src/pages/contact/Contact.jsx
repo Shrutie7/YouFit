@@ -8,15 +8,75 @@ import axiosInstance from "../../services/LocalAxiosInstance";
 import { useState } from "react";
 import { handleReactSelectCss } from "../../commonmodules/ReactSelectCss";
 import Select from "react-select";
+import { useSelector } from "react-redux";
 
 const Contact = () => {
   let gymaddressurl = "location/gymaddress";
-  const [options5,setoptions5] = useState();
+  let trainerurl = "users/trainerlist"
 
+  const [radioselect,setradioselect] = useState("trainer");
+
+  const handleradio = (e,name) => {
+  
+
+    console.log(e.target.value);
+    
+    if(name==="gym")
+    {
+      setradioselect(e.target.value)
+    }
+    else{
+      setradioselect(e.target.value);
+    }
+
+
+  };
+  
+  const [options5,setoptions5] = useState();
+  const [options6,setoptions6] = useState();
+
+  const sms = {
+    trainerId:"",
+    trainerName:"",
+    gymId:"",
+    gymName:""
+  }
+
+  let [fdata,setfdata] = useState({...sms});
+
+  const handlechange = (e,name)=>{
+
+    console.log(e,name)
+    let l = {...fdata};
+    
+    if(name==="gym"){
+      l.gymId = e.value;
+      l.gymName = e.label;
+    }
+    if(name==="trainer"){
+      l.trainerId = e.value;
+      l.trainerName = e.label;
+    }
+   
+
+    setfdata({...l})
+    
+
+  }
+  // {
+  //   "userId":1, //based on user who is giving feedback
+  //   "rating":5, 
+  //   "feedbackTypeId":1, //1 is for trainer 2 is for gym
+  //   "trainerUserId":3, //trainer id
+  //   "gymId":""}
+
+  const loginDetails = useSelector((e)=>e.logindetails.data)
+
+  console.log(loginDetails);
   const getGymAddress = async () => {
     try {
       // location id will come from logindetailsget store it in reduxstore...
-      const res = await axiosInstance.post(gymaddressurl, { location_id:1});
+      const res = await axiosInstance.post(gymaddressurl, { location_id:loginDetails.locationDetails.locationId});
 
       if (res.status === 200) {
         if (res.data.status) {
@@ -25,6 +85,48 @@ const Contact = () => {
             label: d.gymName,
           }));
           setoptions5([...l]);
+        } else {
+          // const l = { ...modalpopupdata };
+          //         l.show=true
+          //         l.errormsg=res.data.message
+          //         l.logout=false
+          //         setmodalpopupdata({...l})
+        }
+      } else if (res.response.status === 401) {
+        // const l = { ...modalpopupdata };
+        // l.show=true
+        // l.errormsg="Session Expired. Please login again..."
+        // l.logout=true
+        // setmodalpopupdata({...l})
+      } else {
+        // const l = { ...modalpopupdata };
+        // l.show=true
+        // l.errormsg="Unable to Connect.Please try again later"
+        // l.logout=false
+        // setmodalpopupdata({...l})
+      }
+    } catch (err) {
+      // const l = { ...modalpopupdata };
+      // l.show=true
+      // l.errormsg="Unable to Connect.Please try again later"
+      // l.logout=false
+      // setmodalpopupdata({...l})
+    }
+  };
+  const getTrainerList = async () => {
+    try {
+      // location id will come from logindetailsget store it in reduxstore...
+
+      console.log(loginDetails?.parentUserDetails);
+      const res = await axiosInstance.post(trainerurl, {ownerId:parseInt(loginDetails?.parentUserId)});
+
+      if (res.status === 200) {
+        if (res.data.status) {
+          let l = res.data.data.listOfTrainers.map((d) => ({
+            value: d.userId,
+            label: d.trainerName,
+          }));
+          setoptions6([...l]);
         } else {
           // const l = { ...modalpopupdata };
           //         l.show=true
@@ -214,11 +316,11 @@ const Contact = () => {
                     <input
                       type="radio"
                       defaultChecked
-                      name="roleId"
+                      name="type"
                       className="mb-6"
                       // id="roleId"
-                      // onClick={(e) => handleradio(e,"user")}
-                      value={4}
+                      onClick={(e) => handleradio(e,"trainer")}
+                      value={"trainer"}
                     />
                     <label className="text-white font-semibold text-base">
                       Rate Trainer
@@ -227,25 +329,27 @@ const Contact = () => {
                   <div className="flex gap-2 mt-4">
                     <input
                       type="radio"
-                      name="roleId"
+                      name="type"
                       className="mb-6"
                       // id="roleId"
-                      // onClick={(e) => handleradio(e,"trainer")}
-                      value={3}
+                      onClick={(e) => handleradio(e,"gym")}
+                      value={"gym"}
                     />
                     <label className="text-white font-semibold text-base ">
                       Rate Gym
                     </label>
                   </div>
                   <div className="flex flex-col">
+                  {console.log(fdata.gymId,fdata.gymName)}
                 <label
                       className="block mb-2 text-sm font-semibold text-gray-700 dark:text-white"
                       htmlFor="location"
                     >
-                      Gym Address
+                      {radioselect === "gym" ? "Gym Address" : "Trainer"}
                     </label>
 
-                    <Select
+                    {
+                      radioselect === "gym"?<Select
                       id="gymAddress"
                       name="gymAddress"
                       placeholder="Gym Address"
@@ -257,25 +361,56 @@ const Contact = () => {
                       // }
 
                       styles={handleReactSelectCss("large", false)}
-                      // onChange={(e) => handlegymaddress(e)}
-                      // value={
+                      onChange={(e) => handlechange(e,"gym")}
+                      value={
                      
-                      //  locationdata.ownerId
-                      //     ? [
-                      //         {
-                      //           value: locationdata.ownerId,
-                      //           label: locationdata.gymName,
-                      //         },
-                      //       ]
-                      //     : []
+                       fdata.gymId
+                          ? [
+                              {
+                                value:  fdata.gymId,
+                                label:  fdata.gymName,
+                              },
+                            ]
+                          : []
                       
-                      // }
+                      }
                       // value={selectdraft?.id?[{"value":selectdraft.id,"label":selectdraft.desc}]:[]}
                       menuPortalTarget={document.body}
                       menuPosition={"fixed"}
                       onMenuOpen={()=>getGymAddress()}
                       options={options5}
+                    ></Select>:
+                    <Select
+                      id="Trainer"
+                      name="trainer"
+                      placeholder="Trainer"
+                      className="bg-none"
+                      // styles={
+                      //   mandatoryData.includes("gender") && !data.gender
+                      //     ? handleReactSelectCss("small", true)
+                      //     : handleReactSelectCss("small", false)
+                      // }  
+
+                      styles={handleReactSelectCss("large", false)}
+                      onChange={(e) => handlechange(e,"trainer")}
+                      value={
+                     
+                       [
+                              {
+                                value: fdata.trainerId,
+                                label: fdata.trainerName,
+                              },
+                            ]
+                      
+                      
+                      }
+                      // value={selectdraft?.id?[{"value":selectdraft.id,"label":selectdraft.desc}]:[]}
+                      menuPortalTarget={document.body}
+                      menuPosition={"fixed"}
+                      onMenuOpen={()=>getTrainerList()}
+                      options={options6}
                     ></Select>
+                    }
 
                 </div>
                 </div>

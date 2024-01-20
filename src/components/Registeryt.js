@@ -10,6 +10,7 @@ import { ToastContainer, toast } from "react-toastify";
 import Carousel from "./Carousel";
 import { handleReactSelectCss } from "../commonmodules/ReactSelectCss";
 import { Addrowerror } from "../commonmodules/Addrowerror";
+import { CircularProgress } from "@material-ui/core";
 import Select from "react-select";
 const Registeryt = () => {
   const [showeye, setShoweye] = useState(false);
@@ -143,6 +144,8 @@ const Registeryt = () => {
   let cityurl = "location/city";
   let locationaddressurl = "location/address";
   let gymaddressurl = "location/gymaddress";
+
+  const [flag,setflag] = useState(false);
   async function postMainData(gdata) {
     let res = Addrowerror(lableMandatoryData, data);
     if (res?.length > 0) {
@@ -155,7 +158,7 @@ const Registeryt = () => {
       // })
     } else {
       const dat = { ...gdata };
-
+      setflag(true);
       // console.log(dat);
       try {
         const res = await axiosInstance.post(createuserurl, dat);
@@ -163,8 +166,9 @@ const Registeryt = () => {
         if (res?.status === 200) {
           if (res?.data?.status) {
             // console.log("user created");
+            
             setData({ ...sms });
-            toast("🦄 User created Successfully", {
+            toast(`🦄 ${data.roleId===4 ? "User" : data.roleId===3 ? "Trainer" :"Owner" } Created Successfully`, {
               position: "top-right",
               autoClose: 5000,
               hideProgressBar: false,
@@ -185,7 +189,9 @@ const Registeryt = () => {
         } else {
         }
       } catch (err) {}
+      setflag(false);
     }
+
   }
   const getcity = async () => {
     try {
@@ -456,7 +462,7 @@ const Registeryt = () => {
                       className="bg-white w-full px-3 py-2 mb-3 text-sm leading-tight text-gray-700 dark:text-black border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
                       id="userName"
                       style={
-                        mandatoryData.includes("userName") && !data.username
+                        mandatoryData.includes("userName") && !data.userName
                           ? { border: "2px solid red" }
                           : {}
                       }
@@ -787,6 +793,10 @@ const Registeryt = () => {
                     // onClick={()=>console.log(data)}
                   >
                     Register Account
+                    
+                    {
+                      flag ?<CircularProgress color="inherit" size={"7px"}></CircularProgress>:<></>
+                    }
                   </button>
                 </div>
                 <hr className="mb-6 border-t" />

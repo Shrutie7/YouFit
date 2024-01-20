@@ -7,6 +7,9 @@ import { keycloakSessionreducer } from "../store/KeycloakSession";
 import { addLoginReducer } from "../store/LoginDetails";
 import axiosInstance from "../services/LocalAxiosInstance";
 import { useLocation, useNavigate } from "react-router-dom";
+import InitialUserUI from "../components/InitialUserUI";
+import InitialOwnerUI from "../components/InitialOwnerUI";
+
 // import Head from "../components/Head";
 
 const YtcloneLogin = () => {
@@ -14,6 +17,7 @@ const YtcloneLogin = () => {
 //     e.keycloakSession?.data?.sessionId ? e.keycloakSession.data.sessionId : ""
 //   );
   const { keycloak, initialized } = useKeycloak();
+  const loginDetails = useSelector((e)=>e.logindetails?.data)
   const loc = useLocation();
   const nav = useNavigate();
   let keyclcksession = useSelector((e) =>
@@ -81,7 +85,7 @@ const logindetailsapi = async (logindetailsurl,emailId,navpath) => {
     // setmodalType("errormodal");
   }
 };
-
+console.log(keycloak?.authenticated)
 
 const data = async () => {
     const getdata = () => new Promise((resolve) => resolve(keycloak.token));
@@ -122,16 +126,18 @@ const data = async () => {
     // }
   };
 
+  const [navflag , setnavflag] = useState(false);
+
   useEffect(() => {
     data();
   }, [keycloak.authenticated]);
 
   return (
     <>
-
+{/* {tokenavailability  ? <Home></Home> :<></>} */}
 {
-    /* tokenavailability  ? <Head></Head> :<></> */
-        tokenavailability  ? <Home></Home> :<></>
+   
+  !navflag&&tokenavailability && loginDetails?.parentUserId==="" && parseInt(loginDetails?.roleId)===parseInt(4)?<InitialUserUI setnavflag={setnavflag} navflag={navflag}/>: !navflag && tokenavailability && loginDetails?.parentUserId===""&& parseInt(loginDetails?.roleId)===parseInt(2) ?<InitialOwnerUI setnavflag={setnavflag} navflag={navflag}/> :tokenavailability  ? <Home></Home> :<></>
 }
 {/* 
       <input
