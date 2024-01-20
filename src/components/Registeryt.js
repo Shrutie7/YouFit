@@ -168,9 +168,9 @@ const Registeryt = () => {
             // console.log("user created");
             
             setData({ ...sms });
-            toast(`🦄 ${data.roleId===4 ? "User" : data.roleId===3 ? "Trainer" :"Owner" } Created Successfully`, {
+            toast(`🦄 ${parseInt(data.roleId)===parseInt(4) ? "User" : parseInt(data.roleId)===parseInt(3) ? "Trainer" :"Owner" } Created Successfully`, {
               position: "top-right",
-              autoClose: 5000,
+              autoClose: 3000,
               hideProgressBar: false,
               closeOnClick: true,
               pauseOnHover: true,
@@ -178,7 +178,7 @@ const Registeryt = () => {
               progress: undefined,
               theme: "light",
               onClose: () => {
-                nav("/");
+                nav("/portal");
               },
             });
 
@@ -793,9 +793,9 @@ const Registeryt = () => {
                     // onClick={()=>console.log(data)}
                   >
                     Register Account
-                    
+                    &nbsp;&nbsp;&nbsp;
                     {
-                      flag ?<CircularProgress color="inherit" size={"7px"}></CircularProgress>:<></>
+                      flag ?<CircularProgress color="inherit" size={"20px"}></CircularProgress>:<></>
                     }
                   </button>
                 </div>
@@ -825,7 +825,7 @@ const Registeryt = () => {
       </div>
       <ToastContainer
         position="top-right"
-        autoClose={5000}
+        autoClose={3000}
         hideProgressBar={false}
         newestOnTop={false}
         closeOnClick

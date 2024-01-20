@@ -10,6 +10,7 @@ const InitialOwnerUI = ({ setnavflag, nacflag }) => {
 
   const nav = useNavigate();
   const gymcreateurl = "/gymcreate";
+  const updateurl = "users/update";
 
   const gymjson = {
     dno: "",
@@ -28,70 +29,70 @@ const InitialOwnerUI = ({ setnavflag, nacflag }) => {
   };
 
 
-  //   const updatefun = async () => {
-  //   let localjson = {};
+    const updatefun = async () => {
+    let localjson = {};
 
-  //   localjson.userId = parseInt(loginDetails.userId);
-  //   localjson.firstName = loginDetails.firstName;
-  //   localjson.lastName = loginDetails.lastName;
-  //   localjson.gender = loginDetails.gender;
-  //   localjson.emailId = loginDetails.emailId;
-  //   localjson.activeFlag = true;
-  //   localjson.parentUserId = formdata.trainerId;
-  //   localjson.locationId = parseInt(loginDetails.locationDetails.locationId);
+    localjson.userId = parseInt(loginDetails.userId);
+    localjson.firstName = loginDetails.firstName;
+    localjson.lastName = loginDetails.lastName;
+    localjson.gender = loginDetails.gender;
+    localjson.emailId = loginDetails.emailId;
+    localjson.activeFlag = true;
+    localjson.parentUserId = 1;
+    localjson.locationId = parseInt(loginDetails.locationDetails.locationId);
 
-  //   console.log(localjson)
+    console.log(localjson)
 
-  //   try {
-  //     const res = await axiosInstance.post(submiturl, localjson);
+    try {
+      const res = await axiosInstance.post(updateurl, localjson);
 
-  //     if (res.status === 200) {
-  //       if (res.data.status) {
+      if (res.status === 200) {
+        if (res.data.status) {
 
-  //         // setnavflag(true)
-  //         toast("🦄 User Updated Successfully", {
-  //           position: "top-right",
-  //           autoClose: 5000,
-  //           hideProgressBar: false,
-  //           closeOnClick: true,
-  //           pauseOnHover: true,
-  //           draggable: true,
-  //           progress: undefined,
-  //           theme: "light",
-  //           onClose: () => {
-  //             setnavflag(true)
-  //             nav("portal");
+          // setnavflag(true)
+          // toast("🦄 User Updated Successfully", {
+          //   position: "top-right",
+          //   autoClose: 5000,
+          //   hideProgressBar: false,
+          //   closeOnClick: true,
+          //   pauseOnHover: true,
+          //   draggable: true,
+          //   progress: undefined,
+          //   theme: "light",
+          //   onClose: () => {
+          //     setnavflag(true)
+          //     nav("portal");
 
-  //           },
-  //         });
-  //       } else {
-  //         // const l = { ...modalpopupdata };
-  //         //         l.show=true
-  //         //         l.errormsg=res.data.message
-  //         //         l.logout=false
-  //         //         setmodalpopupdata({...l})
-  //       }
-  //     } else if (res.response.status === 401) {
-  //       // const l = { ...modalpopupdata };
-  //       // l.show=true
-  //       // l.errormsg="Session Expired. Please login again..."
-  //       // l.logout=true
-  //       // setmodalpopupdata({...l})
-  //     } else {
-  //       // const l = { ...modalpopupdata };
-  //       // l.show=true
-  //       // l.errormsg="Unable to Connect.Please try again later"
-  //       // l.logout=false
-  //       // setmodalpopupdata({...l})
-  //     }
-  //   } catch (err) {
-  //     // const l = { ...modalpopupdata };
-  //     // l.show=true
-  //     // l.errormsg="Unable to Connect.Please try again later"
-  //     // l.logout=false
-  //     // setmodalpopupdata({...l})
-  //   }
-  // };
+          //   },
+          // });
+        } else {
+          // const l = { ...modalpopupdata };
+          //         l.show=true
+          //         l.errormsg=res.data.message
+          //         l.logout=false
+          //         setmodalpopupdata({...l})
+        }
+      } else if (res.response.status === 401) {
+        // const l = { ...modalpopupdata };
+        // l.show=true
+        // l.errormsg="Session Expired. Please login again..."
+        // l.logout=true
+        // setmodalpopupdata({...l})
+      } else {
+        // const l = { ...modalpopupdata };
+        // l.show=true
+        // l.errormsg="Unable to Connect.Please try again later"
+        // l.logout=false
+        // setmodalpopupdata({...l})
+      }
+    } catch (err) {
+      // const l = { ...modalpopupdata };
+      // l.show=true
+      // l.errormsg="Unable to Connect.Please try again later"
+      // l.logout=false
+      // setmodalpopupdata({...l})
+    }
+  };
 
   const submitfun = async () => {
     let localjson = {};
@@ -113,6 +114,7 @@ const InitialOwnerUI = ({ setnavflag, nacflag }) => {
 
       if (res.status === 200) {
         if (res.data.status) {
+          updatefun();
           toast("🦄 Gym Created Successfully", {
             position: "top-right",
             autoClose: 5000,

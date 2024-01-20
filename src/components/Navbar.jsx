@@ -27,7 +27,7 @@ const Navbar = () => {
   const popover = (
     <Popover id="popover-basic">
       <Popover.Body>
-        <div className="bg-black bg-opacity-60 border border-solid border-neutral-100 rounded-md w-auto mt-5 p-1">
+        <div className="bg-black bg-opacity-60 border border-solid border-neutral-100 rounded-md w-auto mt-5 p-">
           <div className="text-white  mt-1">
 
           <div className="text-xl ml-2">
