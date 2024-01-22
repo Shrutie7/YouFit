@@ -20,6 +20,7 @@ const InitialUserUI = ({setnavflag,navflag}) => {
     ownerId: "",
     trainerId: "",
     trainerName: "",
+    gymId:""
   };
 
   const [formdata, setformdata] = useState({ ...formjson });
@@ -39,6 +40,7 @@ const[flag,setflag] = useState(false);
     localjson.activeFlag = true;
     localjson.parentUserId = formdata.trainerId;
     localjson.locationId = parseInt(loginDetails.locationDetails.locationId);
+    localjson.gymId = formdata.gymId
 
     console.log(localjson)
     setflag(true);
@@ -60,7 +62,7 @@ const[flag,setflag] = useState(false);
             theme: "light",
             onClose: () => {
               setnavflag(true)
-              nav("portal");
+              nav("/portal/home");
 
             },
           });
@@ -104,8 +106,9 @@ const[flag,setflag] = useState(false);
       if (res.status === 200) {
         if (res.data.status) {
           let l = res.data.data.gymAddressList.map((d) => ({
-            value: d.ownerId,
+            value: d.gymId,
             label: d.gymName,
+            extrakey:d.ownerId
           }));
           setoptions5([...l]);
         } else {
@@ -181,9 +184,11 @@ const[flag,setflag] = useState(false);
   function handlegymaddress(e) {
     let l = { ...formdata };
 
-    l.ownerId = e.value;
+    l.gymId = e.value;
     l.gymName = e.label;
+    l.ownerId = e.extrakey;
 
+    
     setformdata({ ...l });
   }
   function handleTrainer(e) {
@@ -228,10 +233,10 @@ const[flag,setflag] = useState(false);
               styles={handleReactSelectCss("xlarge", false)}
               onChange={(e) => handlegymaddress(e)}
               value={
-                formdata.ownerId
+                formdata.gymId
                   ? [
                       {
-                        value: formdata.ownerId,
+                        value: formdata.gymId,
                         label: formdata.gymName,
                       },
                     ]

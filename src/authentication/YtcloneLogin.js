@@ -17,6 +17,7 @@ const YtcloneLogin = () => {
 //     e.keycloakSession?.data?.sessionId ? e.keycloakSession.data.sessionId : ""
 //   );
   const { keycloak, initialized } = useKeycloak();
+  const [localflag,setlocalflag] = useState(false);
   const loginDetails = useSelector((e)=>e.logindetails?.data)
   const loc = useLocation();
   const nav = useNavigate();
@@ -137,7 +138,7 @@ const data = async () => {
 {/* {tokenavailability  ? <Home></Home> :<></>} */}
 {
    
-  !navflag&&tokenavailability && loginDetails?.parentUserId==="" && parseInt(loginDetails?.roleId)===parseInt(4)?<InitialUserUI setnavflag={setnavflag} navflag={navflag}/>: !navflag && tokenavailability && loginDetails?.parentUserId===""&& parseInt(loginDetails?.roleId)===parseInt(2) ?<InitialOwnerUI setnavflag={setnavflag} navflag={navflag}/> :tokenavailability  ? <Home></Home> :<></>
+  !navflag&&tokenavailability && loginDetails?.parentUserId==="" && parseInt(loginDetails?.roleId)===parseInt(4)?<InitialUserUI setnavflag={setnavflag} navflag={navflag} />: !navflag && tokenavailability && loginDetails?.parentUserId===""&& parseInt(loginDetails?.roleId)===parseInt(2) ?<InitialOwnerUI setnavflag={setnavflag} navflag={navflag}/> :tokenavailability  ? <Home></Home> :<></>
 }
 {/* 
       <input

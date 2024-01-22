@@ -45,7 +45,8 @@ const Registeryt = () => {
     confirmPassword: "",
     roleId: "4",
     parentUserId:"",
-    locationId:""
+    locationId:"",
+    categoryId:"",
   };
 
   let locationdaata = {
@@ -54,7 +55,9 @@ const Registeryt = () => {
     location: "",
     locationId: "",
     gymName:"",
-    ownerId:""
+    ownerId:"",
+   categoryId:"",
+   categoryName:""
   };
 
   const [locationdata, setlocationdata] = useState({ ...locationdaata });
@@ -111,6 +114,23 @@ const Registeryt = () => {
 
     setlocationdata({ ...l });
   }
+  function handlecategory(e) {
+    let l = { ...data };
+    let l2 = {...locationdata};
+
+    l2.categoryId = e.value;
+    l2.categoryName = e.label;
+
+    l.categoryId = e.value;
+    // l.ownerId = e.value;
+    // l.gymName=e.label;
+
+    // let l2 = {...data}
+    // l2.parentUserId=e.value;
+    // setData({...l2})
+    setData({ ...l });
+    setlocationdata({...l2})
+  }
 
   const handleradio = (e,name) => {
     const te = { ...data };
@@ -133,6 +153,7 @@ const Registeryt = () => {
   const [options3, setoptions3] = useState([]);
   const [options4, setoptions4] = useState([]);
   const [options5, setoptions5] = useState([]);
+  const [options6, setoptions6] = useState([]);
   const handleselect = (e) => {
     let l = { ...data };
     l.gender = e.value;
@@ -143,7 +164,9 @@ const Registeryt = () => {
   let stateurl = "location/state";
   let cityurl = "location/city";
   let locationaddressurl = "location/address";
-  let gymaddressurl = "location/gymaddress";
+  let gymaddressurl = "location/gymaddress";  
+  let getcategoryurl = "categorylist";
+
 
   const [flag,setflag] = useState(false);
   async function postMainData(gdata) {
@@ -283,6 +306,45 @@ const Registeryt = () => {
             label: d.gymName,
           }));
           setoptions5([...l]);
+        } else {
+          // const l = { ...modalpopupdata };
+          //         l.show=true
+          //         l.errormsg=res.data.message
+          //         l.logout=false
+          //         setmodalpopupdata({...l})
+        }
+      } else if (res.response.status === 401) {
+        // const l = { ...modalpopupdata };
+        // l.show=true
+        // l.errormsg="Session Expired. Please login again..."
+        // l.logout=true
+        // setmodalpopupdata({...l})
+      } else {
+        // const l = { ...modalpopupdata };
+        // l.show=true
+        // l.errormsg="Unable to Connect.Please try again later"
+        // l.logout=false
+        // setmodalpopupdata({...l})
+      }
+    } catch (err) {
+      // const l = { ...modalpopupdata };
+      // l.show=true
+      // l.errormsg="Unable to Connect.Please try again later"
+      // l.logout=false
+      // setmodalpopupdata({...l})
+    }
+  };
+  const getcategory = async () => {
+    try {
+      const res = await axiosInstance.get(getcategoryurl);
+
+      if (res.status === 200) {
+        if (res.data.status) {
+          let l = res.data.data.categoryDetailsList.map((d) => ({
+            value: d.categoryId,
+            label: d.categoryName,
+          }));
+          setoptions6([...l]);
         } else {
           // const l = { ...modalpopupdata };
           //         l.show=true
@@ -528,13 +590,13 @@ const Registeryt = () => {
                       alt="eye"
                       onClick={handleShoweye}
                     ></img>
-                    {data.password === "" ? (
+                    {/* {data.password === "" ? (
                       <p className="text-xs italic text-red-500">
                         Please choose a password.
                       </p>
                     ) : (
                       <></>
-                    )}
+                    )} */}
                   </div>
                   <div className="mr-2 md:ml-2">
                     <label
@@ -634,7 +696,7 @@ const Registeryt = () => {
                 </div>
 
 
-                <div className={parseInt(data.roleId)===parseInt(3) ?"mb-4 md:flex gap-7 relative z-0" :"mb-4 md:flex justify-between relative z-0"}>
+                <div className={parseInt(data.roleId)===parseInt(3) ?"mb-4 md:flex gap-6 relative z-0" :"mb-4 md:flex justify-between relative z-0"}>
                   <div className="flex flex-col">
                     <label
                       className="block mb-2 text-sm font-semibold text-gray-700 dark:text-white"
@@ -648,7 +710,7 @@ const Registeryt = () => {
                       name="state"
                       placeholder="State"
                       // styles={(mandatoryData.includes("state") && !data.gender) ? handleReactSelectCss("small", true):handleReactSelectCss("small", false)}
-                      styles={handleReactSelectCss("large", false)}
+                      // styles={handleReactSelectCss("large", false)}
                       onChange={(e) => handlelocation(e, "state")}
                       value={
                         locationdata?.state
@@ -661,6 +723,9 @@ const Registeryt = () => {
                           : []
                       }
                       // value={selectdraft?.id?[{"value":selectdraft.id,"label":selectdraft.desc}]:[]}
+
+                      styles={parseInt(data.roleId)===parseInt(3) ? handleReactSelectCss("small", false): handleReactSelectCss("large", false)}
+
                       menuPortalTarget={document.body}
                       menuPosition={"fixed"}
                       options={options2}
@@ -678,6 +743,7 @@ const Registeryt = () => {
                       id="city"
                       name="city"
                       placeholder="City"
+                      
                       // styles={
                       //   mandatoryData.includes("gender") && !data.gender
                       //     ? handleReactSelectCss("small", true)
@@ -755,13 +821,17 @@ const Registeryt = () => {
                       id="gymAddress"
                       name="gymAddress"
                       placeholder="Gym Address"
+                      className="leading-4"
                       // styles={
                       //   mandatoryData.includes("gender") && !data.gender
                       //     ? handleReactSelectCss("small", true)
                       //     : handleReactSelectCss("small", false)
                       // }
 
-                      styles={handleReactSelectCss("large", false)}
+                      // styles={handleReactSelectCss("large", false)}
+
+                      styles={parseInt(data.roleId)===parseInt(3) ? handleReactSelectCss("small", false): handleReactSelectCss("large", false)}
+
                       onChange={(e) => handlegymaddress(e)}
                       value={
                      
@@ -782,6 +852,53 @@ const Registeryt = () => {
                       options={options5}
                     ></Select>
                   </div>:<></>}
+
+
+                  {parseInt(data.roleId)===parseInt(3)?<div className="flex flex-col">
+                    <label
+                      className="block mb-2 text-sm font-semibold text-gray-700 dark:text-white"
+                      htmlFor="category"
+                    >
+                      Category
+                    </label>
+
+                    <Select
+                      id="category"
+                      name="categoryId"
+                      placeholder="Category"
+                   
+                      // styles={
+                      //   mandatoryData.includes("gender") && !data.gender
+                      //     ? handleReactSelectCss("small", true)
+                      //     : handleReactSelectCss("small", false)
+                      // }
+
+                      // styles={handleReactSelectCss("large", false)}
+
+                      styles={parseInt(data.roleId)===parseInt(3) ? handleReactSelectCss("small", false): handleReactSelectCss("large", false)}
+
+                      onChange={(e) => handlecategory(e)}
+                      value={
+                      locationdata?.categoryId
+                      ?
+                      [
+                        {
+                          value: locationdata.categoryId,
+                          label: locationdata.categoryName
+                        }
+                      ]:[]     
+                      }
+                      // value={selectdraft?.id?[{"value":selectdraft.id,"label":selectdraft.desc}]:[]}
+                      menuPortalTarget={document.body}
+                      menuPosition={"fixed"}
+                      onMenuOpen={()=>getcategory()}
+                      options={options6}
+                    ></Select>
+                  </div>:<></>}
+
+
+
+
                 </div>
                 <div className="mb-6 text-center">
                   <button
