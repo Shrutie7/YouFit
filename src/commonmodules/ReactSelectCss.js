@@ -27,7 +27,11 @@ export const handleReactSelectCss = (name,error, type) => {
         reactslctw = "13rem";
         break;
       }
-      case "xlarge": {
+      case "xlarge1": {
+        reactslctw = "24rem";
+        break;
+      }
+      case "xlarge2": {
         reactslctw = "29rem";
         break;
       }

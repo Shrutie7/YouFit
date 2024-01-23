@@ -4,6 +4,8 @@ import axiosInstance from "../services/LocalAxiosInstance";
 import Logo from "../assets/yflogo.png";
 import { ToastContainer, toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import Select from "react-select"
+import { handleReactSelectCss } from "../commonmodules/ReactSelectCss";
 const InitialOwnerUI = ({ setnavflag, nacflag }) => {
   const loginDetails = useSelector((e) => e.logindetails.data);
   console.log(loginDetails);
@@ -12,12 +14,24 @@ const InitialOwnerUI = ({ setnavflag, nacflag }) => {
   const gymcreateurl = "/gymcreate";
   const updateurl = "users/update";
 
+  let options = [
+    {
+value:1,
+label:"YouFit Gyms Pro"
+    },
+    {
+value:2,
+label:"YouFit Gyms Elite"
+
+    }
+  ]
   const gymjson = {
     dno: "",
     street: "",
     pincode: "",
     contact: "",
     gymName: "",
+    gymId:""
   };
 
   const [gymdata, setgymdata] = useState({ ...gymjson });
@@ -28,6 +42,13 @@ const InitialOwnerUI = ({ setnavflag, nacflag }) => {
     setgymdata({ ...l });
   };
 
+ const  handlegymaddress=(e)=>{
+  let l  = {...gymdata};
+  l.gymName = e.label;
+  l.gymId = e.value;
+  setgymdata({ ...l });
+
+  }
 
     const updatefun = async () => {
     let localjson = {};
@@ -40,6 +61,7 @@ const InitialOwnerUI = ({ setnavflag, nacflag }) => {
     localjson.activeFlag = true;
     localjson.parentUserId = 1;
     localjson.locationId = parseInt(loginDetails.locationDetails.locationId);
+    localjson.gymId = "";
 
     console.log(localjson)
 
@@ -126,7 +148,7 @@ const InitialOwnerUI = ({ setnavflag, nacflag }) => {
             theme: "light",
             onClose: () => {
               setnavflag(true);
-              nav("portal");
+              nav("/portal/home");
             },
           });
         } else {
@@ -173,13 +195,32 @@ const InitialOwnerUI = ({ setnavflag, nacflag }) => {
               >
                 Gym Name
               </label>
-              <input
+              {/* <input
                 type="text"
                 id="gymname"
                 class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white dark:border-gray-600 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light"
                 required
                 placeholder="Gym Name"
                 onChange={(e) => handlechange(e, "gymName")}
+              /> */}
+
+
+              <Select
+
+              options={options}
+              value={options.filter((e)=>(e.value === gymdata.gymId))}
+              id="GymName"
+              name="gymName"
+              placeholder="Gym Name"
+
+              onChange={(e) => handlegymaddress(e)}
+
+              styles={handleReactSelectCss("xlarge1", false)}
+
+              menuPortalTarget={document.body}
+              menuPosition={"fixed"}
+              
+
               />
             </div>
             <div class="mb-5">

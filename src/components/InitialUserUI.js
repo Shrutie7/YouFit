@@ -230,7 +230,7 @@ const[flag,setflag] = useState(false);
               //     : handleReactSelectCss("small", false)
               // }
 
-              styles={handleReactSelectCss("xlarge", false)}
+              styles={handleReactSelectCss("xlarge2", false)}
               onChange={(e) => handlegymaddress(e)}
               value={
                 formdata.gymId
@@ -267,7 +267,7 @@ const[flag,setflag] = useState(false);
               //     : handleReactSelectCss("small", false)
               // }
 
-              styles={handleReactSelectCss("xlarge", false)}
+              styles={handleReactSelectCss("xlarge2", false)}
               onChange={(e) => handleTrainer(e)}
               value={
                 formdata.trainerId

@@ -9,74 +9,89 @@ import { useState } from "react";
 import { handleReactSelectCss } from "../../commonmodules/ReactSelectCss";
 import Select from "react-select";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import { CircularProgress } from "@material-ui/core";
 
 const Contact = () => {
   let gymaddressurl = "location/gymaddress";
-  let trainerurl = "users/trainerlist"
+  let trainerurl = "users/trainerlist";
+  let createfdburl = "/feedbackcreate";
 
-  const [radioselect,setradioselect] = useState("trainer");
+  const [radioselect, setradioselect] = useState("trainer");
 
-  const handleradio = (e,name) => {
-  
-
+  const handleradio = (e, name) => {
     console.log(e.target.value);
-    
-    if(name==="gym")
-    {
-      setradioselect(e.target.value)
-    }
-    else{
-      setradioselect(e.target.value);
-    }
 
+    let l = {...feedbackdata}
+    if (name === "gym") {
+      l.feedbackTypeId = 2;
+    } else {
+      l.feedbackTypeId = 1;
+    }
+    setfeedbackdata({...l})
 
   };
-  
-  const [options5,setoptions5] = useState();
-  const [options6,setoptions6] = useState();
+
+  const handlechangefunction = (e)=>{
+
+    let l = {...feedbackdata}
+    l.message = e.target.value;
+    setfeedbackdata({...l});
+
+  }
+  const fddata = {
+    rating: "",
+    feedbackTypeId: 1,
+    message:""
+  };
+
+  const [feedbackdata, setfeedbackdata] = useState({ ...fddata });
+
+  const [options5, setoptions5] = useState();
+  const [options6, setoptions6] = useState();
 
   const sms = {
-    trainerId:"",
-    trainerName:"",
-    gymId:"",
-    gymName:""
-  }
+    trainerId: "",
+    trainerName: "",
+    gymId: "",
+    gymName: "",
+  };
 
-  let [fdata,setfdata] = useState({...sms});
+  let [fdata, setfdata] = useState({ ...sms });
 
-  const handlechange = (e,name)=>{
+  const handlechange = (e, name) => {
+    console.log(e, name);
+    let l = { ...fdata };
 
-    console.log(e,name)
-    let l = {...fdata};
-    
-    if(name==="gym"){
+    if (name === "gym") {
       l.gymId = e.value;
       l.gymName = e.label;
     }
-    if(name==="trainer"){
+    if (name === "trainer") {
       l.trainerId = e.value;
       l.trainerName = e.label;
     }
-   
 
-    setfdata({...l})
-    
-
-  }
+    setfdata({ ...l });
+  };
   // {
   //   "userId":1, //based on user who is giving feedback
-  //   "rating":5, 
+  //   "rating":5,
   //   "feedbackTypeId":1, //1 is for trainer 2 is for gym
   //   "trainerUserId":3, //trainer id
   //   "gymId":""}
 
-  const loginDetails = useSelector((e)=>e.logindetails.data)
+  const loginDetails = useSelector((e) => e.logindetails.data);
+  console.log(loginDetails);
 
   console.log(loginDetails);
   const getGymAddress = async () => {
     try {
       // location id will come from logindetailsget store it in reduxstore...
-      const res = await axiosInstance.post(gymaddressurl, { location_id:loginDetails.locationDetails.locationId});
+      const res = await axiosInstance.post(gymaddressurl, {
+        location_id: loginDetails.locationDetails.locationId,
+      });
 
       if (res.status === 200) {
         if (res.data.status) {
@@ -118,7 +133,9 @@ const Contact = () => {
       // location id will come from logindetailsget store it in reduxstore...
 
       console.log(loginDetails?.parentUserDetails);
-      const res = await axiosInstance.post(trainerurl, {ownerId:parseInt(loginDetails?.parentUserId)});
+      const res = await axiosInstance.post(trainerurl, {
+        ownerId: parseInt(loginDetails?.parentUserId),
+      });
 
       if (res.status === 200) {
         if (res.data.status) {
@@ -155,6 +172,71 @@ const Contact = () => {
       // setmodalpopupdata({...l})
     }
   };
+
+  const submitclickfun = async () => {
+    let localjson = {};
+    localjson.userId = parseInt(loginDetails?.userId);
+    localjson.rating = parseInt(feedbackdata?.rating);
+    localjson.feedbackTypeId = feedbackdata?.feedbackTypeId;
+    localjson.trainerId = feedbackdata?.feedbackTypeId === 1 ?
+      loginDetails?.parentUserId
+      : "";
+    localjson.gymId = feedbackdata?.feedbackTypeId === 2 ? loginDetails?.gymId : "";
+    localjson.message = feedbackdata?.message;
+
+    console.log(localjson);
+
+    try {
+      const res = await axiosInstance.post(createfdburl, localjson);
+      if (res.status === 200) {
+        if (res.data.status) {
+          toast(`🦄 Feedback ${parseInt(feedbackdata.feedbackTypeId)===parseInt(2) ? "for Gym":"for Trainer"} Submitted Successfully`, {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            onClose: () => {
+              // nav("/portal");
+              let l = {...feedbackdata};
+              l.rating=5;
+              l.message="";
+              l.feedbackTypeId = 1;
+              setfeedbackdata({...l})
+            },
+          });
+        } else {
+          // const l = { ...modalpopupdata };
+          //         l.show=true
+          //         l.errormsg=res.data.message
+          //         l.logout=false
+          //         setmodalpopupdata({...l})
+        }
+      } else if (res.response.status === 401) {
+        // const l = { ...modalpopupdata };
+        // l.show=true
+        // l.errormsg="Session Expired. Please login again..."
+        // l.logout=true
+        // setmodalpopupdata({...l})
+      } else {
+        // const l = { ...modalpopupdata };
+        // l.show=true
+        // l.errormsg="Unable to Connect.Please try again later"
+        // l.logout=false
+        // setmodalpopupdata({...l})
+      }
+    } catch (error) {}
+  };
+
+  const handleradiostar = (e)=>{
+    console.log(e.target.value)
+    let l = {...feedbackdata};
+    l.rating=e.target.value;
+    setfeedbackdata({...l});
+  }
   return (
     <>
       <Header title="Insights Matter" image={HeaderImage}></Header>
@@ -279,10 +361,10 @@ const Contact = () => {
                 <h2 className="mb-4 text-2xl font-bold">
                   Let us know how you feel?
                 </h2>
-                <form id="contactForm">
+                
                   <div className="mb-6">
                     <div className="mx-0 mb-1 sm:mb-4">
-                      <div className="mx-0 mb-1 sm:mb-4">
+                      {/* <div className="mx-0 mb-1 sm:mb-4">
                         <label
                           for="name"
                           className="pb-1 text-xs uppercase tracking-wider"
@@ -295,8 +377,8 @@ const Contact = () => {
                           className="bg-white mb-2 w-full rounded-md border border-gray-400 py-2 pl-2 pr-4 shadow-md dark:text-black sm:mb-0"
                           name="name"
                         ></input>
-                      </div>
-                      <div className="mx-0 mb-1 sm:mb-4">
+                      </div> */}
+                      {/* <div className="mx-0 mb-1 sm:mb-4">
                         <label
                           for="email"
                           className="pb-1 text-xs uppercase tracking-wider"
@@ -309,38 +391,38 @@ const Contact = () => {
                           className="bg-white mb-2 w-full rounded-md border border-gray-400 py-2 pl-2 pr-4 shadow-md dark:text-black sm:mb-0"
                           name="email"
                         ></input>
-                      </div>
+                      </div> */}
 
-                      <div className="mb-4 md:flex md:justify-around relative z-0">
-                  <div className="flex gap-2 mt-4">
-                    <input
-                      type="radio"
-                      defaultChecked
-                      name="type"
-                      className="mb-6"
-                      // id="roleId"
-                      onClick={(e) => handleradio(e,"trainer")}
-                      value={"trainer"}
-                    />
-                    <label className="text-white font-semibold text-base">
-                      Rate Trainer
-                    </label>
-                  </div>
-                  <div className="flex gap-2 mt-4">
-                    <input
-                      type="radio"
-                      name="type"
-                      className="mb-6"
-                      // id="roleId"
-                      onClick={(e) => handleradio(e,"gym")}
-                      value={"gym"}
-                    />
-                    <label className="text-white font-semibold text-base ">
-                      Rate Gym
-                    </label>
-                  </div>
-                  <div className="flex flex-col">
-                  {console.log(fdata.gymId,fdata.gymName)}
+                      <div className="mb-4 md:flex md:justify-start items-start gap-10 relative z-0">
+                        <div className="flex gap-2 mt-4">
+                          <input
+                            type="radio"
+                            defaultChecked
+                            name="type"
+                            className="mb-6"
+                            // id="roleId"
+                            onClick={(e) => handleradio(e, "trainer")}
+                            value={"trainer"}
+                          />
+                          <label className="text-white font-semibold text-base mb-6">
+                            Rate Trainer
+                          </label>
+                        </div>
+                        <div className="flex gap-2 mt-4">
+                          <input
+                            type="radio"
+                            name="type"
+                            className="mb-6"
+                            // id="roleId"
+                            onClick={(e) => handleradio(e, "gym")}
+                            value={"gym"}
+                          />
+                          <label className="text-white font-semibold text-base mb-6 ">
+                            Rate Gym
+                          </label>
+                        </div>
+                        {/* <div className="flex flex-col">
+               
                 <label
                       className="block mb-2 text-sm font-semibold text-gray-700 dark:text-white"
                       htmlFor="location"
@@ -412,72 +494,110 @@ const Contact = () => {
                     ></Select>
                     }
 
-                </div>
-                </div>
+                </div> */}
+                      </div>
 
-            
                       <div class="mb-4 flex gap-10">
-                     <div className="mt-2">Rating</div>
+                        <div className="mt-2">Rating</div>
                         <div className="rating rating-lg rating-half">
                           <input
                             type="radio"
                             name="rating-10"
                             className="rating-hidden"
+                            value={0.5}
+                            onChange={(e)=>handleradiostar(e)}
                           />
                           <input
                             type="radio"
                             name="rating-10"
                             className="bg-green-500 mask mask-star-2 mask-half-1"
+
+                            value={0.5}
+                            onChange={(e)=>handleradiostar(e)}
+                          
+
                           />
                           <input
                             type="radio"
                             name="rating-10"
                             className="bg-green-500 mask mask-star-2 mask-half-2"
+                            value={1}
+                            onChange={(e)=>handleradiostar(e)}
+                           
+
                           />
                           <input
                             type="radio"
                             name="rating-10"
                             className="bg-green-500 mask mask-star-2 mask-half-1"
-                            checked
+                            // checked
+                            value={1.5}
+                            onChange={(e)=>handleradiostar(e)}
+                           
+
                           />
                           <input
                             type="radio"
                             name="rating-10"
                             className="bg-green-500 mask mask-star-2 mask-half-2"
+                            value={2}
+                            onChange={(e)=>handleradiostar(e)}
+                            
+
                           />
                           <input
                             type="radio"
                             name="rating-10"
                             className="bg-green-500 mask mask-star-2 mask-half-1"
+                            value={2.5}
+                            onChange={(e)=>handleradiostar(e)}
+                          
+
                           />
                           <input
                             type="radio"
                             name="rating-10"
                             className="bg-green-500 mask mask-star-2 mask-half-2"
+                            value={3}
+                            onChange={(e)=>handleradiostar(e)}
+                        
+
                           />
                           <input
                             type="radio"
                             name="rating-10"
                             className="bg-green-500 mask mask-star-2 mask-half-1"
+                            value={3.5}
+                            onChange={(e)=>handleradiostar(e)}
+                          
+
                           />
                           <input
                             type="radio"
                             name="rating-10"
                             className="bg-green-500 mask mask-star-2 mask-half-2"
+                            value={4}
+                            onChange={(e)=>handleradiostar(e)}
+                          
+
                           />
                           <input
                             type="radio"
                             name="rating-10"
                             className="bg-green-500 mask mask-star-2 mask-half-1"
+                            value={4.5}
+                            onChange={(e)=>handleradiostar(e)}
+                           
+
                           />
                           <input
                             type="radio"
                             name="rating-10"
                             className="bg-green-500 mask mask-star-2 mask-half-2"
+                            value={5}
+                            onChange={(e)=>handleradiostar(e)}
                           />
                         </div>
-
-
                       </div>
                     </div>
                     <div className="mx-0 mb-1 sm:mb-4">
@@ -491,6 +611,8 @@ const Contact = () => {
                         cols="30"
                         rows="5"
                         placeholder="Write your message..."
+                        onChange={(e)=>handlechangefunction(e)}
+                        value={feedbackdata.message}
                         className="bg-white resize-none mb-2 w-full rounded-md border border-gray-400 py-2 pl-2 pr-4 shadow-md dark:text-black sm:mb-0"
                       ></textarea>
                     </div>
@@ -498,12 +620,15 @@ const Contact = () => {
                   <div className="text-center">
                     <button
                       // type="submit"
+                      onClick={() => {
+                        submitclickfun();
+                      }}
                       className="w-full bg-blue-800 text-white px-6 py-3 font-xl rounded-md sm:mb-0 bg-blue-800"
                     >
                       Submit
                     </button>
                   </div>
-                </form>
+               
               </div>
             </div>
           </div>
@@ -535,7 +660,21 @@ const Contact = () => {
             </a>
           </div>
         </div>
+
       </section>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        className="toast"
+      />
     </>
   );
 };

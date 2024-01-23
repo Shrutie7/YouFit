@@ -47,6 +47,7 @@ const Registeryt = () => {
     parentUserId:"",
     locationId:"",
     categoryId:"",
+    gymId:""
   };
 
   let locationdaata = {
@@ -103,11 +104,15 @@ const Registeryt = () => {
   function handlegymaddress(e) {
     let l = { ...locationdata };
 
+    
     l.ownerId = e.value;
     l.gymName=e.label;
+ 
 
     let l2 = {...data}
     l2.parentUserId=e.value;
+    
+    l2.gymId = e.extrakey;
     setData({...l2})
 
     
@@ -304,6 +309,7 @@ const Registeryt = () => {
           let l = res.data.data.gymAddressList.map((d) => ({
             value: d.ownerId,
             label: d.gymName,
+            extrakey:d.gymId
           }));
           setoptions5([...l]);
         } else {
