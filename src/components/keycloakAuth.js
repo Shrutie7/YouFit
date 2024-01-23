@@ -20,6 +20,7 @@ import Footer from "../components/Footer"
 import Checkout from "../pages/plans/Checkout";
 import Feed from "../pages/feed/Feed";
 import Setting  from "../pages/settings/Setting";
+import PlanIndex from "../pages/plans/PlanIndex";
 
 const keycloakAuth = () => {
   return (
@@ -41,8 +42,8 @@ const keycloakAuth = () => {
         <Route path ="feed/*" element={<Feed/>}/>
         <Route path ="settings/*" element={<Setting/>}/>
 
-        <Route path="plans/*" element={<Plans />} />
-        <Route path = "plans/checkout" element={<Checkout />} />
+        <Route path="plans/*" exact element={<PlanIndex />} />
+        {/* <Route path = "plans/checkout" element={<Checkout />} /> */}
         <Route path="trainers/*" element={<Trainers />} />
         <Route path="*" element={<NotFound />} />
             {/* <Route path="head/*" exact element={<Head />} /> */}

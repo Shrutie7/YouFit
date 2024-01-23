@@ -12,9 +12,9 @@ const Home = () => {
   //   keycloak.logout({ redirectUri: `${window.location.origin}/` });
 
   // }
-  // useEffect(() => {
-  //   nav("/portal/home");
-  // }, []);
+  useEffect(() => {
+    nav("/portal/home");
+  }, []);
   return (
     <div className="">
       {/* <div>Home</div> */}
