@@ -4,9 +4,12 @@ import HeaderImage from "../../images/header_bg_4.jpg"
 import Card from "../../UI/Card"
 import { plan, plans } from "../../data"
 import { useNavigate } from "react-router-dom"
+import { useSelector } from "react-redux"
+
 
 const Plan = () => {
 
+    const loginDetails = useSelector((e)=>e.logindetails.data);
   const nav = useNavigate();
   return (
     <>
@@ -36,10 +39,11 @@ const Plan = () => {
 
       <div class=" mt-0 border-solid">
   <div class="py-8 px-4 lg:py-10 lg:px-6">
-      <div class="mx-auto max-w-screen-md text-center mb-8 lg:mb-12">
+      {parseInt(loginDetails.roleId) !== parseInt(1) ? <div class="mx-auto max-w-screen-md text-center mb-8 lg:mb-12">
           <h2 class="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">Unlock your full potential with our highly curated fitness plans</h2>
           <p class="mb-5 font-light text-gray-500 sm:text-xl dark:text-gray-200">Ready to elevate your fitness game? Select the plan that suits your goals and kickstart your wellness adventure!</p>
-      </div>
+      </div>:<button onClick={()=>nav("plancreate")}>Create Plan</button>}
+      <button onClick={()=>nav("plancreate")}>Create Plan</button>
       <div class="space-y-8 lg:grid lg:grid-cols-4 sm:gap-6 xl:gap-16 lg:space-y-0">
           
           <div class="flex flex-col p-6 mx-auto max-w-lg text-center text-gray-900 bg-white rounded-lg border border-gray-100 shadow dark:border-gray-600 xl:p-8 dark:bg-gray-800 dark:text-white">
