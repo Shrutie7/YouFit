@@ -12,6 +12,7 @@ import {
 } from "@material-ui/icons";
 import sh from "./Feed.module.css";
 import { useSelector } from "react-redux";
+import Modal from "../../commonmodules/Modals"
 import { useNavigate } from "react-router-dom";
 const Feed = () => {
   const descRef = useRef();
@@ -20,6 +21,7 @@ const Feed = () => {
   const [file, setFile] = useState(null);
   const [comment,setcomment] = useState(false);
   const nav = useNavigate();
+   const [modalOpen, setModalOpen] = useState(false);
   return (
     <div>
       <div class="dark:font-sans">
@@ -50,11 +52,11 @@ const Feed = () => {
                 <hr className={sh.shareHr}></hr>
                 {file && (
                   <div className={sh.shareImgContainer}>
-                    {/* URL.createObjectURL allows us to create pseudo url to view file before uploading  */}
+                     URL.createObjectURL allows us to create pseudo url to view file before uploading 
                     <img
                       className={sh.shareImg}
                       src={URL.createObjectURL(file)}
-                      alt=""
+                      alt="Preview of Uploaded Image"
                     />
                     <Cancel
                       className={sh.shareCancelImg}
@@ -71,15 +73,15 @@ const Feed = () => {
                     htmlColor="tomato"
                     className={sh.shareIcon}
                   ></PermMedia>
-                  <span className={sh.shareOptionText}>Photo or Video</span>
+                  <span className={sh.shareOptionText} onClick={()=>setModalOpen(true)}>Photo or Video</span>
                   {/* to upload only 1 file at a time e.target.files[0]*/}
-                  <input
+                  {/* <input
                     style={{ display: "none" }}
                     type="file"
                     id="file"
                     accept=".png,.jpeg,.jpg"
                     onChange={(e) => setFile(e.target.files[0])}
-                  />
+                  /> */}
                 </label>
                 <div className={sh.shareOption}>
                   <Label htmlColor="blue" className={sh.shareIcon}></Label>
@@ -524,6 +526,12 @@ const Feed = () => {
 
         {/* <script src="./static/app.js"></script> */}
       </div>
+      {modalOpen && (
+        <Modal
+          // updateAvatar={updateAvatar}
+          closeModal={() => setModalOpen(false)}
+        />
+      )}
     </div>
   );
 };

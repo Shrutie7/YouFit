@@ -1,4 +1,4 @@
-export const handleReactSelectCss = (name,error, type) => {
+export const handleReactSelectCss = (name,error, flag, type) => {
     var pointers = "fill";
     var pointer1 = "";
     if (type === "view") {
@@ -35,6 +35,10 @@ export const handleReactSelectCss = (name,error, type) => {
         reactslctw = "29rem";
         break;
       }
+      case "xlarge3": {
+        reactslctw = "21rem";
+        break;
+      }
       default:
         reactslctw = "392px";
         break;
@@ -44,12 +48,13 @@ export const handleReactSelectCss = (name,error, type) => {
         ...styles,
         width: reactslctw,
         // overflowY: "auto",
-        height: "35px",
-        maxHeight: "35px",
+        height: flag===true ?"49px" :"35px",
+        maxHeight: flag===true ?"49px" :"35px",
         borderRadius:"5px",
         fontSize: "16px",
         marginTop: "-2px",
         border: error?"2px solid red !important":state.isFocused ? "none" : "none",
+        backgroundColor:flag===true ?" rgb(229 231 235 / var(--tw-bg-opacity))":"white",
         // outline: state.isFocused?"none !important":"none",
         // filter: state.isFocused
         //   ? "drop-shadow(5px 5px 2px black) !important"

@@ -644,8 +644,8 @@ const Registeryt = () => {
                       placeholder="Gender"
                       styles={
                         mandatoryData.includes("gender") && !data.gender
-                          ? handleReactSelectCss("normal", true)
-                          : handleReactSelectCss("normal", false)
+                          ? handleReactSelectCss("normal", true,false)
+                          : handleReactSelectCss("normal", false,false)
                       }
                       onChange={(e) => handlegender(e)}
                       value={
