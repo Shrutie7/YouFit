@@ -6,10 +6,10 @@ import ReactCrop, {
 } from "react-image-crop";
 import setCanvasPreview from "./SetCanvasPreview";
 
-const ASPECT_RATIO = 1;
+const ASPECT_RATIO = 16/9;
 const MIN_DIMENSION = 150;
 
-const ImageCropper = ({ closeModal, updateAvatar }) => {
+const ImageCropper = ({ closeModal, updateAvatar ,file,setfile}) => {
   const imgRef = useRef(null);
   const previewCanvasRef = useRef(null);
   const [imgSrc, setImgSrc] = useState("");
@@ -18,6 +18,7 @@ const ImageCropper = ({ closeModal, updateAvatar }) => {
 
   const onSelectFile = (e) => {
     const file = e.target.files?.[0];
+    setfile(e.target.files[0]);
     if (!file) return;
 
     const reader = new FileReader();
@@ -59,7 +60,7 @@ const ImageCropper = ({ closeModal, updateAvatar }) => {
   return (
     <>
       <label className="block mb-3 w-fit">
-        <span className="sr-only">Choose profile photo</span>
+        <span className="sr-only">Choose photo</span>
         <input
           type="file"
           accept="image/*"
@@ -73,7 +74,7 @@ const ImageCropper = ({ closeModal, updateAvatar }) => {
           <ReactCrop
             crop={crop}
             onChange={(pixelCrop, percentCrop) => setCrop(percentCrop)}
-            
+            circularCrop={false}
             keepSelection
             aspect={ASPECT_RATIO}
             minWidth={MIN_DIMENSION}

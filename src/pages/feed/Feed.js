@@ -9,6 +9,7 @@ import {
   Room,
   EmojiEmotions,
   Cancel,
+  VideoCall
 } from "@material-ui/icons";
 import sh from "./Feed.module.css";
 import { useSelector } from "react-redux";
@@ -22,6 +23,13 @@ const Feed = () => {
   const [comment,setcomment] = useState(false);
   const nav = useNavigate();
    const [modalOpen, setModalOpen] = useState(false);
+  const [type,settype] = useState(null);
+   const avatarUrl = useRef(null);
+   const updateAvatar = (imgSrc)=>{
+
+    avatarUrl.current = imgSrc;
+   }
+  
   return (
     <div>
       <div class="dark:font-sans">
@@ -52,12 +60,17 @@ const Feed = () => {
                 <hr className={sh.shareHr}></hr>
                 {file && (
                   <div className={sh.shareImgContainer}>
-                     URL.createObjectURL allows us to create pseudo url to view file before uploading 
+                  
+                     {/* URL.createObjectURL allows us to create pseudo url to view file before uploading  */}
                     <img
                       className={sh.shareImg}
-                      src={URL.createObjectURL(file)}
+                      // src={URL.createObjectURL(file)}
+                      src={avatarUrl.current}
                       alt="Preview of Uploaded Image"
+
                     />
+               
+        
                     <Cancel
                       className={sh.shareCancelImg}
                       onClick={() => setFile(null)}
@@ -72,8 +85,9 @@ const Feed = () => {
                   <PermMedia
                     htmlColor="tomato"
                     className={sh.shareIcon}
+                    onClick={()=>{setModalOpen(true);settype("photo")}}
                   ></PermMedia>
-                  <span className={sh.shareOptionText} onClick={()=>setModalOpen(true)}>Photo or Video</span>
+                  <span className={sh.shareOptionText} onClick={()=>{setModalOpen(true);settype("photo")}}>Photo</span>
                   {/* to upload only 1 file at a time e.target.files[0]*/}
                   {/* <input
                     style={{ display: "none" }}
@@ -84,8 +98,8 @@ const Feed = () => {
                   /> */}
                 </label>
                 <div className={sh.shareOption}>
-                  <Label htmlColor="blue" className={sh.shareIcon}></Label>
-                  <span className={sh.shareOptionText}>Tag</span>
+                  <VideoCall htmlColor="blue" className={sh.shareIcon} onClick={()=>{setModalOpen(true);settype("video")}}></VideoCall>
+                  <span className={sh.shareOptionText} onClick={()=>{setModalOpen(true);settype("video")}}>Video</span>
                 </div>
                 <div className={sh.shareOption}>
                   <Room htmlColor="green" className={sh.shareIcon}></Room>
@@ -528,8 +542,11 @@ const Feed = () => {
       </div>
       {modalOpen && (
         <Modal
-          // updateAvatar={updateAvatar}
+        file={file}
+        setfile={setFile}
+          updateAvatar={updateAvatar}
           closeModal={() => setModalOpen(false)}
+          type={type}
         />
       )}
     </div>

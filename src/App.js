@@ -4,6 +4,8 @@ import Keycloakrouter from "./components/keycloakAuth";
 import Registeryt from "./components/Registeryt";
 import "./App.css";
 import InitialUiRoute from "./components/InitialUiRoute";
+import 'react-image-crop/dist/ReactCrop.css';
+
 
 function App() {
   return (

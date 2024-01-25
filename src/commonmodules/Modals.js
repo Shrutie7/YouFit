@@ -1,7 +1,8 @@
 import CloseIcon from "./CloseIcon";
 import ImageCropper from "./ImageCropper";
+import VideoEditor from "./VideoEditor";
 
-const Modal = ({ updateAvatar, closeModal }) => {
+const Modal = ({ updateAvatar, closeModal,file,setfile,type }) => {
   return (
     <div
       className="relative z-[9999] mt-24"
@@ -22,10 +23,12 @@ const Modal = ({ updateAvatar, closeModal }) => {
                 <span className="sr-only">Close menu</span>
                 <CloseIcon />
               </button>
-              <ImageCropper
+              {type==="photo"?<ImageCropper
+              file={file}
+              setfile={setfile}
                 updateAvatar={updateAvatar}
                 closeModal={closeModal}
-              />
+              />:<VideoEditor/>}
             </div>
           </div>
         </div>
