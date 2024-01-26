@@ -1,24 +1,21 @@
 .trainerstocontainer {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 4rem;
+  gap: 5rem;
+  /* border: 1px solid red;; */
+}
+.trainers{
+  /* border:1px solid green; */
+  margin-top: 2rem;
 }
 
-.card.trainer {
+/* .card.trainer {
   padding: 1rem;
-}
+} */
 
 .trainertoimg {
   border-radius: 0 2rem;
   overflow: hidden;
-}
-
-.trainer h3 {
-  margin-top: 2rem;
-}
-
-.trainer p {
-  margin-top: 0.5rem;
 }
 
 .trainertosocials {

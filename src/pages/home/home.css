@@ -184,6 +184,7 @@
 .testimonailstoquote {
   font-style: italic;
   margin: 1rem 0 2rem;
+  /* font-size: 1.5rem; */
 }
 
 .card small.testimonailstotitle {
