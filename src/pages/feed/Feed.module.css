@@ -34,11 +34,23 @@
     width:99%;
     background:transparent;
     color: black;
-    height: 4rem;
+    height: 2.5rem;
     border:1px solid rgb(227, 212, 212);
     padding-left: 5px;
     /* padding-top: 10px; */
-    border-radius: 10px;
+    border-radius: 0.4rem;
+
+}
+.shareInput1{
+    border:none;
+    width:99%;
+    background:transparent;
+    color: black;
+    height: 3.5rem;
+    border:1px solid rgb(227, 212, 212);
+    padding-left: 5px;
+    /* padding-top: 10px; */
+    border-radius: 0.4rem;
 
 }
 .shareInput:focus{
@@ -101,4 +113,11 @@ margin-left: 8px;
     right:50px;
     cursor:pointer;
     opacity: 0.7;
+}
+.shareCancelImg1{
+   
+transform: scale(0.7);
+cursor: pointer;
+margin-right: -12px;
+margin-top: -28px;
 }

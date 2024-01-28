@@ -1,9 +1,9 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import post from "../../assets/post/3.jpeg";
 import heart from "../../assets/heart.png";
 import chat from "../../assets/speech-bubble.png";
 import send from "../../assets/send-message.png";
-import { Player ,BigPlayButton} from "video-react";
+import { Player, BigPlayButton } from "video-react";
 import {
   PermMedia,
   Label,
@@ -18,17 +18,17 @@ import Modal from "../../commonmodules/Modals";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../services/LocalAxiosInstance";
 const Feed = () => {
-
-  const loginDetails = useSelector((e)=>e.logindetails.data)
-  const jsondata={
-"title":"",
-"description":"",
-"userId":loginDetails?.userId,
-"categoryId":1,
-"file":""
-  }
+  const loginDetails = useSelector((e) => e.logindetails.data);
+  const jsondata = {
+    title: "",
+    description: "",
+    userId: loginDetails?.userId,
+    categoryId: 1,
+    file: "",
+  };
   const [metadata, setMetadata] = useState({ ...jsondata });
   const descRef = useRef();
+  const [categorydata, setcategorydata] = useState([]);
 
   console.log(loginDetails);
   const [file, setFile] = useState(null);
@@ -40,20 +40,28 @@ const Feed = () => {
   const updateAvatar = (imgSrc) => {
     avatarUrl.current = imgSrc;
   };
-
   const postcreateurl = "post/create";
+  let getcategoryurl = "categorylist";
 
-  const postcreateapi = async () => {
-    
+  const handleinput = (e, name) => {
+    let l = { ...metadata };
+    l[name] = e.target.value;
+    setMetadata({ ...l });
+  };
+
+  const getcategory = async () => {
     try {
-      const res = await axiosInstance.post(postcreateurl, {
-        ownerId: loginDetails.parentUserId,
-      });
+      const res = await axiosInstance.get(getcategoryurl);
 
       if (res.status === 200) {
         if (res.data.status) {
-          console.log(res?.data?.data);
-   
+          // let l = res.data.data.categoryDetailsList.map((d) => ({
+          //   value: d.categoryId,
+          //   label: d.categoryName,
+          // }));
+          // setoptions6([...l]);
+          let l = res.data.data.categoryDetailsList;
+          setcategorydata([...l]);
         } else {
           // const l = { ...modalpopupdata };
           //         l.show=true
@@ -81,9 +89,69 @@ const Feed = () => {
       // l.logout=false
       // setmodalpopupdata({...l})
     }
-
   };
 
+  const postcreateapi = async () => {
+
+    let cat = [...categorydata];
+    let arr = [];
+    cat.forEach((ele)=>{
+      arr.push(ele.categoryId);
+    })
+    console.log(arr);
+console.log(arr[0])
+
+
+    // try {
+    //   const res = await axiosInstance.post(postcreateurl, {
+    //     ownerId: loginDetails.parentUserId,
+    //   });
+
+    //   if (res.status === 200) {
+    //     if (res.data.status) {
+    //       console.log(res?.data?.data);
+    //     } else {
+    //       // const l = { ...modalpopupdata };
+    //       //         l.show=true
+    //       //         l.errormsg=res.data.message
+    //       //         l.logout=false
+    //       //         setmodalpopupdata({...l})
+    //     }
+    //   } else if (res.response.status === 401) {
+    //     // const l = { ...modalpopupdata };
+    //     // l.show=true
+    //     // l.errormsg="Session Expired. Please login again..."
+    //     // l.logout=true
+    //     // setmodalpopupdata({...l})
+    //   } else {
+    //     // const l = { ...modalpopupdata };
+    //     // l.show=true
+    //     // l.errormsg="Unable to Connect.Please try again later"
+    //     // l.logout=false
+    //     // setmodalpopupdata({...l})
+    //   }
+    // } catch (err) {
+    //   // const l = { ...modalpopupdata };
+    //   // l.show=true
+    //   // l.errormsg="Unable to Connect.Please try again later"
+    //   // l.logout=false
+    //   // setmodalpopupdata({...l})
+    // }
+  };
+  useEffect(() => {
+    getcategory();
+  },[metadata.title,metadata.description]);
+
+  const removecategory = (cat,index)=>{
+
+    let l =[...categorydata];
+
+    console.log(l)
+    l.splice(index,1);
+    console.log(l);
+    setcategorydata([...l])
+  }
+  {console.log(categorydata)};
   return (
     <div>
       <div class="dark:font-sans">
@@ -111,12 +179,43 @@ const Feed = () => {
           <div class="w-full mt-4 lg:w-2/3 xl:w-3/5 pt-32 lg:pt-16 px-2">
             {parseInt(loginDetails?.roleId) === parseInt(3) ? (
               <div class="px-4 mt-4 shadow rounded-lg bg-white">
-                <div class="p-2 border-b border-gray-300">
+                <div class="p-2 border-b border-gray-300 flex flex-col gap-2">
                   <input
                     placeholder={`Whats on your mind ${loginDetails.firstName} ?`}
                     className={sh.shareInput}
                     ref={descRef}
+                    onChange={(e) => handleinput(e, "title")}
                   ></input>
+
+                  {metadata.title !== "" ? (
+                    <input
+                      placeholder={`Share some more details on the post you are creating ...`}
+                      className={sh.shareInput1}
+                      ref={descRef}
+                      onChange={(e) => handleinput(e, "description")}
+                    ></input>
+                  ) : (
+                    <></>
+                  )}
+
+                  {metadata.title !== "" && metadata.description !== "" ? (
+                    <div className="flex flex-wrap gap-3  ">
+                      {categorydata.map((ele,ind) => (
+                        <div className="text-black border-black border-solid border-2 rounded-md p-2 cursor-pointer bg-zinc-300 hover :bg-gray-500" >
+                          {ele?.categoryName}
+                          {<Cancel
+                        className={sh.shareCancelImg1}
+                        // onClick={() => setFile(null)}
+                        onClick={()=>removecategory(ele,ind)}
+                        color="black"
+                        
+                      />}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <></>
+                  )}
 
                   <hr className={sh.shareHr}></hr>
                   {file && (
@@ -142,7 +241,7 @@ const Feed = () => {
                             // width={480}
                             // height={272}>
                           >
-                               <BigPlayButton position="center" />
+                            <BigPlayButton position="center" />
                           </Player>
                         </>
                       )}
@@ -215,7 +314,7 @@ const Feed = () => {
                     <span className={sh.shareOptionText}>Feelings</span>
                   </div>
                 </div>
-                <button className={sh.shareButton} type="submit">
+                <button className={sh.shareButton} onClick={()=>postcreateapi()} >
                   Share
                 </button>
               </div>
