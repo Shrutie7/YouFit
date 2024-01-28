@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import Keycloakrouter from "./components/keycloakAuth";
+import "video-react/dist/video-react.css";
 import Registeryt from "./components/Registeryt";
 import "./App.css";
 import InitialUiRoute from "./components/InitialUiRoute";

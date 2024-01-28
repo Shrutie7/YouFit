@@ -1,4 +1,4 @@
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { links } from "../data";
 import { GoAlertFill } from "react-icons/go";
 import { MdOutlineClose } from "react-icons/md";
@@ -14,6 +14,7 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Popover from "react-bootstrap/Popover";
 
 const Navbar = () => {
+  const nav = useNavigate();
   const [showoverlay, setshowoverlay] = useState(false);
   const [isNavShowing, setIsNavShowing] = useState(false);
   const { keycloak, initialized } = useKeycloak();
@@ -38,7 +39,7 @@ const Navbar = () => {
           </div>
           <hr className="h-px  my-3 bg-gray-200 border-0 dark:bg-gray-700"></hr>
           
-            <div className="cursor-pointer ml-4 mt-2 hover:underline">Settings</div>
+            <div className="cursor-pointer ml-4 mt-2 hover:underline" onClick={()=>{nav("/portal/settings")}}>Settings</div>
             <div className="cursor-pointer ml-4 mt-2 hover:underline">
               Help Center
             </div>

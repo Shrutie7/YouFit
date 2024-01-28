@@ -1,6 +1,7 @@
 import CloseIcon from "./CloseIcon";
 import ImageCropper from "./ImageCropper";
 import VideoEditor from "./VideoEditor";
+import VideoInput from "./VideoInput";
 
 const Modal = ({ updateAvatar, closeModal,file,setfile,type }) => {
   return (
@@ -23,12 +24,21 @@ const Modal = ({ updateAvatar, closeModal,file,setfile,type }) => {
                 <span className="sr-only">Close menu</span>
                 <CloseIcon />
               </button>
+              {/* {type==="photo"?<ImageCropper
+              file={file}
+              setfile={setfile}
+                updateAvatar={updateAvatar}
+                closeModal={closeModal}
+              />:<VideoEditor/>} */}
               {type==="photo"?<ImageCropper
               file={file}
               setfile={setfile}
                 updateAvatar={updateAvatar}
                 closeModal={closeModal}
-              />:<VideoEditor/>}
+              />:<VideoInput width={300} height={200}  file={file}
+              setfile={setfile}
+                updateAvatar={updateAvatar}
+                closeModal={closeModal}/>}
             </div>
           </div>
         </div>

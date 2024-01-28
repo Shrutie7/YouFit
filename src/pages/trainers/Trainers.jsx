@@ -14,7 +14,7 @@ import Card from "../../UI/Card";
 import halfstar from "../../assets/halfstar.png";
 import fullstar from "../../assets/fullstar.png";
 import logo from "../../assets/logotrainer.png";
-
+import LoadingPopup from "../../commonmodules/Loading";
 const Trainers = () => {
   let gettrainerlisturl = "users/trainerlist";
   let loginDetails = useSelector((e) => e.logindetails.data);
@@ -27,9 +27,10 @@ const Trainers = () => {
     { icon: <BsLine />, link: "https://line.me/th/" },
   ];
   console.log(loginDetails);
-
+  let [loading, setLoading] = useState(false);
   const [trainerdata, settrainerdata] = useState([]);
   const gettrainers = async () => {
+    setLoading(true)
     try {
       const res = await axiosInstance.post(gettrainerlisturl, {
         ownerId: loginDetails.parentUserId,
@@ -66,6 +67,7 @@ const Trainers = () => {
       // l.logout=false
       // setmodalpopupdata({...l})
     }
+    setLoading(false)
   };
   useEffect(() => {
     gettrainers();
@@ -211,7 +213,13 @@ const Trainers = () => {
             </Card>
           ))}
         </div>
+
       </section>
+
+      {loading && (
+        <LoadingPopup state={loading} message="Loading... Please Wait" />
+      )}
+
     </>
   );
 };

@@ -104,4 +104,13 @@ pre {
   }
 }
 
+.modal-content {
+  border-radius: 30px !important;
+  background-color: white;
+}
+
+.modal-body{
+  padding:8px;
+}
+
 

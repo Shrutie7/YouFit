@@ -13,10 +13,10 @@ export const links = [
     name:"Feed",
     path:"/portal/feed"
   },
-  {
-    name: "Gallery",
-    path: "/portal/gallery",
-  },
+  // {
+  //   name: "Gallery",
+  //   path: "/portal/gallery",
+  // },
   {
     name: "Plans",
     path: "/portal/plans",

@@ -11,7 +11,7 @@ const About = () => {
       <Header title="About Us" image={HeaderImage}>
         
       </Header>
-      <section className="abouttostory">
+      {/* <section className="abouttostory">
         <div className="container abouttostory-container">
           <div className="abouttosection-image">
             <img src={StoryImage} alt="Our Story Image" />
@@ -74,7 +74,12 @@ const About = () => {
             </p>
           </div>
         </div>
-      </section>
+      </section> */}
+
+<section className="abouttostory">
+<p className="text-center">In progress...</p>
+
+</section>
     </>
   )
 }

@@ -18,6 +18,7 @@ const ImageCropper = ({ closeModal, updateAvatar ,file,setfile}) => {
 
   const onSelectFile = (e) => {
     const file = e.target.files?.[0];
+    console.log(file);
     setfile(e.target.files[0]);
     if (!file) return;
 
@@ -60,6 +61,7 @@ const ImageCropper = ({ closeModal, updateAvatar ,file,setfile}) => {
   return (
     <>
       <label className="block mb-3 w-fit">
+     
         <span className="sr-only">Choose photo</span>
         <input
           type="file"
@@ -67,6 +69,7 @@ const ImageCropper = ({ closeModal, updateAvatar ,file,setfile}) => {
           onChange={onSelectFile}
           className="block w-full text-sm text-slate-500 file:mr-4 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-xs file:bg-gray-700 file:text-sky-300 hover:file:bg-gray-600"
         />
+        
       </label>
       {error && <p className="text-red-400 text-xs">{error}</p>}
       {imgSrc && (
@@ -100,6 +103,7 @@ const ImageCropper = ({ closeModal, updateAvatar ,file,setfile}) => {
                 )
               );
               const dataUrl = previewCanvasRef.current.toDataURL();
+              console.log(dataUrl);
               updateAvatar(dataUrl);
               closeModal();
             }}

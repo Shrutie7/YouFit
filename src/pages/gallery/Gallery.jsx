@@ -19,15 +19,16 @@ const Gallery = () => {
         {/* nulla velit elementum lorem,at aliquam ante leo eu risus. Duis quis magna leo. Suspendisse potenti. */}
       </Header>
       <section className="gallery">
-        <div className="container gallerytocontainer">
-          {
+        {/* <div className="container gallerytocontainer"> */}
+          {/* {
             images.map((imagee, index) => {
               return <article key={index}>
                 <img src={imagee} alt={`Gallery Image ${index + 1}`} />
               </article>
             })
-          }
-        </div>
+          } */}
+          <p className="text-center">In progress...</p>
+        {/* </div> */}
       </section>
     </>
   )
