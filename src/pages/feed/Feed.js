@@ -30,6 +30,7 @@ const Feed = () => {
     file: "",
   };
   const [metadata, setMetadata] = useState({ ...jsondata });
+  const [feeddata,setfeeddata] = useState([]);
   const descRef = useRef();
   let videoRef = createRef();
   const [categorydata, setcategorydata] = useState([]);
@@ -46,8 +47,15 @@ const Feed = () => {
   const updateAvatar = (imgSrc) => {
     avatarUrl.current = imgSrc;
   };
-  const postcreateurl = "post/create";
+  let postcreateurl = "post/create";
   let getcategoryurl = "categorylist";
+  let postlisturl = "post/list";
+
+  async function asynForEach(array, callback) {
+    for (let index = 0; index < array.length; index++) {
+      await callback(array[index], index, array);
+    }
+  }
 
   const handleinput = (e, name) => {
     let l = { ...metadata };
@@ -68,6 +76,100 @@ const Feed = () => {
           // setoptions6([...l]);
           let l = res.data.data.categoryDetailsList;
           setcategorydata([...l]);
+        } else {
+          // const l = { ...modalpopupdata };
+          //         l.show=true
+          //         l.errormsg=res.data.message
+          //         l.logout=false
+          //         setmodalpopupdata({...l})
+        }
+      } else if (res.response.status === 401) {
+        // const l = { ...modalpopupdata };
+        // l.show=true
+        // l.errormsg="Session Expired. Please login again..."
+        // l.logout=true
+        // setmodalpopupdata({...l})
+      } else {
+        // const l = { ...modalpopupdata };
+        // l.show=true
+        // l.errormsg="Unable to Connect.Please try again later"
+        // l.logout=false
+        // setmodalpopupdata({...l})
+      }
+    } catch (err) {
+      // const l = { ...modalpopupdata };
+      // l.show=true
+      // l.errormsg="Unable to Connect.Please try again later"
+      // l.logout=false
+      // setmodalpopupdata({...l})
+    }
+  };
+
+  const mediaapi = async(url)=>{
+    try {
+      const res = await axiosInstance.get(url);
+
+      if (res.status === 200) {
+        if (res.data.status) {
+          console.log(res.data.data);
+
+          return res?.data?.data
+        } else {
+          // const l = { ...modalpopupdata };
+          //         l.show=true
+          //         l.errormsg=res.data.message
+          //         l.logout=false
+          //         setmodalpopupdata({...l})
+        }
+      } else if (res.response.status === 401) {
+        // const l = { ...modalpopupdata };
+        // l.show=true
+        // l.errormsg="Session Expired. Please login again..."
+        // l.logout=true
+        // setmodalpopupdata({...l})
+      } else {
+        // const l = { ...modalpopupdata };
+        // l.show=true
+        // l.errormsg="Unable to Connect.Please try again later"
+        // l.logout=false
+        // setmodalpopupdata({...l})
+      }
+    } catch (err) {
+      // const l = { ...modalpopupdata };
+      // l.show=true
+      // l.errormsg="Unable to Connect.Please try again later"
+      // l.logout=false
+      // setmodalpopupdata({...l})
+    }
+
+  }
+  const postlistapi = async () => {
+    let localjson = {};
+    localjson.userId = parseInt(loginDetails.userId);
+    localjson.categoryId = "";
+    localjson.roleId = parseInt(loginDetails.roleId);
+    try {
+      const res = await axiosInstance.post(postlisturl, localjson);
+
+      if (res.status === 200) {
+        if (res.data.status) {
+          console.log(res.data.data);
+          
+          let fdata = [...res?.data?.data?.postList];
+          await asynForEach(fdata, async (ele, ind)=>{
+            let json = {};
+            // let l = [...ele?.contentUrl];
+
+            let l = await mediaapi(ele?.contentUrl);
+            // for (const iterator of l) {
+            //   // json[iterator.contentUrl] = await mediaapi(ele.contentUrl);
+              
+            // }
+          })
+
+         
+
+          setfeeddata([...res?.data?.data?.postList]);
         } else {
           // const l = { ...modalpopupdata };
           //         l.show=true
@@ -136,7 +238,7 @@ const Feed = () => {
         if (res.data.status) {
           console.log(res.data.message);
 
-          setMetadata({...jsondata});
+          setMetadata({ ...jsondata });
           setFile(null);
 
           toast(`🦄 Post Created Successfully`, {
@@ -150,12 +252,10 @@ const Feed = () => {
             theme: "light",
             onClose: () => {
               // nav("/portal");
-              setMetadata({...jsondata});
+              setMetadata({ ...jsondata });
               setFile(null);
             },
           });
-
-
         } else {
           // const l = { ...modalpopupdata };
           //         l.show=true
@@ -189,6 +289,10 @@ const Feed = () => {
     getcategory();
   }, [metadata.title, metadata.description]);
 
+  useEffect(()=>{
+postlistapi();
+  },[])
+
   const removecategory = (cat, index) => {
     let l = [...categorydata];
 
@@ -207,7 +311,7 @@ const Feed = () => {
     const newSpeed = parseFloat(event.target.value);
 
     if (!isNaN(newSpeed) && isFinite(newSpeed)) {
-      setplaybackRate( newSpeed );
+      setplaybackRate(newSpeed);
 
       if (videoRef.current) {
         videoRef.current.playbackRate = newSpeed;
@@ -424,8 +528,7 @@ const Feed = () => {
                   className={sh.shareButton}
                   onClick={() => postcreateapi()}
                 >
-                  Share
-                  &nbsp;&nbsp;
+                  Share &nbsp;&nbsp;
                   {flag ? (
                     <CircularProgress
                       color="inherit"
