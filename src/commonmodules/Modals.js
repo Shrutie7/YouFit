@@ -35,10 +35,14 @@ const Modal = ({ updateAvatar, closeModal,file,setfile,type }) => {
               setfile={setfile}
                 updateAvatar={updateAvatar}
                 closeModal={closeModal}
+                imagesize={2*1024}
               />:<VideoInput width={300} height={200}  file={file}
               setfile={setfile}
                 updateAvatar={updateAvatar}
-                closeModal={closeModal}/>}
+                closeModal={closeModal}
+                videosize={200*1024}
+                />}
+               
             </div>
           </div>
         </div>
