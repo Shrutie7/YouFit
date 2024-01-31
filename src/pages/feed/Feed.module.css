@@ -128,7 +128,23 @@ margin-top: -28px;
     justify-content: flex-end;
     margin-left: 5px;
   }
+
+.videoreactcontrolbar1 {
+    display: flex;
+    /* float: right; */
+    justify-content: flex-end;
+    margin-left: 5px;
+  }
+.videoreactcontrolbar1:last-child {
+    display: none;
+  }
   
   .videoreactspeedcontrol {
     margin-left: auto;
   }
+
+  .customvideoplayer .video-react-icon-fullscreen:before {
+    display: none !important;
+    content: none !important;
+  }
+  
