@@ -33,7 +33,7 @@ const ImageCropper = ({
         e?.target?.files[0]?.name.lastIndexOf(".") + 1,
         e?.target?.files[0]?.name.length
       );
-      var allowedtypes = ["jpg", "png", "jpeg","heic"];
+      var allowedtypes = ["jpg", "png", "jpeg", "heic"];
       const reader = new FileReader();
       reader.addEventListener("load", () => {
         const imageElement = new Image();
@@ -49,11 +49,10 @@ const ImageCropper = ({
           if (allowedtypes.indexOf(filetype?.toString()?.toLowerCase()) < 0) {
             e.target.value = null;
             setError("Allowed file types are only .jpg,.png,.jpeg");
-           setImgSrc("")
+            setImgSrc("");
           } else if (file) {
             if (parseInt(sz) >= parseInt(imagesize)) {
-
-              console.log(sz,imagesize)
+              console.log(sz, imagesize);
               // fileToDataUri(path).then((dataUri) => {
 
               //   setimage(dataUri);
@@ -64,11 +63,11 @@ const ImageCropper = ({
               console.log("notable to fix");
               e.target.value = null;
               setError("Image size should not be beyond 2 MB");
-               setImgSrc("")
+              setImgSrc("");
             }
           }
         });
-        setImgSrc(imageUrl)
+        setImgSrc(imageUrl);
       });
       reader.readAsDataURL(file);
     }
@@ -121,26 +120,33 @@ const ImageCropper = ({
               onLoad={onImageLoad}
             />
           </ReactCrop>
-          <button
-            className="text-white font-mono text-xs py-2 px-4 rounded-2xl mt-4 bg-sky-500 hover:bg-sky-600"
-            onClick={() => {
-              setCanvasPreview(
-                imgRef.current, // HTMLImageElement
-                previewCanvasRef.current, // HTMLCanvasElement
-                convertToPixelCrop(
-                  crop,
-                  imgRef.current.width,
-                  imgRef.current.height
-                )
-              );
-              const dataUrl = previewCanvasRef.current.toDataURL();
-              console.log(dataUrl);
-              updateAvatar(dataUrl);
-              closeModal();
-            }}
-          >
-            Crop Image
-          </button>
+
+          <div className="flex gap-2">
+            <button
+              className="text-white font-mono text-xs py-2 px-4 rounded-2xl mt-4 bg-sky-500 hover:bg-sky-600"
+              onClick={() => {
+                setCanvasPreview(
+                  imgRef.current, // HTMLImageElement
+                  previewCanvasRef.current, // HTMLCanvasElement
+                  convertToPixelCrop(
+                    crop,
+                    imgRef.current.width,
+                    imgRef.current.height
+                  )
+                );
+                const dataUrl = previewCanvasRef.current.toDataURL();
+                console.log(dataUrl);
+                updateAvatar(dataUrl);
+                closeModal();
+              }}
+            >
+              Crop Image
+            </button>
+
+            <button className="text-white font-mono text-xs py-2 px-4 rounded-2xl mt-4 bg-sky-500 hover:bg-sky-600">
+              Post
+            </button>
+          </div>
         </div>
       )}
       {crop && (

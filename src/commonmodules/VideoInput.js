@@ -110,7 +110,7 @@ export default function VideoInput({
             updateAvatar(source);
           }}
         >
-          Crop Video
+          Post Video
         </button>
       )}
 
