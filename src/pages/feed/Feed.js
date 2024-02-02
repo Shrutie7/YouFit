@@ -6,8 +6,9 @@ import explore from "../../assets/explore.png";
 import archived from "../../assets/archived.png";
 import bookmarks from "../../assets/bookmarks.png";
 import settings from "../../assets/settings (2).png";
-import chat from "../../assets/speech-bubble.png";
-
+import chat from "../../assets/comment.png";
+import bookmarkfill from "../../assets/bookmark.png"
+import bookmark from "../../assets/save-instagram.png";
 import send from "../../assets/send-message.png";
 import { MoreVert } from "@material-ui/icons";
 import { Player, BigPlayButton, ControlBar,
@@ -45,7 +46,7 @@ const Feed = () => {
   };
   const playerRef = useRef(null);
 
-
+const [bookmarksfl,setbookmarksfl] =useState(false);
   const [deletemodal, setdeletemodal] = useState(false);
   const [archivemodal, setarchivemodal] = useState(false);
   const [openIndex, setOpenIndex] = useState(null);
@@ -62,15 +63,17 @@ const Feed = () => {
   const isCategorySelected = (categoryId) =>
     selectedCategoryIds.includes(categoryId);
   const [open, setOpen] = useState(true);
+  const [activeTab, setActiveTab] = useState('Explore');
   const Menus = [
     { title: "Explore", src: explore },
     { title: "Settings", src: settings ,navpath:"/portal/settings"},
     { title: "Archived Posts", src: archived },
-    { title: "Bookmarks Posts ", src: bookmarks },
+    { title: "Bookmarks Posts", src: bookmarks },
   ];
   const [playbackRate, setplaybackRate] = useState(1.0);
   const [comment, setcomment] = useState(false);
   const nav = useNavigate();
+  const [archivefl,setarchivefl] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [type, settype] = useState(null);
   const [flag, setflag] = useState(false);
@@ -88,7 +91,7 @@ const Feed = () => {
   let postlisturl = "post/list";
   let postgeturl = "post/get";
   let deletearchiveurl = "post/update";
-  // let archiveurl = "post/update";
+  let archivelisturl = "post/list/user/based";
   let downloadmediaurl = "post/download/media/";
 
   const overlayRef = useRef(null);
@@ -260,6 +263,53 @@ const Feed = () => {
     }
   };
 
+
+  
+  const postarchivelistapi = async () => {
+    setarchivefl(true)
+    let localjson = {};
+   
+    localjson.archiveFlag = true;
+    localjson.userId = loginDetails.userId;
+    try {
+      const res = await axiosInstance.post(archivelisturl, localjson);
+
+      if (res.status === 200) {
+        if (res.data.status) {
+          console.log(res.data.data);
+
+          setfeeddata([...res?.data?.data?.postList]);
+
+
+       
+        } else {
+          // const l = { ...modalpopupdata };
+          //         l.show=true
+          //         l.errormsg=res.data.message
+          //         l.logout=false
+          //         setmodalpopupdata({...l})
+        }
+      } else if (res.response.status === 401) {
+        // const l = { ...modalpopupdata };
+        // l.show=true
+        // l.errormsg="Session Expired. Please login again..."
+        // l.logout=true
+        // setmodalpopupdata({...l})
+      } else {
+        // const l = { ...modalpopupdata };
+        // l.show=true
+        // l.errormsg="Unable to Connect.Please try again later"
+        // l.logout=false
+        // setmodalpopupdata({...l})
+      }
+    } catch (err) {
+      // const l = { ...modalpopupdata };
+      // l.show=true
+      // l.errormsg="Unable to Connect.Please try again later"
+      // l.logout=false
+      // setmodalpopupdata({...l})
+    }
+  };
   const postgetapi = async (postid, userid, ind) => {
     let localjson = {};
     localjson.postId = postid;
@@ -306,25 +356,25 @@ const Feed = () => {
       // setmodalpopupdata({...l})
     }
   };
-  const postlistapi = async () => {
+  const postlistapi = async (postid,userid,ind) => {
+  
     let localjson = {};
     localjson.userId = parseInt(loginDetails.userId);
     localjson.categoryId = "";
     localjson.roleId = parseInt(loginDetails.roleId);
-    localjson.bookmarkFlag = false;
+    localjson.bookmarkFlag = bookmarksfl ? true : false;
     try {
       const res = await axiosInstance.post(postlisturl, localjson);
 
       if (res.status === 200) {
         if (res.data.status) {
           console.log(res.data.data);
+          setarchivefl(false);
 
-          // await asynForEach(fdata, async (ele, ind) => {
-          //   let json = {};
-
-          //   let l = await mediaapi(ele?.contentUrl);
-
-          // });
+         
+      if(bookmarksfl){
+        postgetapi(postid,userid,ind)
+      }
 
           if(res?.data?.data!==null){
             setfeeddata([...res?.data?.data?.postList]);
@@ -634,7 +684,14 @@ const Feed = () => {
       // setmodalpopupdata({...l})
     }
   };
-
+  useEffect(() => {
+    if (bookmarksfl) {
+      // Call your postlistapi function here
+      // This will be triggered after the state is updated
+      // Make sure to pass the necessary arguments
+      postlistapi();
+    }
+  }, [bookmarksfl])
   return (
     <>
       <div class="dark:font-sans h-full relative">
@@ -672,7 +729,7 @@ const Feed = () => {
               {Menus.map((Menu, index) => (
                 <li
                   key={index}
-                  className={`flex  rounded-md p-2 cursor-pointer hover:bg-slate-500   text-gray-300 text-sm items-center gap-x-4 
+                  className={`flex  rounded-md p-2 cursor-pointer ${activeTab===Menu.title?"bg-slate-500":""}  text-gray-300 text-sm items-center gap-x-4 
                 ${Menu.gap ? "mt-9" : "mt-5"} ${
                     index === 0 && "bg-light-white"
                   } `}
@@ -681,10 +738,10 @@ const Feed = () => {
                     src={Menu.src}
                     alt="icon"
                     className="h-6 w-6 lg:h-6 lg:w-6 lg:border-red-400 border-2"
-                    onClick={()=>nav(Menu.navpath)}
+                    onClick={()=>{setActiveTab(Menu.title);Menu.title==="Archived Posts"?postarchivelistapi():Menu.title==="Explore"?postlistapi():Menu.title==="Bookmarks Posts" ?postlistapi():nav(Menu.navpath)}}
                   />
                   <span
-                  onClick={()=>nav(Menu.navpath)}
+                  onClick={()=>{setActiveTab(Menu.title);Menu.title==="Archived Posts"?postarchivelistapi():Menu.title==="Explore"?postlistapi():Menu.title==="Bookmarks Posts" ?postlistapi():nav(Menu.navpath)}}
                     className={`${
                       !open && "hidden"
                     } origin-left duration-200 text-lg font-sans`}
@@ -700,9 +757,10 @@ const Feed = () => {
           <div
             class={` ${
               open === false ? "xl:w-[75%]" : "xl:w-3/5 "
-            } w-full mt-4 lg:w-2/3 pt-32 lg:pt-16 px-2 `}
+            } -mt-12 w-full lg:w-full lg:mt-4 lg:w-2/3 pt-32 lg:pt-16 px-2 `}
           >
-            {parseInt(loginDetails?.roleId) === parseInt(3) ? (
+          {console.log(parseInt(loginDetails?.roleId) === parseInt(3) && !archivefl)}
+            {(parseInt(loginDetails?.roleId) === parseInt(3) && !archivefl) || (parseInt(loginDetails?.roleId) === parseInt(2)&&!archivefl) ? (
               <div class="px-4 mt-4 shadow rounded-lg bg-white">
                 <div class="p-2 border-b border-gray-300 flex flex-col gap-2">
                   <input
@@ -907,8 +965,7 @@ const Feed = () => {
             )}
 
             <div>
-              <div></div>
-{console.log(feeddata)}
+
               {feeddata.length>0 ? feeddata.map((ele, ind) => (
                 <div class="shadow bg-white dark:bg-dark-second dark:text-dark-txt mt-4 rounded-lg relative">
                   <div class="flex items-center justify-between px-4 py-2">
@@ -1064,6 +1121,26 @@ const Feed = () => {
                               setOpenIndex(null);
                             }}
                           />
+                          {!ele.bookmarkStatus?<img
+                            src={bookmark}
+                            alt="bookmark"
+                            className="h-9 w-8 cursor-pointer"
+                            onClick={() => {
+                             
+                              setbookmarksfl(true);
+                              postlistapi(ele?.postId, loginDetails?.userId, ind);
+                            }}
+                            
+                          />:<img
+                            src={bookmarkfill}
+                            alt="bookmark"
+                            className="h-9 w-8 cursor-pointer"
+                            onClick={() => {
+                              setbookmarksfl(false);
+
+                             
+                            }}
+                          />}
                         </span>
                         <span class="rounded-full grid place-items-center text-2xl -ml-1 text-red-800">
                           <i class="bx bxs-angry"></i>
