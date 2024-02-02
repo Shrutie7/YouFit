@@ -12,8 +12,9 @@ const Plancreate = () => {
     planPrice: "",
     planDescription: "",
     planDuration: "",
-    gymTypeId: "",
+    gymTypeId: "2",
     categoryId: [],
+    features: ""
   };
   let json = {
     gymTypeName: "",
@@ -23,6 +24,12 @@ const Plancreate = () => {
     categoryId: [],
     categoryName: [],
   };
+  let feauturesadd = [{
+    features: ""
+  }
+  ]
+
+  let [featurest, setfeaturest] = useState([...feauturesadd])
   let createplanurl = "plan/create";
 
   let [formdata, setformdata] = useState({ ...formjson });
@@ -35,14 +42,30 @@ const Plancreate = () => {
     "planPrice",
     "planDescription",
     "planDuration",
-    "gymTypeId",
     "categoryId",
   ];
+
   const handlechange = (e, name) => {
     let l = { ...formdata };
     l[name] = e.target.value;
     setformdata({ ...l });
   };
+  const handlechange1 = (e, ind) => {
+  
+let l =[...featurest]
+   l[ind].features = e.target.value;
+    let l2 = {...formdata};
+let arr =[]
+    l.forEach((ele)=>{
+        arr.push(ele.features)
+    })
+    console.log(arr);
+    l2.features = arr.join(".-.")
+    console.log(l2)
+    setfeaturest([...l])
+setformdata({...l2})
+  };
+
 
   const handlesingle = (e, name, key) => {
     let l = { ...formdata };
@@ -131,17 +154,12 @@ const Plancreate = () => {
     console.log(formdata);
     let res = Addrowerror(lableMandatoryData, formdata);
     if (res?.length > 0) {
-      // var nameId = res?.at(0);
-      // document.getElementsByName(nameId)[0].focus();
       setMandatoryData([...res]);
-      // res?.forEach((ele) => {
-      //     let doc = document.getElementsByName(ele)[0]
-      //     doc.style.border = "2px solid red"
-      // })
+
     } else {
       const dat = { ...gdata };
       setflag(true);
-      // console.log(dat);
+      console.log(dat);
       try {
         const res = await axiosInstance.post(createplanurl, dat);
 
@@ -171,13 +189,26 @@ const Plancreate = () => {
         } else if (res?.response.status === 401) {
         } else {
         }
-      } catch (err) {}
+      } catch (err) { }
       setflag(false);
     }
   }
+
+  const addfeatures = () => {
+    let l = [...featurest]
+    l.push({
+      features: ""
+    })
+    setfeaturest([...l])
+  }
+  const deletefeatures = (ind) => {
+    let l = [...featurest]
+    l.splice(ind, 1)
+    setfeaturest([...l])
+  }
   return (
     <>
-      <body class="flex mt-24 ">
+      <div class="flex mt-24 ">
         <div class="bg-gray-100 mx-auto max-w-6xl bg-white py-20 px-12 lg:px-24 shadow-xl mb-24">
           <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 flex flex-col">
             <div class="-mx-3 md:flex mb-6">
@@ -222,7 +253,7 @@ const Plancreate = () => {
                   value={formdata.planDescription}
                   style={
                     mandatoryData.includes("planDescription") &&
-                    !formdata?.planDescription
+                      !formdata?.planDescription
                       ? { border: "2px solid red" }
                       : {}
                   }
@@ -230,12 +261,7 @@ const Plancreate = () => {
               </div>
             </div>
             <div class="-mx-3 md:flex mb-6">
-              {/* <div class="md:w-full px-3">
-            <label class="uppercase tracking-wide text-black text-xs font-bold mb-2" for="application-link">
-              Application Link*
-            </label>
-            <input class="w-full bg-gray-200 text-black border border-gray-200 rounded py-3 px-4 mb-3" id="application-link" type="text" placeholder="http://...."/>
-          </div> */}
+
 
               <div class="md:w-1/2 px-3 mb-6 md:mb-0">
                 <label
@@ -274,7 +300,7 @@ const Plancreate = () => {
                   placeholder="Duration"
                   styles={
                     mandatoryData.includes("planDuration") &&
-                    !formdata?.planDuration
+                      !formdata?.planDuration
                       ? handleReactSelectCss("xlarge3", true, true)
                       : handleReactSelectCss("xlarge3", false, true)
                   }
@@ -285,11 +311,11 @@ const Plancreate = () => {
                   value={
                     formdatalocal?.planDuration
                       ? [
-                          {
-                            value: formdatalocal.planDuration,
-                            label: formdatalocal.planDurationName,
-                          },
-                        ]
+                        {
+                          value: formdatalocal.planDuration,
+                          label: formdatalocal.planDurationName,
+                        },
+                      ]
                       : []
                   }
                   menuPortalTarget={document.body}
@@ -298,57 +324,8 @@ const Plancreate = () => {
                 />
               </div>
             </div>
-            <div class="-mx-3 md:flex mb-2">
-              <div class="md:w-1/2 px-3 mb-6 md:mb-0">
-                <label
-                  class="uppercase tracking-wide text-black text-xs font-bold mb-2"
-                  for="location"
-                >
-                  Gym Type*
-                </label>
-                <div>
-                  <Select
-                    id="gymtype"
-                    name="gymType"
-                    className="mt-1"
-                    placeholder="Gym Type"
-                    styles={
-                      mandatoryData.includes("gymTypeId") &&
-                      !formdata?.gymTypeId
-                        ? handleReactSelectCss("xlarge3", true, true)
-                        : handleReactSelectCss("xlarge3", false, true)
-                    }
-                    // onChange={(e) => handlegender(e)}
-                    onChange={(e) => handlesingle(e, "gymTypeId", "gymTypeName")}
-                    value={
-                      formdatalocal?.gymTypeId
-                        ? [
-                            {
-                              value: formdatalocal.gymTypeId,
-                              label: formdatalocal.gymTypeName,
-                            },
-                          ]
-                        : []
-                    }
-                    menuPortalTarget={document.body}
-                    menuPosition={"fixed"}
-                    options={gymOptions}
-                  />
-                </div>
-              </div>
-              {/* <div class="md:w-1/2 px-3">
-            <label class="uppercase tracking-wide text-black text-xs font-bold mb-2" for="job-type">
-              Job Type*
-            </label>
-            <div>
-              <select class="w-full bg-gray-200 border border-gray-200 text-black text-xs py-3 px-4 pr-8 mb-3 rounded" id="job-type">
-                <option>Full-Time</option>
-                <option>Part-Time</option>
-                <option>Internship</option>
-              </select>
-            </div>
-          </div> */}
-              <div class="md:w-1/2 px-3">
+            <div class="-mx-3 md:flex mb-6">
+              <div class="md:w-full px-3">
                 <label
                   class="uppercase tracking-wide text-black text-xs font-bold mb-2"
                   for="department"
@@ -364,9 +341,9 @@ const Plancreate = () => {
                     isMulti
                     styles={
                       mandatoryData.includes("categoryId") &&
-                      formdata?.categoryId?.length === 0
-                        ? handleReactSelectCss("xlarge3", true, true)
-                        : handleReactSelectCss("xlarge3", false, true)
+                        formdata?.categoryId?.length === 0
+                        ? handleReactSelectCss("xlarge4", true, true)
+                        : handleReactSelectCss("xlarge4", false, true)
                     }
                     onChange={(e) => handlemulti(e)}
                     // value={
@@ -382,6 +359,45 @@ const Plancreate = () => {
                   />
                 </div>
               </div>
+            </div>
+            <div class="-mx-3 md:flex mb-6">
+              <div class="md:w-full px-3 mb-6 md:mb-0">
+                <div className="flex justify-between ">
+                  <label
+                    class="uppercase tracking-wide text-black text-xs font-bold mb-2"
+                    for="location"
+                  >
+                    Features*
+                  </label>
+                  <div className="cursor-pointer bg-gray-600 text-white text-center rounded-[50%] w-6 h-6" onClick={() => addfeatures()}>+</div>
+
+                </div>
+
+                <div className="h-24 overflow-y-scroll">
+                  {
+                    featurest.map((ele, ind) => (
+                      <div className="flex ">
+                        <label className="text-center text-black">{ind + 1}</label>
+                        <input
+                          class="w-full bg-gray-200 text-black border border-gray-200 rounded py-3 px-4 mb-2"
+                          id="company"
+                          type="text"
+                          placeholder={`Add Feature ${ind + 1}`}
+                       
+                          onChange={(e) => {
+                            handlechange1(e,ind);
+                          }}
+                        // value={formdata?.features?.at(ind)}
+                        />
+                        {featurest.length !== 1 ? <div onClick={() => deletefeatures(ind)} className="cursor-pointer text-black">D</div> : <></>}
+                      </div>
+                    ))
+
+                  }
+                </div>
+
+              </div>
+
             </div>
             <div class="-mx-3 md:flex mt-2">
               <div class="md:w-full px-3">
@@ -422,7 +438,7 @@ const Plancreate = () => {
           theme="light"
           className="toast"
         />
-      </body>
+      </div>
     </>
   );
 };

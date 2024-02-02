@@ -172,7 +172,7 @@ const Feed = () => {
     }
   };
 
-  const downloadpost = async (contenturl ) => {
+  const downloadpost = async (contenturl) => {
     let slicedurl = contenturl.slice(contenturl.lastIndexOf("/") + 1, contenturl.length);
     console.log(slicedurl)
     try {
@@ -216,7 +216,7 @@ const Feed = () => {
     localjson.description = ele.description;
     localjson.userId = loginDetails?.userId;
     localjson.activeFlag = flagtype === "delete" ? false : true;
-    localjson.archivedFlag = flagtype === "archive" ? true : false;
+    localjson.archiveFlag = flagtype === "archive" ? true : false;
     localjson.remarks = ele?.remarks;
     console.log(localjson);
     try {
@@ -224,12 +224,13 @@ const Feed = () => {
 
       if (res.status === 200) {
         if (res.data.status) {
-          postlistapi();
+      
           console.log("deleted");
 
           flagtype === "delete"
             ? setdeletemodal(false)
             : setarchivemodal(false);
+            postlistapi();
         } else {
           // const l = { ...modalpopupdata };
           //         l.show=true
@@ -310,6 +311,7 @@ const Feed = () => {
     localjson.userId = parseInt(loginDetails.userId);
     localjson.categoryId = "";
     localjson.roleId = parseInt(loginDetails.roleId);
+    localjson.bookmarkFlag = false;
     try {
       const res = await axiosInstance.post(postlisturl, localjson);
 
@@ -324,8 +326,15 @@ const Feed = () => {
 
           // });
 
-          setfeeddata([...res?.data?.data?.postList]);
+          if(res?.data?.data!==null){
+            setfeeddata([...res?.data?.data?.postList]);
+          }
+          else{
+            setfeeddata([])
+          }
+         
         } else {
+          setfeeddata([])
           // const l = { ...modalpopupdata };
           //         l.show=true
           //         l.errormsg=res.data.message
@@ -411,6 +420,7 @@ const Feed = () => {
               setMetadata({ ...jsondata });
               setFile(null);
               setcategorydata([]);
+              postlistapi()
             },
           });
         } else {
@@ -898,8 +908,8 @@ const Feed = () => {
 
             <div>
               <div></div>
-
-              {feeddata.map((ele, ind) => (
+{console.log(feeddata)}
+              {feeddata.length>0 ? feeddata.map((ele, ind) => (
                 <div class="shadow bg-white dark:bg-dark-second dark:text-dark-txt mt-4 rounded-lg relative">
                   <div class="flex items-center justify-between px-4 py-2">
                     <div class="flex space-x-2 items-center">
@@ -1270,7 +1280,7 @@ const Feed = () => {
                     <></>
                   )}
                 </div>
-              ))}
+              )):<></>}
             </div>
           </div>
 

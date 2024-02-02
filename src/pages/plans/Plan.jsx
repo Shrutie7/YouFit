@@ -20,7 +20,7 @@ const Plan = () => {
     setLoading(true)
     try {
       const res = await axiosInstance.post(planlisturl, {
-        gymTypeId: loginDetails.gymtypeId,
+        gymTypeId: loginDetails.roleId===parseInt(loginDetails.userId) ? loginDetails.gymtypeId:2,
       });
 
       if (res.status === 200) {
@@ -123,7 +123,7 @@ const Plan = () => {
                 <span class="text-gray-500 dark:text-gray-400 text-2xl font-extrabold">/{ele.planDuration}months</span>
               </div>
               <ul role="list" class="mb-8 space-y-4 text-left">
-                <li class="flex items-center space-x-3">
+                {/* <li class="flex items-center space-x-3">
                   <svg
                     class="flex-shrink-0 w-5 h-5 text-green-500 dark:text-green-400"
                     fill="currentColor"
@@ -203,7 +203,29 @@ const Plan = () => {
                   <span>
                     Free updates: <span class="font-semibold">6 months</span>
                   </span>
-                </li>
+                </li> */}
+
+
+
+                {
+                  ele?.listOfFeatures?.map((fe)=>(
+                    <li class="flex items-center space-x-3">
+                    <svg
+                      class="flex-shrink-0 w-5 h-5 text-green-500 dark:text-green-400"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                        clip-rule="evenodd"
+                      ></path>
+                    </svg>
+                    <span>{fe?.features}</span>
+                  </li>
+                  ))
+                }
               </ul>
               <button
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
