@@ -46,7 +46,7 @@ const keycloakAuth = () => {
          
           {/* <Route path ="register" exact element={<Registeryt/>}/> */}
         </Routes>
-        <Interceptor/>
+        {/* <Interceptor/> */}
     
       </ReactKeycloakProvider>
     </div>

@@ -53,7 +53,6 @@ const Feed = () => {
   };
   const playerRef = useRef(null);
 
-  const [bookmarksfl, setbookmarksfl] = useState(false);
   const [deletemodal, setdeletemodal] = useState(false);
   const [archivemodal, setarchivemodal] = useState(false);
   const [openIndex, setOpenIndex] = useState(null);
@@ -81,6 +80,7 @@ const Feed = () => {
   const [comment, setcomment] = useState(false);
   const nav = useNavigate();
   const [archivefl, setarchivefl] = useState(false);
+  const [bookmarksfl, setbookmarksfl] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [type, settype] = useState(null);
   const [flag, setflag] = useState(false);
@@ -100,6 +100,8 @@ const Feed = () => {
   let deletearchiveurl = "post/update";
   let archivelisturl = "post/list/user/based";
   let downloadmediaurl = "post/download/media/";
+  let addbookmarksurl = "post/add/bookmark";
+  let removebookmarksurl = "post/remove/bookmark";
 
   const overlayRef = useRef(null);
   async function asynForEach(array, callback) {
@@ -181,49 +183,47 @@ const Feed = () => {
     }
   };
 
- 
+  // const downloadpost = (contenturl) => {
+  //   let slicedurl = contenturl.slice(
+  //     contenturl.lastIndexOf("/") + 1,
+  //     contenturl.length
+  //   );
 
+  //   // Open a new window and set its location to the download URL
+  //   const downloadWindow = window.open("http://" + process.env.REACT_APP_LOCAL_AXIOS_URL+ "/"+downloadmediaurl + slicedurl, '_blank');
 
+  //   // Close the window after a short delay
+  //   setTimeout(() => {
+  //     if (downloadWindow) {
+  //       downloadWindow.close();
+  //     }
+  //   }, 5000); // Adjust the delay as needed
+  // };
 
-// const downloadpost = (contenturl) => {
-//   let slicedurl = contenturl.slice(
-//     contenturl.lastIndexOf("/") + 1,
-//     contenturl.length
-//   );
+  const downloadpost = (contenturl) => {
+    let slicedurl = contenturl.slice(
+      contenturl.lastIndexOf("/") + 1,
+      contenturl.length
+    );
 
-//   // Open a new window and set its location to the download URL
-//   const downloadWindow = window.open("http://" + process.env.REACT_APP_LOCAL_AXIOS_URL+ "/"+downloadmediaurl + slicedurl, '_blank');
+    // Create a hidden iframe
+    const iframe = document.createElement("iframe");
+    iframe.style.display = "none";
+    document.body.appendChild(iframe);
 
-//   // Close the window after a short delay
-//   setTimeout(() => {
-//     if (downloadWindow) {
-//       downloadWindow.close();
-//     }
-//   }, 5000); // Adjust the delay as needed
-// };
+    // Set the iframe source to the download URL
+    iframe.src =
+      "http://" +
+      process.env.REACT_APP_LOCAL_AXIOS_URL +
+      "/" +
+      downloadmediaurl +
+      slicedurl;
 
-
-const downloadpost = (contenturl) => {
-  let slicedurl = contenturl.slice(
-    contenturl.lastIndexOf("/") + 1,
-    contenturl.length
-  );
-
-  // Create a hidden iframe
-  const iframe = document.createElement('iframe');
-  iframe.style.display = 'none';
-  document.body.appendChild(iframe);
-
-  // Set the iframe source to the download URL
-  iframe.src = "http://" + process.env.REACT_APP_LOCAL_AXIOS_URL+ "/"+downloadmediaurl + slicedurl;
-
-  // Remove the iframe after a short delay
-  setTimeout(() => {
-    document.body.removeChild(iframe);
-  }, 5000); // Adjust the delay as needed
-};
-  
-  
+    // Remove the iframe after a short delay
+    setTimeout(() => {
+      document.body.removeChild(iframe);
+    }, 5000); // Adjust the delay as needed
+  };
 
   // const downloadpost = async (contenturl) => {
   //   let slicedurl = contenturl.slice(
@@ -231,27 +231,25 @@ const downloadpost = (contenturl) => {
   //     contenturl.length
   //   );
   //   console.log(slicedurl);
-  
+
   //   try {
   //     const res = await axiosInstance.get(downloadmediaurl + slicedurl, {
   //       responseType: 'blob', // Set the response type to 'blob' to handle binary data
   //     });
-  
-      
+
   //     console.log(res);
   //     if (res.status === 200) {
   //       if (res.data && res.data.status) {
 
-        
   //         const href = URL.createObjectURL(res.data);
-          
+
   //         // create "a" HTML element with href to file & click
   //         const link = document.createElement('a');
   //         link.href = href;
   //         link.setAttribute('download', 'f.mp4'); //or any other extension
   //         document.body.appendChild(link);
   //         link.click();
-      
+
   //         // clean up "a" element & remove ObjectURL
   //         document.body.removeChild(link);
   //         URL.revokeObjectURL(href);
@@ -406,12 +404,12 @@ const downloadpost = (contenturl) => {
       // setmodalpopupdata({...l})
     }
   };
-  const postlistapi = async (postid, userid, ind) => {
+  const postlistapi = async (typez) => {
     let localjson = {};
     localjson.userId = parseInt(loginDetails.userId);
     localjson.categoryId = "";
     localjson.roleId = parseInt(loginDetails.roleId);
-    localjson.bookmarkFlag = bookmarksfl ? true : false;
+    localjson.bookmarkFlag = typez === "bookmarks" ? true : false;
     try {
       const res = await axiosInstance.post(postlisturl, localjson);
 
@@ -420,9 +418,14 @@ const downloadpost = (contenturl) => {
           console.log(res.data.data);
           setarchivefl(false);
 
-          if (bookmarksfl) {
-            postgetapi(postid, userid, ind);
+          if (typez === "bookmarks") {
+            setbookmarksfl(true);
+          } else {
+            setbookmarksfl(false);
           }
+          // if (bookmarksfl) {
+          //   postgetapi(postid, userid, ind);
+          // }
 
           if (res?.data?.data !== null) {
             setfeeddata([...res?.data?.data?.postList]);
@@ -689,6 +692,84 @@ const downloadpost = (contenturl) => {
     }
   };
 
+  const handleaddbookmarks = async (postid, userid, ind) => {
+    let localjson = {};
+    localjson.postId = parseInt(postid);
+    localjson.userId = parseInt(userid);
+    try {
+      const res = await axiosInstance.post(addbookmarksurl, localjson);
+
+      if (res.status === 200) {
+        if (res.data.status) {
+          postgetapi(postid, userid, ind);
+          console.log("postliked");
+        } else {
+          // const l = { ...modalpopupdata };
+          //         l.show=true
+          //         l.errormsg=res.data.message
+          //         l.logout=false
+          //         setmodalpopupdata({...l})
+        }
+      } else if (res.response.status === 401) {
+        // const l = { ...modalpopupdata };
+        // l.show=true
+        // l.errormsg="Session Expired. Please login again..."
+        // l.logout=true
+        // setmodalpopupdata({...l})
+      } else {
+        // const l = { ...modalpopupdata };
+        // l.show=true
+        // l.errormsg="Unable to Connect.Please try again later"
+        // l.logout=false
+        // setmodalpopupdata({...l})
+      }
+    } catch (err) {
+      // const l = { ...modalpopupdata };
+      // l.show=true
+      // l.errormsg="Unable to Connect.Please try again later"
+      // l.logout=false
+      // setmodalpopupdata({...l})
+    }
+  };
+  const handleremovebookmarks = async (postid, userid, ind) => {
+    let localjson = {};
+    localjson.postId = parseInt(postid);
+    localjson.userId = parseInt(userid);
+    try {
+      const res = await axiosInstance.post(removebookmarksurl, localjson);
+
+      if (res.status === 200) {
+        if (res.data.status) {
+          postgetapi(postid, userid, ind);
+          console.log("postliked");
+        } else {
+          // const l = { ...modalpopupdata };
+          //         l.show=true
+          //         l.errormsg=res.data.message
+          //         l.logout=false
+          //         setmodalpopupdata({...l})
+        }
+      } else if (res.response.status === 401) {
+        // const l = { ...modalpopupdata };
+        // l.show=true
+        // l.errormsg="Session Expired. Please login again..."
+        // l.logout=true
+        // setmodalpopupdata({...l})
+      } else {
+        // const l = { ...modalpopupdata };
+        // l.show=true
+        // l.errormsg="Unable to Connect.Please try again later"
+        // l.logout=false
+        // setmodalpopupdata({...l})
+      }
+    } catch (err) {
+      // const l = { ...modalpopupdata };
+      // l.show=true
+      // l.errormsg="Unable to Connect.Please try again later"
+      // l.logout=false
+      // setmodalpopupdata({...l})
+    }
+  };
   const handlepostlikeslist = async (postid, userid, ind) => {
     try {
       const res = await axiosInstance.post(postlikelisturl, {
@@ -730,14 +811,12 @@ const downloadpost = (contenturl) => {
       // setmodalpopupdata({...l})
     }
   };
-  useEffect(() => {
-    if (bookmarksfl) {
-      // Call your postlistapi function here
-      // This will be triggered after the state is updated
-      // Make sure to pass the necessary arguments
-      postlistapi();
-    }
-  }, [bookmarksfl]);
+  // useEffect(() => {
+  //   if (bookmarksfl) {
+
+  //     postlistapi();
+  //   }
+  // }, [bookmarksfl]);
   return (
     <>
       <div class="dark:font-sans h-full relative">
@@ -793,7 +872,7 @@ const downloadpost = (contenturl) => {
                         : Menu.title === "Explore"
                         ? postlistapi()
                         : Menu.title === "Bookmarks Posts"
-                        ? postlistapi()
+                        ? postlistapi("bookmarks")
                         : nav(Menu.navpath);
                     }}
                   />
@@ -805,7 +884,7 @@ const downloadpost = (contenturl) => {
                         : Menu.title === "Explore"
                         ? postlistapi()
                         : Menu.title === "Bookmarks Posts"
-                        ? postlistapi()
+                        ? postlistapi("bookmarks")
                         : nav(Menu.navpath);
                     }}
                     className={`${
@@ -828,8 +907,12 @@ const downloadpost = (contenturl) => {
             {console.log(
               parseInt(loginDetails?.roleId) === parseInt(3) && !archivefl
             )}
-            {(parseInt(loginDetails?.roleId) === parseInt(3) && !archivefl) ||
-            (parseInt(loginDetails?.roleId) === parseInt(2) && !archivefl) ? (
+            {(parseInt(loginDetails?.roleId) === parseInt(3) &&
+              !archivefl &&
+              !bookmarksfl) ||
+            (parseInt(loginDetails?.roleId) === parseInt(2) &&
+              !archivefl &&
+              !bookmarksfl) ? (
               <div class="px-4 mt-4 shadow rounded-lg bg-white">
                 <div class="p-2 border-b border-gray-300 flex flex-col gap-2">
                   <input
@@ -1197,9 +1280,16 @@ const downloadpost = (contenturl) => {
                                 src={bookmark}
                                 alt="bookmark"
                                 className="h-9 w-8 cursor-pointer"
+                                // onClick={() => {
+                                //   setbookmarksfl(true);
+                                //   postlistapi(
+                                //     ele?.postId,
+                                //     loginDetails?.userId,
+                                //     ind
+                                //   );
+                                // }}
                                 onClick={() => {
-                                  setbookmarksfl(true);
-                                  postlistapi(
+                                  handleaddbookmarks(
                                     ele?.postId,
                                     loginDetails?.userId,
                                     ind
@@ -1211,8 +1301,15 @@ const downloadpost = (contenturl) => {
                                 src={bookmarkfill}
                                 alt="bookmark"
                                 className="h-9 w-8 cursor-pointer"
+                                // onClick={() => {
+                                //   setbookmarksfl(false);
+                                // }}
                                 onClick={() => {
-                                  setbookmarksfl(false);
+                                  handleremovebookmarks(
+                                    ele?.postId,
+                                    loginDetails?.userId,
+                                    ind
+                                  );
                                 }}
                               />
                             )}
