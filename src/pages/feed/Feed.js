@@ -7,17 +7,23 @@ import archived from "../../assets/archived.png";
 import bookmarks from "../../assets/bookmarks.png";
 import settings from "../../assets/settings (2).png";
 import chat from "../../assets/comment.png";
-import bookmarkfill from "../../assets/bookmark.png"
+import bookmarkfill from "../../assets/bookmark.png";
 import bookmark from "../../assets/save-instagram.png";
 import send from "../../assets/send-message.png";
 import { MoreVert } from "@material-ui/icons";
-import { Player, BigPlayButton, ControlBar,
+import {
+  Player,
+  BigPlayButton,
+  ControlBar,
   ReplayControl,
   ForwardControl,
   CurrentTimeDisplay,
-  TimeDivider,FullscreenToggle,
-  PlaybackRateMenuButton,VolumeMenuButton } from "video-react";
-import 'video-react/dist/video-react.css';
+  TimeDivider,
+  FullscreenToggle,
+  PlaybackRateMenuButton,
+  VolumeMenuButton,
+} from "video-react";
+import "video-react/dist/video-react.css";
 import { format } from "timeago.js";
 import control from "../../assets/control.png";
 import {
@@ -35,6 +41,7 @@ import { useSelector } from "react-redux";
 import Modal from "../../commonmodules/Modals";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../services/LocalAxiosInstance";
+import axios from "axios";
 const Feed = () => {
   const loginDetails = useSelector((e) => e.logindetails.data);
   const jsondata = {
@@ -46,7 +53,7 @@ const Feed = () => {
   };
   const playerRef = useRef(null);
 
-const [bookmarksfl,setbookmarksfl] =useState(false);
+  const [bookmarksfl, setbookmarksfl] = useState(false);
   const [deletemodal, setdeletemodal] = useState(false);
   const [archivemodal, setarchivemodal] = useState(false);
   const [openIndex, setOpenIndex] = useState(null);
@@ -63,17 +70,17 @@ const [bookmarksfl,setbookmarksfl] =useState(false);
   const isCategorySelected = (categoryId) =>
     selectedCategoryIds.includes(categoryId);
   const [open, setOpen] = useState(true);
-  const [activeTab, setActiveTab] = useState('Explore');
+  const [activeTab, setActiveTab] = useState("Explore");
   const Menus = [
     { title: "Explore", src: explore },
-    { title: "Settings", src: settings ,navpath:"/portal/settings"},
+    { title: "Settings", src: settings, navpath: "/portal/settings" },
     { title: "Archived Posts", src: archived },
     { title: "Bookmarks Posts", src: bookmarks },
   ];
   const [playbackRate, setplaybackRate] = useState(1.0);
   const [comment, setcomment] = useState(false);
   const nav = useNavigate();
-  const [archivefl,setarchivefl] = useState(false);
+  const [archivefl, setarchivefl] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [type, settype] = useState(null);
   const [flag, setflag] = useState(false);
@@ -143,7 +150,6 @@ const [bookmarksfl,setbookmarksfl] =useState(false);
 
       if (res.status === 200) {
         if (res.data.status) {
-      
           let l = res.data.data.categoryDetailsList;
           setcategorydata([...l]);
         } else {
@@ -175,43 +181,93 @@ const [bookmarksfl,setbookmarksfl] =useState(false);
     }
   };
 
-  const downloadpost = async (contenturl) => {
-    let slicedurl = contenturl.slice(contenturl.lastIndexOf("/") + 1, contenturl.length);
-    console.log(slicedurl)
-    try {
-      const res = await axiosInstance.get(`post/download/media/${slicedurl}`);
+ 
 
-      if (res.status === 200) {
-        if (res.data.status) {
-      console.log("downloaded")
-        } else {
-          // const l = { ...modalpopupdata };
-          //         l.show=true
-          //         l.errormsg=res.data.message
-          //         l.logout=false
-          //         setmodalpopupdata({...l})
-        }
-      } else if (res.response.status === 401) {
-        // const l = { ...modalpopupdata };
-        // l.show=true
-        // l.errormsg="Session Expired. Please login again..."
-        // l.logout=true
-        // setmodalpopupdata({...l})
-      } else {
-        // const l = { ...modalpopupdata };
-        // l.show=true
-        // l.errormsg="Unable to Connect.Please try again later"
-        // l.logout=false
-        // setmodalpopupdata({...l})
-      }
-    } catch (err) {
-      // const l = { ...modalpopupdata };
-      // l.show=true
-      // l.errormsg="Unable to Connect.Please try again later"
-      // l.logout=false
-      // setmodalpopupdata({...l})
-    }
-  };
+
+
+// const downloadpost = (contenturl) => {
+//   let slicedurl = contenturl.slice(
+//     contenturl.lastIndexOf("/") + 1,
+//     contenturl.length
+//   );
+
+//   // Open a new window and set its location to the download URL
+//   const downloadWindow = window.open("http://" + process.env.REACT_APP_LOCAL_AXIOS_URL+ "/"+downloadmediaurl + slicedurl, '_blank');
+
+//   // Close the window after a short delay
+//   setTimeout(() => {
+//     if (downloadWindow) {
+//       downloadWindow.close();
+//     }
+//   }, 5000); // Adjust the delay as needed
+// };
+
+
+const downloadpost = (contenturl) => {
+  let slicedurl = contenturl.slice(
+    contenturl.lastIndexOf("/") + 1,
+    contenturl.length
+  );
+
+  // Create a hidden iframe
+  const iframe = document.createElement('iframe');
+  iframe.style.display = 'none';
+  document.body.appendChild(iframe);
+
+  // Set the iframe source to the download URL
+  iframe.src = "http://" + process.env.REACT_APP_LOCAL_AXIOS_URL+ "/"+downloadmediaurl + slicedurl;
+
+  // Remove the iframe after a short delay
+  setTimeout(() => {
+    document.body.removeChild(iframe);
+  }, 5000); // Adjust the delay as needed
+};
+  
+  
+
+  // const downloadpost = async (contenturl) => {
+  //   let slicedurl = contenturl.slice(
+  //     contenturl.lastIndexOf("/") + 1,
+  //     contenturl.length
+  //   );
+  //   console.log(slicedurl);
+  
+  //   try {
+  //     const res = await axiosInstance.get(downloadmediaurl + slicedurl, {
+  //       responseType: 'blob', // Set the response type to 'blob' to handle binary data
+  //     });
+  
+      
+  //     console.log(res);
+  //     if (res.status === 200) {
+  //       if (res.data && res.data.status) {
+
+        
+  //         const href = URL.createObjectURL(res.data);
+          
+  //         // create "a" HTML element with href to file & click
+  //         const link = document.createElement('a');
+  //         link.href = href;
+  //         link.setAttribute('download', 'f.mp4'); //or any other extension
+  //         document.body.appendChild(link);
+  //         link.click();
+      
+  //         // clean up "a" element & remove ObjectURL
+  //         document.body.removeChild(link);
+  //         URL.revokeObjectURL(href);
+  //       } else {
+  //         // Handle the case where res.data.status is falsy
+  //       }
+  //     } else if (res.response && res.response.status === 401) {
+  //       // Handle 401 Unauthorized
+  //     } else {
+  //       // Handle other status codes
+  //     }
+  //   } catch (err) {
+  //     console.error("Error during download:", err);
+  //     // Handle other errors or log as needed
+  //   }
+  // };
   const deleteandarchiveapi = async (flagtype, ele) => {
     const localjson = {};
     localjson.postId = ele.postId;
@@ -227,13 +283,12 @@ const [bookmarksfl,setbookmarksfl] =useState(false);
 
       if (res.status === 200) {
         if (res.data.status) {
-      
           console.log("deleted");
 
           flagtype === "delete"
             ? setdeletemodal(false)
             : setarchivemodal(false);
-            postlistapi();
+          postlistapi();
         } else {
           // const l = { ...modalpopupdata };
           //         l.show=true
@@ -263,12 +318,10 @@ const [bookmarksfl,setbookmarksfl] =useState(false);
     }
   };
 
-
-  
   const postarchivelistapi = async () => {
-    setarchivefl(true)
+    setarchivefl(true);
     let localjson = {};
-   
+
     localjson.archiveFlag = true;
     localjson.userId = loginDetails.userId;
     try {
@@ -279,9 +332,6 @@ const [bookmarksfl,setbookmarksfl] =useState(false);
           console.log(res.data.data);
 
           setfeeddata([...res?.data?.data?.postList]);
-
-
-       
         } else {
           // const l = { ...modalpopupdata };
           //         l.show=true
@@ -356,8 +406,7 @@ const [bookmarksfl,setbookmarksfl] =useState(false);
       // setmodalpopupdata({...l})
     }
   };
-  const postlistapi = async (postid,userid,ind) => {
-  
+  const postlistapi = async (postid, userid, ind) => {
     let localjson = {};
     localjson.userId = parseInt(loginDetails.userId);
     localjson.categoryId = "";
@@ -371,20 +420,17 @@ const [bookmarksfl,setbookmarksfl] =useState(false);
           console.log(res.data.data);
           setarchivefl(false);
 
-         
-      if(bookmarksfl){
-        postgetapi(postid,userid,ind)
-      }
+          if (bookmarksfl) {
+            postgetapi(postid, userid, ind);
+          }
 
-          if(res?.data?.data!==null){
+          if (res?.data?.data !== null) {
             setfeeddata([...res?.data?.data?.postList]);
+          } else {
+            setfeeddata([]);
           }
-          else{
-            setfeeddata([])
-          }
-         
         } else {
-          setfeeddata([])
+          setfeeddata([]);
           // const l = { ...modalpopupdata };
           //         l.show=true
           //         l.errormsg=res.data.message
@@ -470,7 +516,7 @@ const [bookmarksfl,setbookmarksfl] =useState(false);
               setMetadata({ ...jsondata });
               setFile(null);
               setcategorydata([]);
-              postlistapi()
+              postlistapi();
             },
           });
         } else {
@@ -691,7 +737,7 @@ const [bookmarksfl,setbookmarksfl] =useState(false);
       // Make sure to pass the necessary arguments
       postlistapi();
     }
-  }, [bookmarksfl])
+  }, [bookmarksfl]);
   return (
     <>
       <div class="dark:font-sans h-full relative">
@@ -729,7 +775,9 @@ const [bookmarksfl,setbookmarksfl] =useState(false);
               {Menus.map((Menu, index) => (
                 <li
                   key={index}
-                  className={`flex  rounded-md p-2 cursor-pointer ${activeTab===Menu.title?"bg-slate-500":""}  text-gray-300 text-sm items-center gap-x-4 
+                  className={`flex  rounded-md p-2 cursor-pointer ${
+                    activeTab === Menu.title ? "bg-slate-500" : ""
+                  }  text-gray-300 text-sm items-center gap-x-4 
                 ${Menu.gap ? "mt-9" : "mt-5"} ${
                     index === 0 && "bg-light-white"
                   } `}
@@ -738,10 +786,28 @@ const [bookmarksfl,setbookmarksfl] =useState(false);
                     src={Menu.src}
                     alt="icon"
                     className="h-6 w-6 lg:h-6 lg:w-6 lg:border-red-400 border-2"
-                    onClick={()=>{setActiveTab(Menu.title);Menu.title==="Archived Posts"?postarchivelistapi():Menu.title==="Explore"?postlistapi():Menu.title==="Bookmarks Posts" ?postlistapi():nav(Menu.navpath)}}
+                    onClick={() => {
+                      setActiveTab(Menu.title);
+                      Menu.title === "Archived Posts"
+                        ? postarchivelistapi()
+                        : Menu.title === "Explore"
+                        ? postlistapi()
+                        : Menu.title === "Bookmarks Posts"
+                        ? postlistapi()
+                        : nav(Menu.navpath);
+                    }}
                   />
                   <span
-                  onClick={()=>{setActiveTab(Menu.title);Menu.title==="Archived Posts"?postarchivelistapi():Menu.title==="Explore"?postlistapi():Menu.title==="Bookmarks Posts" ?postlistapi():nav(Menu.navpath)}}
+                    onClick={() => {
+                      setActiveTab(Menu.title);
+                      Menu.title === "Archived Posts"
+                        ? postarchivelistapi()
+                        : Menu.title === "Explore"
+                        ? postlistapi()
+                        : Menu.title === "Bookmarks Posts"
+                        ? postlistapi()
+                        : nav(Menu.navpath);
+                    }}
                     className={`${
                       !open && "hidden"
                     } origin-left duration-200 text-lg font-sans`}
@@ -759,8 +825,11 @@ const [bookmarksfl,setbookmarksfl] =useState(false);
               open === false ? "xl:w-[75%]" : "xl:w-3/5 "
             } -mt-12 w-full lg:w-full lg:mt-4 lg:w-2/3 pt-32 lg:pt-16 px-2 `}
           >
-          {console.log(parseInt(loginDetails?.roleId) === parseInt(3) && !archivefl)}
-            {(parseInt(loginDetails?.roleId) === parseInt(3) && !archivefl) || (parseInt(loginDetails?.roleId) === parseInt(2)&&!archivefl) ? (
+            {console.log(
+              parseInt(loginDetails?.roleId) === parseInt(3) && !archivefl
+            )}
+            {(parseInt(loginDetails?.roleId) === parseInt(3) && !archivefl) ||
+            (parseInt(loginDetails?.roleId) === parseInt(2) && !archivefl) ? (
               <div class="px-4 mt-4 shadow rounded-lg bg-white">
                 <div class="p-2 border-b border-gray-300 flex flex-col gap-2">
                   <input
@@ -965,351 +1034,361 @@ const [bookmarksfl,setbookmarksfl] =useState(false);
             )}
 
             <div>
-
-              {feeddata.length>0 ? feeddata.map((ele, ind) => (
-                <div class="shadow bg-white dark:bg-dark-second dark:text-dark-txt mt-4 rounded-lg relative">
-                  <div class="flex items-center justify-between px-4 py-2">
-                    <div class="flex space-x-2 items-center">
-                      <div class="flex flex-col">
-                        <div class="font-semibold text-black">
-                          {ele?.updatedBy?.userName}
-                        </div>
-                        <div className="text-gray-400 text-sm">
-                          {format(ele?.postedDate)}
+              {feeddata.length > 0 ? (
+                feeddata.map((ele, ind) => (
+                  <div class="shadow bg-white dark:bg-dark-second dark:text-dark-txt mt-4 rounded-lg relative">
+                    <div class="flex items-center justify-between px-4 py-2">
+                      <div class="flex space-x-2 items-center">
+                        <div class="flex flex-col">
+                          <div class="font-semibold text-black">
+                            {ele?.updatedBy?.userName}
+                          </div>
+                          <div className="text-gray-400 text-sm">
+                            {format(ele?.postedDate)}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div
-                      onClick={() => toggleoverlay(ind)}
-                      class="w-8 h-8 grid place-items-center text-xl text-gray-500 hover:bg-gray-200 dark:text-black dark:hover:bg-dark-third rounded-full cursor-pointer"
-                    >
-                      <MoreVert />
+                      <div
+                        onClick={() => toggleoverlay(ind)}
+                        class="w-8 h-8 grid place-items-center text-xl text-gray-500 hover:bg-gray-200 dark:text-black dark:hover:bg-dark-third rounded-full cursor-pointer"
+                      >
+                        <MoreVert />
 
-                      {openIndexOverlay === ind && (
-                        <div
-                          ref={overlayRef}
-                          className="absolute top-4 mt-8 w-44 z-[100] bg-white border rounded-lg shadow-lg "
-                        >
-                          {parseInt(loginDetails?.userId) ===
-                          parseInt(ele?.updatedBy?.userId) ? (
-                            <div
-                              onClick={() => {
-                                setdeletemodal(true);
-                                setdatadel(ele);
-                              }}
-                              className="block px-4 py-2 text-gray-800 hover:bg-gray-200 hover:rounded-lg focus:outline-none"
-                            >
-                              Delete
-                            </div>
-                          ) : (
-                            <></>
-                          )}
-                          {parseInt(loginDetails?.userId) ===
-                          parseInt(ele?.updatedBy?.userId) ? (
-                            <div
-                              onClick={() => {
-                                setarchivemodal(true);
-                                setdatadel(ele);
-                              }}
-                              className="block px-4 py-2 text-gray-800 hover:bg-gray-200 focus:outline-none"
-                            >
-                              Archive
-                            </div>
-                          ) : (
-                            <></>
-                          )}
+                        {openIndexOverlay === ind && (
                           <div
-                            onClick={() => downloadpost(ele?.contentUrl)}
-                            className="block px-4 py-2 text-gray-800 hover:bg-gray-200  hover:rounded-lg focus:outline-none"
+                            ref={overlayRef}
+                            className="absolute top-4 mt-8 w-44 z-[100] bg-white border rounded-lg shadow-lg "
                           >
-                            Download
+                            {parseInt(loginDetails?.userId) ===
+                            parseInt(ele?.updatedBy?.userId) ? (
+                              <div
+                                onClick={() => {
+                                  setdeletemodal(true);
+                                  setdatadel(ele);
+                                }}
+                                className="block px-4 py-2 text-gray-800 hover:bg-gray-200 hover:rounded-lg focus:outline-none"
+                              >
+                                Delete
+                              </div>
+                            ) : (
+                              <></>
+                            )}
+                            {parseInt(loginDetails?.userId) ===
+                            parseInt(ele?.updatedBy?.userId) ? (
+                              <div
+                                onClick={() => {
+                                  setarchivemodal(true);
+                                  setdatadel(ele);
+                                }}
+                                className="block px-4 py-2 text-gray-800 hover:bg-gray-200 focus:outline-none"
+                              >
+                                Archive
+                              </div>
+                            ) : (
+                              <></>
+                            )}
+                            <div
+                              onClick={() => downloadpost(ele?.contentUrl)}
+                              className="block px-4 py-2 text-gray-800 hover:bg-gray-200  hover:rounded-lg focus:outline-none"
+                            >
+                              Download
+                            </div>
                           </div>
+                        )}
+                      </div>
+                    </div>
+                    <div class="text-justify px-4 py-2 text-black ">
+                      <span className="text-gray-600 text-base">Title:</span>{" "}
+                      <span className="text-black text-lg">{ele?.title}</span>
+                    </div>
+                    <div class="text-justify px-4  text-black">
+                      <span className="text-gray-600 text-base">
+                        Description:
+                      </span>{" "}
+                      <span className="text-black text-lg">
+                        {ele?.description}
+                      </span>
+                    </div>
+                    <div class="py-2">
+                      {ele?.contentType === "image" ? (
+                        <img
+                          src={
+                            "http://" +
+                            process.env.REACT_APP_LOCAL_AXIOS_URL +
+                            ele?.contentUrl
+                          }
+                          alt="Post image"
+                          className="max-h-96"
+                        />
+                      ) : (
+                        <div className={sh.customvideoplayer}>
+                          <Player
+                            playsInline
+                            autoPlay
+                            src={
+                              "http://" +
+                              process.env.REACT_APP_LOCAL_AXIOS_URL +
+                              ele?.contentUrl
+                            }
+                            width="100%"
+                            height={500}
+                            position="center"
+                          >
+                            <BigPlayButton position="center" />
+                            <ControlBar>
+                              <ReplayControl seconds={10} order={1.1} />
+                              <ForwardControl seconds={30} order={1.2} />
+                              <CurrentTimeDisplay order={4.1} />
+                              <TimeDivider order={4.2} />
+                              <PlaybackRateMenuButton
+                                rates={[5, 2, 1, 0.5, 0.1]}
+                                order={7.1}
+                              />
+                              <VolumeMenuButton disabled />
+                              <FullscreenToggle disabled />
+                            </ControlBar>
+                          </Player>
                         </div>
                       )}
                     </div>
-                  </div>
-                  <div class="text-justify px-4 py-2 text-black ">
-                    <span className="text-gray-600 text-base">Title:</span>{" "}
-                    <span className="text-black text-lg">{ele?.title}</span>
-                  </div>
-                  <div class="text-justify px-4  text-black">
-                    <span className="text-gray-600 text-base">
-                      Description:
-                    </span>{" "}
-                    <span className="text-black text-lg">
-                      {ele?.description}
-                    </span>
-                  </div>
-                  <div class="py-2">
-                    {ele?.contentType === "image" ? (
-                      <img
-                        src={
-                          "http://" +
-                          process.env.REACT_APP_LOCAL_AXIOS_URL +
-                          ele?.contentUrl
-                        }
-                        alt="Post image"
-                        className="max-h-96"
-                      />
-                    ) : (
-                      <div className={sh.customvideoplayer}>
-                      <Player
-                        playsInline
-                        
-                        autoPlay
-                        src={
-                          "http://" +
-                          process.env.REACT_APP_LOCAL_AXIOS_URL +
-                          ele?.contentUrl
-                        }
-                        width="100%"
-                        height={500}
-                        position="center"
-                      >
-                        <BigPlayButton position="center" />
-                        <ControlBar>
-        <ReplayControl seconds={10} order={1.1} />
-        <ForwardControl seconds={30} order={1.2} />
-        <CurrentTimeDisplay order={4.1} />
-        <TimeDivider order={4.2} />
-        <PlaybackRateMenuButton rates={[5, 2, 1, 0.5, 0.1]} order={7.1} />
-        <VolumeMenuButton disabled />
-        <FullscreenToggle disabled/>
-      </ControlBar>
-                      </Player>
-                      </div>
-                    )}
-                  </div>
-                  <div class="px-4 py-1">
-                    <div class="flex items-center justify-between">
-                      <div class="flex flex-row-reverse items-center">
-                        <span class="ml-2 text-gray-500 dark:text-dark-txt flex gap-3">
-                          {!ele?.likeStatus ? (
+                    <div class="px-4 py-1">
+                      <div class="flex items-center justify-between">
+                        <div class="flex flex-row-reverse items-center">
+                          <span class="ml-2 text-gray-500 dark:text-dark-txt flex gap-3">
+                            {!ele?.likeStatus ? (
+                              <img
+                                src={heart}
+                                alt="like"
+                                className="h-8 w-8 cursor-pointer"
+                                onClick={() => {
+                                  handlelike(
+                                    ele?.postId,
+                                    loginDetails?.userId,
+                                    ind
+                                  );
+                                }}
+                              />
+                            ) : (
+                              <img
+                                src={heart2}
+                                alt="like"
+                                className="h-8 w-8 cursor-pointer"
+                                onClick={() => {
+                                  handledislike(
+                                    ele?.postId,
+                                    loginDetails?.userId,
+                                    ind
+                                  );
+                                  setOpenIndex(null);
+                                }}
+                              />
+                            )}
                             <img
-                              src={heart}
-                              alt="like"
-                              className="h-8 w-8 cursor-pointer"
+                              src={chat}
+                              alt="chat"
+                              className="h-9 w-8 cursor-pointer"
                               onClick={() => {
-                                handlelike(
-                                  ele?.postId,
-                                  loginDetails?.userId,
-                                  ind
-                                );
-                              }}
-                            />
-                          ) : (
-                            <img
-                              src={heart2}
-                              alt="like"
-                              className="h-8 w-8 cursor-pointer"
-                              onClick={() => {
-                                handledislike(
-                                  ele?.postId,
-                                  loginDetails?.userId,
-                                  ind
-                                );
+                                setcomment(!comment);
                                 setOpenIndex(null);
                               }}
                             />
-                          )}
-                          <img
-                            src={chat}
-                            alt="chat"
-                            className="h-9 w-8 cursor-pointer"
-                            onClick={() => {
-                              setcomment(!comment);
-                              setOpenIndex(null);
-                            }}
-                          />
-                          {!ele.bookmarkStatus?<img
-                            src={bookmark}
-                            alt="bookmark"
-                            className="h-9 w-8 cursor-pointer"
-                            onClick={() => {
-                             
-                              setbookmarksfl(true);
-                              postlistapi(ele?.postId, loginDetails?.userId, ind);
-                            }}
-                            
-                          />:<img
-                            src={bookmarkfill}
-                            alt="bookmark"
-                            className="h-9 w-8 cursor-pointer"
-                            onClick={() => {
-                              setbookmarksfl(false);
-
-                             
-                            }}
-                          />}
-                        </span>
-                        <span class="rounded-full grid place-items-center text-2xl -ml-1 text-red-800">
-                          <i class="bx bxs-angry"></i>
-                        </span>
-                        <span class="rounded-full grid place-items-center text-2xl -ml-1 text-red-500">
-                          <i class="bx bxs-heart-circle"></i>
-                        </span>
-                        <span class="rounded-full grid place-items-center text-2xl -ml-1 text-yellow-500">
-                          <i class="bx bx-happy-alt"></i>
-                        </span>
-                      </div>
-                      <div class="text-gray-500 dark:text-dark-txt">
-                        <span>90 Comments </span>
-                        <span
-                          onClick={() =>
-                            handlepostlikeslist(
-                              ele?.postId,
-                              loginDetails?.userId,
-                              ind
-                            )
-                          }
-                          className="italic hover:underline cursor-pointer"
-                        >
-                          {ele?.likesCount === 1
-                            ? ele?.likesCount + " Like"
-                            : ele?.likesCount + " Likes"}{" "}
-                        </span>
+                            {!ele.bookmarkStatus ? (
+                              <img
+                                src={bookmark}
+                                alt="bookmark"
+                                className="h-9 w-8 cursor-pointer"
+                                onClick={() => {
+                                  setbookmarksfl(true);
+                                  postlistapi(
+                                    ele?.postId,
+                                    loginDetails?.userId,
+                                    ind
+                                  );
+                                }}
+                              />
+                            ) : (
+                              <img
+                                src={bookmarkfill}
+                                alt="bookmark"
+                                className="h-9 w-8 cursor-pointer"
+                                onClick={() => {
+                                  setbookmarksfl(false);
+                                }}
+                              />
+                            )}
+                          </span>
+                          <span class="rounded-full grid place-items-center text-2xl -ml-1 text-red-800">
+                            <i class="bx bxs-angry"></i>
+                          </span>
+                          <span class="rounded-full grid place-items-center text-2xl -ml-1 text-red-500">
+                            <i class="bx bxs-heart-circle"></i>
+                          </span>
+                          <span class="rounded-full grid place-items-center text-2xl -ml-1 text-yellow-500">
+                            <i class="bx bx-happy-alt"></i>
+                          </span>
+                        </div>
+                        <div class="text-gray-500 dark:text-dark-txt">
+                          <span>90 Comments </span>
+                          <span
+                            onClick={() =>
+                              handlepostlikeslist(
+                                ele?.postId,
+                                loginDetails?.userId,
+                                ind
+                              )
+                            }
+                            className="italic hover:underline cursor-pointer"
+                          >
+                            {ele?.likesCount === 1
+                              ? ele?.likesCount + " Like"
+                              : ele?.likesCount + " Likes"}{" "}
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  {comment ? (
-                    <div className="h-44 overflow-y-scroll overflow-x-hidden">
-                      <div class="py-2 px-4">
-                        <div class="flex space-x-2">
-                          {/* <img
+                    {comment ? (
+                      <div className="h-44 overflow-y-scroll overflow-x-hidden">
+                        <div class="py-2 px-4">
+                          <div class="flex space-x-2">
+                            {/* <img
                       src="./images/avt-5.jpg"
                       alt="Profile picture"
                       class="w-9 h-9 rounded-full"
                     /> */}
-                          <div>
-                            <div class="bg-gray-100 dark:bg-dark-third p-2 rounded-2xl text-sm text-black">
-                              <span class="font-semibold block">John Doe</span>
-                              <span>
-                                Lorem ipsum dolor sit amet consectetur
-                                adipisicing elit.
-                              </span>
-                            </div>
-                            <div class="p-2 text-xs text-gray-500 dark:text-dark-txt">
-                              <span class="font-semibold cursor-pointer">
-                                Like
-                              </span>
-                              <span>.</span>
-                              <span class="font-semibold cursor-pointer">
-                                Reply
-                              </span>
-                              <span>.</span>
-                              10m ago
-                            </div>
+                            <div>
+                              <div class="bg-gray-100 dark:bg-dark-third p-2 rounded-2xl text-sm text-black">
+                                <span class="font-semibold block">
+                                  John Doe
+                                </span>
+                                <span>
+                                  Lorem ipsum dolor sit amet consectetur
+                                  adipisicing elit.
+                                </span>
+                              </div>
+                              <div class="p-2 text-xs text-gray-500 dark:text-dark-txt">
+                                <span class="font-semibold cursor-pointer">
+                                  Like
+                                </span>
+                                <span>.</span>
+                                <span class="font-semibold cursor-pointer">
+                                  Reply
+                                </span>
+                                <span>.</span>
+                                10m ago
+                              </div>
 
-                            <div class="flex space-x-2">
-                              {/* <img
+                              <div class="flex space-x-2">
+                                {/* <img
                           src="./images/avt-7.jpg"
                           alt="Profile picture"
                           class="w-9 h-9 rounded-full"
                         /> */}
-                              <div>
-                                <div class="bg-gray-100 dark:bg-dark-third p-2 rounded-2xl text-sm text-black">
-                                  <span class="font-semibold block">
-                                    John Doe
-                                  </span>
-                                  <span>
-                                    Lorem ipsum dolor sit amet consectetur
-                                    adipisicing elit.
-                                  </span>
+                                <div>
+                                  <div class="bg-gray-100 dark:bg-dark-third p-2 rounded-2xl text-sm text-black">
+                                    <span class="font-semibold block">
+                                      John Doe
+                                    </span>
+                                    <span>
+                                      Lorem ipsum dolor sit amet consectetur
+                                      adipisicing elit.
+                                    </span>
+                                  </div>
+                                  <div class="p-2 text-xs text-gray-500 dark:text-dark-txt">
+                                    <span class="font-semibold cursor-pointer">
+                                      Like
+                                    </span>
+                                    <span>.</span>
+                                    <span class="font-semibold cursor-pointer">
+                                      Reply
+                                    </span>
+                                    <span>.</span>
+                                    10m ago
+                                  </div>
                                 </div>
-                                <div class="p-2 text-xs text-gray-500 dark:text-dark-txt">
-                                  <span class="font-semibold cursor-pointer">
-                                    Like
-                                  </span>
-                                  <span>.</span>
-                                  <span class="font-semibold cursor-pointer">
-                                    Reply
-                                  </span>
-                                  <span>.</span>
-                                  10m ago
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="flex space-x-2">
+                            {/* <img
+                      src="./images/avt-5.jpg"
+                      alt="Profile picture"
+                      class="w-9 h-9 rounded-full"
+                    /> */}
+                            <div>
+                              <div class="bg-gray-100 dark:bg-dark-third p-2 rounded-2xl text-sm text-black">
+                                <span class="font-semibold block">
+                                  John Doe
+                                </span>
+                                <span>
+                                  Lorem ipsum dolor sit amet consectetur,
+                                  adipisicing elit. In voluptate ipsa animi
+                                  corrupti unde, voluptatibus expedita suscipit,
+                                  itaque, laudantium accusantium aspernatur
+                                  officia repellendus nihil mollitia soluta
+                                  distinctio praesentium nulla eos?
+                                </span>
+                              </div>
+                              <div class="p-2 text-xs text-gray-500 dark:text-dark-txt">
+                                <span class="font-semibold cursor-pointer">
+                                  Like
+                                </span>
+                                <span>.</span>
+                                <span class="font-semibold cursor-pointer">
+                                  Reply
+                                </span>
+                                <span>.</span>
+                                10m ago
+                              </div>
+
+                              <div class="flex space-x-2">
+                                {/* <img
+                          src="./images/avt-7.jpg"
+                          alt="Profile picture"
+                          class="w-9 h-9 rounded-full"
+                        /> */}
+                                <div>
+                                  <div class="bg-gray-100 dark:bg-dark-third p-2 rounded-2xl text-sm text-black">
+                                    <span class="font-semibold block">
+                                      John Doe
+                                    </span>
+                                    <span>
+                                      Lorem ipsum dolor sit amet consectetur
+                                      adipisicing elit.
+                                    </span>
+                                  </div>
+                                  <div class="p-2 text-xs text-gray-500 dark:text-dark-txt">
+                                    <span class="font-semibold cursor-pointer">
+                                      Like
+                                    </span>
+                                    <span>.</span>
+                                    <span class="font-semibold cursor-pointer">
+                                      Reply
+                                    </span>
+                                    <span>.</span>
+                                    10m ago
+                                  </div>
                                 </div>
                               </div>
                             </div>
                           </div>
                         </div>
 
-                        <div class="flex space-x-2">
-                          {/* <img
-                      src="./images/avt-5.jpg"
-                      alt="Profile picture"
-                      class="w-9 h-9 rounded-full"
-                    /> */}
-                          <div>
-                            <div class="bg-gray-100 dark:bg-dark-third p-2 rounded-2xl text-sm text-black">
-                              <span class="font-semibold block">John Doe</span>
-                              <span>
-                                Lorem ipsum dolor sit amet consectetur,
-                                adipisicing elit. In voluptate ipsa animi
-                                corrupti unde, voluptatibus expedita suscipit,
-                                itaque, laudantium accusantium aspernatur
-                                officia repellendus nihil mollitia soluta
-                                distinctio praesentium nulla eos?
-                              </span>
-                            </div>
-                            <div class="p-2 text-xs text-gray-500 dark:text-dark-txt">
-                              <span class="font-semibold cursor-pointer">
-                                Like
-                              </span>
-                              <span>.</span>
-                              <span class="font-semibold cursor-pointer">
-                                Reply
-                              </span>
-                              <span>.</span>
-                              10m ago
-                            </div>
-
-                            <div class="flex space-x-2">
-                              {/* <img
-                          src="./images/avt-7.jpg"
-                          alt="Profile picture"
-                          class="w-9 h-9 rounded-full"
-                        /> */}
-                              <div>
-                                <div class="bg-gray-100 dark:bg-dark-third p-2 rounded-2xl text-sm text-black">
-                                  <span class="font-semibold block">
-                                    John Doe
-                                  </span>
-                                  <span>
-                                    Lorem ipsum dolor sit amet consectetur
-                                    adipisicing elit.
-                                  </span>
-                                </div>
-                                <div class="p-2 text-xs text-gray-500 dark:text-dark-txt">
-                                  <span class="font-semibold cursor-pointer">
-                                    Like
-                                  </span>
-                                  <span>.</span>
-                                  <span class="font-semibold cursor-pointer">
-                                    Reply
-                                  </span>
-                                  <span>.</span>
-                                  10m ago
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="py-2 px-4">
-                        <div class="flex space-x-2">
-                          {/* <img
+                        <div class="py-2 px-4">
+                          <div class="flex space-x-2">
+                            {/* <img
                       src="./images/tuat.jpg"
                       alt="Profile picture"
                       class="w-9 h-9 rounded-full"
                     /> */}
-                          <div class="flex-1 flex bg-gray-100 dark:bg-dark-third rounded-full items-center justify-between px-3">
-                            <input
-                              type="text"
-                              placeholder="Write a comment..."
-                              class="outline-none bg-transparent flex-1 text-black"
-                            />
-                            <div class="flex space-x-0 items-center justify-center">
-                              {/* <span class="w-7 h-7 grid place-items-center rounded-full hover:bg-gray-200 cursor-pointer text-gray-500 dark:text-dark-txt dark:hover:bg-dark-second text-xl">
+                            <div class="flex-1 flex bg-gray-100 dark:bg-dark-third rounded-full items-center justify-between px-3">
+                              <input
+                                type="text"
+                                placeholder="Write a comment..."
+                                class="outline-none bg-transparent flex-1 text-black"
+                              />
+                              <div class="flex space-x-0 items-center justify-center">
+                                {/* <span class="w-7 h-7 grid place-items-center rounded-full hover:bg-gray-200 cursor-pointer text-gray-500 dark:text-dark-txt dark:hover:bg-dark-second text-xl">
                           <i class="bx bx-smile"></i>
                         </span>
                         <span class="w-7 h-7 grid place-items-center rounded-full hover:bg-gray-200 cursor-pointer text-gray-500 dark:text-dark-txt dark:hover:bg-dark-second text-xl">
@@ -1321,43 +1400,46 @@ const [bookmarksfl,setbookmarksfl] =useState(false);
                         <span class="w-7 h-7 grid place-items-center rounded-full hover:bg-gray-200 cursor-pointer text-gray-500 dark:text-dark-txt dark:hover:bg-dark-second text-xl">
                           <i class="bx bx-happy-heart-eyes"></i>
                         </span> */}
-                              <img
-                                src={send}
-                                alt="send"
-                                className="h-5 w-5 cursor-pointer"
-                              />
+                                <img
+                                  src={send}
+                                  alt="send"
+                                  className="h-5 w-5 cursor-pointer"
+                                />
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ) : (
-                    <></>
-                  )}
-                  {openIndex === ind ? (
-                    <div className=" h-24 overflow-x-hidden">
-                      <div className="py-2 px-4 h-16 overflow-y-auto">
-                        {postlikeslist.map((ele) => (
-                          <>
-                            {/* <div className="text-black text-base font-medium">{ele?.likedUserData?.userName}</div> */}
+                    ) : (
+                      <></>
+                    )}
+                    {openIndex === ind ? (
+                      <div className=" h-24 overflow-x-hidden">
+                        <div className="py-2 px-4 h-16 overflow-y-auto">
+                          {postlikeslist.map((ele) => (
+                            <>
+                              {/* <div className="text-black text-base font-medium">{ele?.likedUserData?.userName}</div> */}
 
-                            <div class="flex flex-col">
-                              <div class="font-semibold text-gray-600">
-                                {ele?.likedUserData?.userName}
+                              <div class="flex flex-col">
+                                <div class="font-semibold text-gray-600">
+                                  {ele?.likedUserData?.userName}
+                                </div>
+                                <div className="text-gray-400 text-xs">
+                                  {format(ele?.likedOn)}
+                                </div>
                               </div>
-                              <div className="text-gray-400 text-xs">
-                                {format(ele?.likedOn)}
-                              </div>
-                            </div>
-                          </>
-                        ))}
+                            </>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  ) : (
-                    <></>
-                  )}
-                </div>
-              )):<></>}
+                    ) : (
+                      <></>
+                    )}
+                  </div>
+                ))
+              ) : (
+                <></>
+              )}
             </div>
           </div>
 
