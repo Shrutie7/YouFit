@@ -13,6 +13,7 @@ import Feed from "../pages/feed/Feed";
 import Setting  from "../pages/settings/Setting";
 import PlanIndex from "../pages/plans/PlanIndex";
 import Classes from "../pages/classes/Classes";
+import Interceptor from "../services/ApiInterceptor";
 
 const keycloakAuth = () => {
   return (
@@ -45,7 +46,7 @@ const keycloakAuth = () => {
          
           {/* <Route path ="register" exact element={<Registeryt/>}/> */}
         </Routes>
-        
+        <Interceptor/>
     
       </ReactKeycloakProvider>
     </div>

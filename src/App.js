@@ -8,6 +8,7 @@ import InitialUiRoute from "./components/InitialUiRoute";
 import 'react-image-crop/dist/ReactCrop.css';
 
 
+
 function App() {
   return (
 
@@ -17,6 +18,8 @@ function App() {
           <Route path="/register" exact element={<Registeryt />} />
           <Route path="/portal/*" exact element={<Keycloakrouter />} />
         </Routes>
+
+       
       </div>
 
   );
