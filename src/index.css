@@ -7,6 +7,13 @@
     color: white;
     text-align: center;
 }
+
+/* .my-custom-class{
+  position: fixed;
+  top: 0;
+  z-index: 10;
+} */
+
 *,
 *::before,
 *::after {

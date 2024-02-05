@@ -9,7 +9,7 @@ const AppInterceptor = () => {
     token = keycloak.token;
     console.log(token);
 
-    if (keycloak.authenticated && config.url === "users/getuser") {
+    if (keycloak.authenticated) {
       config.headers.Authorization = "Bearer " + token;
     }
     return config;
@@ -20,7 +20,12 @@ const AppInterceptor = () => {
       return response;
     },
     (error) => {
-      return error;
+     if (error?.response?.status === 401) {
+        return error
+      }
+      else{
+        return error
+      }
     }
   );
 };

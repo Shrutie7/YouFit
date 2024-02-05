@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useKeycloak } from "@react-keycloak/web";
-import keyclock from "../keycloak/Keycloak";
 import {useDispatch, useSelector} from "react-redux";
 import Home from "../components/Home";
 import { keycloakSessionreducer } from "../store/KeycloakSession";

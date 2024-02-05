@@ -10,6 +10,7 @@ import chat from "../../assets/comment.png";
 import bookmarkfill from "../../assets/bookmark.png";
 import bookmark from "../../assets/save-instagram.png";
 import send from "../../assets/send-message.png";
+import deleteicon from "../../assets/delete.png";
 import { MoreVert } from "@material-ui/icons";
 import {
   Player,
@@ -54,6 +55,7 @@ const Feed = () => {
   const playerRef = useRef(null);
 
   const [deletemodal, setdeletemodal] = useState(false);
+  const [replyflag,setreplyflag] = useState(false);
   const [archivemodal, setarchivemodal] = useState(false);
   const [openIndex, setOpenIndex] = useState(null);
   const [openIndexOverlay, setOpenIndexOverlay] = useState(null);
@@ -86,6 +88,7 @@ const Feed = () => {
   const [flag, setflag] = useState(false);
   const [postlikeslist, setpostlikeslist] = useState([]);
   const [likelistflag, setlikelistflag] = useState(false);
+  const [commentcountflag,setcommentcountflag] = useState(false);
   const avatarUrl = useRef(null);
   const updateAvatar = (imgSrc) => {
     avatarUrl.current = imgSrc;
@@ -102,6 +105,230 @@ const Feed = () => {
   let downloadmediaurl = "post/download/media/";
   let addbookmarksurl = "post/add/bookmark";
   let removebookmarksurl = "post/remove/bookmark";
+  let commentcreateurl = "post/comment/add";
+  let commentlisturl = "post/comment/list";
+  let commentdeleteurl = "post/comment/delete";
+  let commentreplyurl = "post/comment/reply";
+  let commentreplylisturl = "post/comment/reply/list";
+
+  const [commententered, setcommententered] = useState("");
+  const [commentList, setcommentList] = useState([]);
+
+  const onChangeComment = (e) => {
+    setcommententered(e.target.value);
+  };
+
+  const createcomment = async (postid) => {
+    let localjson = {};
+
+    localjson.commentDesc = commententered;
+    localjson.userId = loginDetails.userId;
+    localjson.postId = postid;
+    try {
+      const res = await axiosInstance.post(commentcreateurl, localjson);
+
+      if (res.status === 200) {
+        if (res.data.status) {
+          // console.log(res.data.data);
+
+          setcommententered("");
+          commentlistapi(postid);
+        } else {
+          // const l = { ...modalpopupdata };
+          //         l.show=true
+          //         l.errormsg=res.data.message
+          //         l.logout=false
+          //         setmodalpopupdata({...l})
+        }
+      } else if (res.response.status === 401) {
+        // const l = { ...modalpopupdata };
+        // l.show=true
+        // l.errormsg="Session Expired. Please login again..."
+        // l.logout=true
+        // setmodalpopupdata({...l})
+      } else {
+        // const l = { ...modalpopupdata };
+        // l.show=true
+        // l.errormsg="Unable to Connect.Please try again later"
+        // l.logout=false
+        // setmodalpopupdata({...l})
+      }
+    } catch (err) {
+      // const l = { ...modalpopupdata };
+      // l.show=true
+      // l.errormsg="Unable to Connect.Please try again later"
+      // l.logout=false
+      // setmodalpopupdata({...l})
+    }
+  };
+
+  const commentlistapi = async (postid) => {
+    let localjson = {};
+
+    localjson.postId = postid;
+    try {
+      const res = await axiosInstance.post(commentlisturl, localjson);
+
+      if (res.status === 200) {
+        if (res.data.status) {
+          console.log(res.data.data);
+
+          setcommentList([...res?.data?.data?.commentList]);
+        } else {
+          setcommentList([]);
+          // const l = { ...modalpopupdata };
+          //         l.show=true
+          //         l.errormsg=res.data.message
+          //         l.logout=false
+          //         setmodalpopupdata({...l})
+        }
+      } else if (res.response.status === 401) {
+        // const l = { ...modalpopupdata };
+        // l.show=true
+        // l.errormsg="Session Expired. Please login again..."
+        // l.logout=true
+        // setmodalpopupdata({...l})
+      } else {
+        // const l = { ...modalpopupdata };
+        // l.show=true
+        // l.errormsg="Unable to Connect.Please try again later"
+        // l.logout=false
+        // setmodalpopupdata({...l})
+      }
+    } catch (err) {
+      // const l = { ...modalpopupdata };
+      // l.show=true
+      // l.errormsg="Unable to Connect.Please try again later"
+      // l.logout=false
+      // setmodalpopupdata({...l})
+    }
+  };
+
+  const commentdeleteapi = async (commentId, postid) => {
+    let localjson = {};
+
+    localjson.commentId = commentId;
+    try {
+      const res = await axiosInstance.post(commentdeleteurl, localjson);
+
+      if (res.status === 200) {
+        if (res.data.status) {
+          console.log(res.data.data);
+          commentlistapi(postid);
+        } else {
+          // const l = { ...modalpopupdata };
+          //         l.show=true
+          //         l.errormsg=res.data.message
+          //         l.logout=false
+          //         setmodalpopupdata({...l})
+        }
+      } else if (res.response.status === 401) {
+        // const l = { ...modalpopupdata };
+        // l.show=true
+        // l.errormsg="Session Expired. Please login again..."
+        // l.logout=true
+        // setmodalpopupdata({...l})
+      } else {
+        // const l = { ...modalpopupdata };
+        // l.show=true
+        // l.errormsg="Unable to Connect.Please try again later"
+        // l.logout=false
+        // setmodalpopupdata({...l})
+      }
+    } catch (err) {
+      // const l = { ...modalpopupdata };
+      // l.show=true
+      // l.errormsg="Unable to Connect.Please try again later"
+      // l.logout=false
+      // setmodalpopupdata({...l})
+    }
+  };
+  const createreply = async (parentCommentId) => {
+    setreplyflag(true);
+    let localjson = {};
+
+    localjson.commentDesc = commententered;
+    localjson.userId = loginDetails.userId;
+    localjson.parentCommentId = parentCommentId;
+    try {
+      const res = await axiosInstance.post(commentreplyurl, localjson);
+
+      if (res.status === 200) {
+        if (res.data.status) {
+          // console.log(res.data.data);
+
+          setcommententered("");
+          commentreplylist();
+          
+        } else {
+          // const l = { ...modalpopupdata };
+          //         l.show=true
+          //         l.errormsg=res.data.message
+          //         l.logout=false
+          //         setmodalpopupdata({...l})
+        }
+      } else if (res.response.status === 401) {
+        // const l = { ...modalpopupdata };
+        // l.show=true
+        // l.errormsg="Session Expired. Please login again..."
+        // l.logout=true
+        // setmodalpopupdata({...l})
+      } else {
+        // const l = { ...modalpopupdata };
+        // l.show=true
+        // l.errormsg="Unable to Connect.Please try again later"
+        // l.logout=false
+        // setmodalpopupdata({...l})
+      }
+    } catch (err) {
+      // const l = { ...modalpopupdata };
+      // l.show=true
+      // l.errormsg="Unable to Connect.Please try again later"
+      // l.logout=false
+      // setmodalpopupdata({...l})
+    }
+  };
+  const commentreplylist = async (commentid) => {
+    let localjson = {};
+
+    localjson.commentId = commentid;
+    try {
+      const res = await axiosInstance.post(commentreplylisturl, localjson);
+
+      if (res.status === 200) {
+        if (res.data.status) {
+          console.log(res.data.data);
+
+          // setcommententered("");
+          
+        } else {
+          // const l = { ...modalpopupdata };
+          //         l.show=true
+          //         l.errormsg=res.data.message
+          //         l.logout=false
+          //         setmodalpopupdata({...l})
+        }
+      } else if (res.response.status === 401) {
+        // const l = { ...modalpopupdata };
+        // l.show=true
+        // l.errormsg="Session Expired. Please login again..."
+        // l.logout=true
+        // setmodalpopupdata({...l})
+      } else {
+        // const l = { ...modalpopupdata };
+        // l.show=true
+        // l.errormsg="Unable to Connect.Please try again later"
+        // l.logout=false
+        // setmodalpopupdata({...l})
+      }
+    } catch (err) {
+      // const l = { ...modalpopupdata };
+      // l.show=true
+      // l.errormsg="Unable to Connect.Please try again later"
+      // l.logout=false
+      // setmodalpopupdata({...l})
+    }
+  };
 
   const overlayRef = useRef(null);
   async function asynForEach(array, callback) {
@@ -811,24 +1038,28 @@ const Feed = () => {
       // setmodalpopupdata({...l})
     }
   };
-  // useEffect(() => {
-  //   if (bookmarksfl) {
 
-  //     postlistapi();
-  //   }
-  // }, [bookmarksfl]);
+
+  const handleKeyPress = (event,postid) => {
+    if (event.key === 'Enter') {
+      createcomment(postid);
+      // You may also want to prevent the default behavior (e.g., form submission)
+      event.preventDefault();
+    }
+  };
+
   return (
     <>
-      <div class="dark:font-sans h-full relative">
-        <div class="flex font-sans relative h-full">
+      <div className="dark:font-sans h-full relative ">
+        <div className="flex font-sans relative h-full">
           <div
             className={` ${
-              open ? "w-72 sticky top-0 z-100" : "w-20 "
-            }  bg-zinc-800 p-5 pt-8 duration-300 mt-20 sticky top-0 z-100`}
+              open ? "w-72" : "w-20 "
+            }  bg-zinc-800 p-5 pt-8 duration-300 mt-20 sticky top-0 `}
           >
             <img
               src={control}
-              className={` absolute cursor-pointer -right-3 top-9 w-7 border-cyan-500
+              className={` absolute cursor-pointer -right-3 top-9 w-7  border-cyan-500
             border-2 rounded-full  ${!open && "rotate-180"}  ${
                 isMobile && "opacity-60 pointer-events-none"
               }`}
@@ -1273,13 +1504,15 @@ const Feed = () => {
                               onClick={() => {
                                 setcomment(!comment);
                                 setOpenIndex(null);
+                                commentlistapi(ele?.postId);
+                                setcommentcountflag(false);
                               }}
                             />
                             {!ele.bookmarkStatus ? (
                               <img
                                 src={bookmark}
                                 alt="bookmark"
-                                className="h-9 w-8 cursor-pointer"
+                                className="h-8 w-8 cursor-pointer mt-0.5"
                                 // onClick={() => {
                                 //   setbookmarksfl(true);
                                 //   postlistapi(
@@ -1300,7 +1533,7 @@ const Feed = () => {
                               <img
                                 src={bookmarkfill}
                                 alt="bookmark"
-                                className="h-9 w-8 cursor-pointer"
+                                className="h-8 w-8 cursor-pointer mt-0.5"
                                 // onClick={() => {
                                 //   setbookmarksfl(false);
                                 // }}
@@ -1325,7 +1558,17 @@ const Feed = () => {
                           </span>
                         </div>
                         <div class="text-gray-500 dark:text-dark-txt">
-                          <span>90 Comments </span>
+                          <span
+                            className="italic hover:underline cursor-pointer"
+                            onClick={() => {
+                              setcommentcountflag(true);
+                              setcomment(!comment);
+                              setOpenIndex(null);
+                              commentlistapi(ele?.postId);
+                            }}
+                          >
+                            {ele?.commentsCount} Comments{" "}
+                          </span>
                           <span
                             onClick={() =>
                               handlepostlikeslist(
@@ -1344,169 +1587,84 @@ const Feed = () => {
                       </div>
                     </div>
                     {comment ? (
-                      <div className="h-44 overflow-y-scroll overflow-x-hidden">
-                        <div class="py-2 px-4">
-                          <div class="flex space-x-2">
-                            {/* <img
+                      <>
+                        <div
+                          className={`max-h-44 ${
+                            commentList.length > 1
+                              ? "overflow-y-scroll"
+                              : "overflow-y-hidden"
+                          } overflow-x-hidden`}
+                        >
+                          <div class="py-2 px-4">
+                            {commentList.map((cele) => (
+                              <div class="flex space-x-2">
+                                {/* <img
                       src="./images/avt-5.jpg"
                       alt="Profile picture"
                       class="w-9 h-9 rounded-full"
                     /> */}
-                            <div>
-                              <div class="bg-gray-100 dark:bg-dark-third p-2 rounded-2xl text-sm text-black">
-                                <span class="font-semibold block">
-                                  John Doe
-                                </span>
-                                <span>
-                                  Lorem ipsum dolor sit amet consectetur
-                                  adipisicing elit.
-                                </span>
-                              </div>
-                              <div class="p-2 text-xs text-gray-500 dark:text-dark-txt">
-                                <span class="font-semibold cursor-pointer">
-                                  Like
-                                </span>
-                                <span>.</span>
-                                <span class="font-semibold cursor-pointer">
-                                  Reply
-                                </span>
-                                <span>.</span>
-                                10m ago
-                              </div>
-
-                              <div class="flex space-x-2">
-                                {/* <img
-                          src="./images/avt-7.jpg"
-                          alt="Profile picture"
-                          class="w-9 h-9 rounded-full"
-                        /> */}
                                 <div>
                                   <div class="bg-gray-100 dark:bg-dark-third p-2 rounded-2xl text-sm text-black">
                                     <span class="font-semibold block">
-                                      John Doe
+                                      {cele?.commentedUserData?.userName}
                                     </span>
-                                    <span>
-                                      Lorem ipsum dolor sit amet consectetur
-                                      adipisicing elit.
-                                    </span>
+                                    <span>{cele?.comment}</span>
                                   </div>
-                                  <div class="p-2 text-xs text-gray-500 dark:text-dark-txt">
+                                  <div class="p-2 text-xs text-gray-500 dark:text-dark-txt flex">
+                                    <span>
+                                      <img
+                                        src={deleteicon}
+                                        alt="delete"
+                                        className="h-4 w-4 opacity-30 cursor-pointer"
+                                        onClick={() =>
+                                          commentdeleteapi(
+                                            cele?.commentId,
+                                            ele?.postId
+                                          )
+                                        }
+                                      />
+                                    </span>
                                     <span class="font-semibold cursor-pointer">
                                       Like
                                     </span>
                                     <span>.</span>
-                                    <span class="font-semibold cursor-pointer">
+                                    <span class="font-semibold cursor-pointer" onClick={()=>{createreply(cele?.commentId)}}>
                                       Reply
                                     </span>
                                     <span>.</span>
-                                    10m ago
+                                    {format(cele?.commentedOn)}
                                   </div>
                                 </div>
                               </div>
-                            </div>
-                          </div>
-
-                          <div class="flex space-x-2">
-                            {/* <img
-                      src="./images/avt-5.jpg"
-                      alt="Profile picture"
-                      class="w-9 h-9 rounded-full"
-                    /> */}
-                            <div>
-                              <div class="bg-gray-100 dark:bg-dark-third p-2 rounded-2xl text-sm text-black">
-                                <span class="font-semibold block">
-                                  John Doe
-                                </span>
-                                <span>
-                                  Lorem ipsum dolor sit amet consectetur,
-                                  adipisicing elit. In voluptate ipsa animi
-                                  corrupti unde, voluptatibus expedita suscipit,
-                                  itaque, laudantium accusantium aspernatur
-                                  officia repellendus nihil mollitia soluta
-                                  distinctio praesentium nulla eos?
-                                </span>
-                              </div>
-                              <div class="p-2 text-xs text-gray-500 dark:text-dark-txt">
-                                <span class="font-semibold cursor-pointer">
-                                  Like
-                                </span>
-                                <span>.</span>
-                                <span class="font-semibold cursor-pointer">
-                                  Reply
-                                </span>
-                                <span>.</span>
-                                10m ago
-                              </div>
-
-                              <div class="flex space-x-2">
-                                {/* <img
-                          src="./images/avt-7.jpg"
-                          alt="Profile picture"
-                          class="w-9 h-9 rounded-full"
-                        /> */}
-                                <div>
-                                  <div class="bg-gray-100 dark:bg-dark-third p-2 rounded-2xl text-sm text-black">
-                                    <span class="font-semibold block">
-                                      John Doe
-                                    </span>
-                                    <span>
-                                      Lorem ipsum dolor sit amet consectetur
-                                      adipisicing elit.
-                                    </span>
-                                  </div>
-                                  <div class="p-2 text-xs text-gray-500 dark:text-dark-txt">
-                                    <span class="font-semibold cursor-pointer">
-                                      Like
-                                    </span>
-                                    <span>.</span>
-                                    <span class="font-semibold cursor-pointer">
-                                      Reply
-                                    </span>
-                                    <span>.</span>
-                                    10m ago
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
+                            ))}
                           </div>
                         </div>
 
-                        <div class="py-2 px-4">
+                       { !commentcountflag ? <div class="py-2 px-4">
                           <div class="flex space-x-2">
-                            {/* <img
-                      src="./images/tuat.jpg"
-                      alt="Profile picture"
-                      class="w-9 h-9 rounded-full"
-                    /> */}
                             <div class="flex-1 flex bg-gray-100 dark:bg-dark-third rounded-full items-center justify-between px-3">
                               <input
                                 type="text"
                                 placeholder="Write a comment..."
                                 class="outline-none bg-transparent flex-1 text-black"
+                                onChange={(e) => onChangeComment(e)}
+                                value={replyflag ? "@"  :commententered}
+                                onKeyPress={(e)=>handleKeyPress(e,ele?.postId)}
                               />
                               <div class="flex space-x-0 items-center justify-center">
-                                {/* <span class="w-7 h-7 grid place-items-center rounded-full hover:bg-gray-200 cursor-pointer text-gray-500 dark:text-dark-txt dark:hover:bg-dark-second text-xl">
-                          <i class="bx bx-smile"></i>
-                        </span>
-                        <span class="w-7 h-7 grid place-items-center rounded-full hover:bg-gray-200 cursor-pointer text-gray-500 dark:text-dark-txt dark:hover:bg-dark-second text-xl">
-                          <i class="bx bx-camera"></i>
-                        </span>
-                        <span class="w-7 h-7 grid place-items-center rounded-full hover:bg-gray-200 cursor-pointer text-gray-500 dark:text-dark-txt dark:hover:bg-dark-second text-xl">
-                          <i class="bx bxs-file-gif"></i>
-                        </span>
-                        <span class="w-7 h-7 grid place-items-center rounded-full hover:bg-gray-200 cursor-pointer text-gray-500 dark:text-dark-txt dark:hover:bg-dark-second text-xl">
-                          <i class="bx bx-happy-heart-eyes"></i>
-                        </span> */}
                                 <img
                                   src={send}
                                   alt="send"
                                   className="h-5 w-5 cursor-pointer"
+                                  onClick={() => {
+                                    createcomment(ele?.postId);
+                                  }}
                                 />
                               </div>
                             </div>
                           </div>
-                        </div>
-                      </div>
+                        </div>:<></>}
+                      </>
                     ) : (
                       <></>
                     )}
