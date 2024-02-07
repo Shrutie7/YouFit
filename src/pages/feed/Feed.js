@@ -113,9 +113,16 @@ const Feed = () => {
 
   const [commententered, setcommententered] = useState("");
   const [commentList, setcommentList] = useState([]);
+  const [replyemailid, setreplyemailid] = useState("");
+  const [parentcommentid,setparentcommentid] = useState("");
 
   const onChangeComment = (e) => {
     setcommententered(e.target.value);
+
+    // if(replyflag)
+    // {
+    //   setcommententered("@" + replyemailid +e.target.value)
+    // }
   };
 
   const createcomment = async (postid) => {
@@ -243,11 +250,21 @@ const Feed = () => {
       // setmodalpopupdata({...l})
     }
   };
-  const createreply = async (parentCommentId) => {
+
+  const createReply1 = (parentCommentId,emailid) =>{
+
+    setreplyflag(true)
+    setparentcommentid(parentCommentId);
+    setreplyemailid(emailid);
+    setcommententered(`@${emailid}`);
+  }
+  const createreply = async (parentCommentId,emailid) => {
     setreplyflag(true);
+    setreplyemailid(emailid);
+    setcommententered(`@${emailid}`);
     let localjson = {};
 
-    localjson.commentDesc = commententered;
+    localjson.commentDesc =`@${emailid}` + commententered;
     localjson.userId = loginDetails.userId;
     localjson.parentCommentId = parentCommentId;
     try {
@@ -258,7 +275,7 @@ const Feed = () => {
           // console.log(res.data.data);
 
           setcommententered("");
-          commentreplylist();
+          commentreplylist(parentCommentId);
           
         } else {
           // const l = { ...modalpopupdata };
@@ -1628,7 +1645,7 @@ const Feed = () => {
                                       Like
                                     </span>
                                     <span>.</span>
-                                    <span class="font-semibold cursor-pointer" onClick={()=>{createreply(cele?.commentId)}}>
+                                    <span class="font-semibold cursor-pointer" onClick={()=>{createReply1(cele?.commentId,cele?.commentedUserData?.userName);setreplyflag(true)}}>
                                       Reply
                                     </span>
                                     <span>.</span>
@@ -1648,7 +1665,7 @@ const Feed = () => {
                                 placeholder="Write a comment..."
                                 class="outline-none bg-transparent flex-1 text-black"
                                 onChange={(e) => onChangeComment(e)}
-                                value={replyflag ? "@"  :commententered}
+                                value={commententered}
                                 onKeyPress={(e)=>handleKeyPress(e,ele?.postId)}
                               />
                               <div class="flex space-x-0 items-center justify-center">
@@ -1657,7 +1674,7 @@ const Feed = () => {
                                   alt="send"
                                   className="h-5 w-5 cursor-pointer"
                                   onClick={() => {
-                                    createcomment(ele?.postId);
+                                    replyflag===false ? createcomment(ele?.postId):createreply(parentcommentid,replyemailid);
                                   }}
                                 />
                               </div>
