@@ -53,9 +53,11 @@ const Feed = () => {
     file: "",
   };
   const playerRef = useRef(null);
-
+  const [commentreplylistfl, setcommentreplylistfl] = useState(false);
+  const [commentreplylistdata, setcommentreplylistdata] = useState([]);
+  const [openCommentIndex, setOpenCommentIndex] = useState(null);
   const [deletemodal, setdeletemodal] = useState(false);
-  const [replyflag,setreplyflag] = useState(false);
+  const [replyflag, setreplyflag] = useState(false);
   const [archivemodal, setarchivemodal] = useState(false);
   const [openIndex, setOpenIndex] = useState(null);
   const [openIndexOverlay, setOpenIndexOverlay] = useState(null);
@@ -88,7 +90,7 @@ const Feed = () => {
   const [flag, setflag] = useState(false);
   const [postlikeslist, setpostlikeslist] = useState([]);
   const [likelistflag, setlikelistflag] = useState(false);
-  const [commentcountflag,setcommentcountflag] = useState(false);
+  const [commentcountflag, setcommentcountflag] = useState(false);
   const avatarUrl = useRef(null);
   const updateAvatar = (imgSrc) => {
     avatarUrl.current = imgSrc;
@@ -111,10 +113,11 @@ const Feed = () => {
   let commentreplyurl = "post/comment/reply";
   let commentreplylisturl = "post/comment/reply/list";
 
+  const [openreplylist, setopenreplylist] = useState(null);
   const [commententered, setcommententered] = useState("");
   const [commentList, setcommentList] = useState([]);
   const [replyemailid, setreplyemailid] = useState("");
-  const [parentcommentid,setparentcommentid] = useState("");
+  const [parentcommentid, setparentcommentid] = useState("");
 
   const onChangeComment = (e) => {
     setcommententered(e.target.value);
@@ -125,7 +128,8 @@ const Feed = () => {
     // }
   };
 
-  const createcomment = async (postid) => {
+  const createcomment = async (postid, ind) => {
+    setreplyflag(false);
     let localjson = {};
 
     localjson.commentDesc = commententered;
@@ -138,8 +142,10 @@ const Feed = () => {
         if (res.data.status) {
           // console.log(res.data.data);
 
+          setOpenCommentIndex(null);
           setcommententered("");
-          commentlistapi(postid);
+          // console.log("Before commentlistapi - openCommentIndex:", openCommentIndex);
+          commentlistapi(postid, ind);
         } else {
           // const l = { ...modalpopupdata };
           //         l.show=true
@@ -169,7 +175,7 @@ const Feed = () => {
     }
   };
 
-  const commentlistapi = async (postid) => {
+  const commentlistapi = async (postid, ind) => {
     let localjson = {};
 
     localjson.postId = postid;
@@ -178,11 +184,20 @@ const Feed = () => {
 
       if (res.status === 200) {
         if (res.data.status) {
-          console.log(res.data.data);
+          // console.log(res.data.data);
+          setcomment(!comment);
 
+          // console.log("Before set state in commentlistapi - openCommentIndex:", openCommentIndex);
+          // setOpenCommentIndex(openCommentIndex === ind ? null : ind);
+          setOpenCommentIndex((prevIndex) => (prevIndex === ind ? null : ind));
+
+          setOpenIndex(null);
+          // setlikelistflag(false);
           setcommentList([...res?.data?.data?.commentList]);
         } else {
           setcommentList([]);
+          setOpenCommentIndex((prevIndex) => (prevIndex === ind ? null : ind));
+          setOpenIndex(null);
           // const l = { ...modalpopupdata };
           //         l.show=true
           //         l.errormsg=res.data.message
@@ -211,7 +226,7 @@ const Feed = () => {
     }
   };
 
-  const commentdeleteapi = async (commentId, postid) => {
+  const commentdeleteapi = async (commentId, postid, ind) => {
     let localjson = {};
 
     localjson.commentId = commentId;
@@ -220,8 +235,9 @@ const Feed = () => {
 
       if (res.status === 200) {
         if (res.data.status) {
-          console.log(res.data.data);
-          commentlistapi(postid);
+          setOpenCommentIndex(null);
+          // console.log(res.data.data);
+          commentlistapi(postid, ind);
         } else {
           // const l = { ...modalpopupdata };
           //         l.show=true
@@ -251,20 +267,16 @@ const Feed = () => {
     }
   };
 
-  const createReply1 = (parentCommentId,emailid) =>{
-
-    setreplyflag(true)
+  const createReply1 = (parentCommentId, emailid) => {
+    setreplyflag(true);
     setparentcommentid(parentCommentId);
     setreplyemailid(emailid);
-    setcommententered(`@${emailid}`);
-  }
-  const createreply = async (parentCommentId,emailid) => {
-    setreplyflag(true);
-    setreplyemailid(emailid);
-    setcommententered(`@${emailid}`);
+    setcommententered(`@${emailid} `);
+  };
+  const createreply = async (parentCommentId,postid,ind) => {
     let localjson = {};
 
-    localjson.commentDesc =`@${emailid}` + commententered;
+    localjson.commentDesc = commententered;
     localjson.userId = loginDetails.userId;
     localjson.parentCommentId = parentCommentId;
     try {
@@ -274,9 +286,9 @@ const Feed = () => {
         if (res.data.status) {
           // console.log(res.data.data);
 
+          // commentreplylist(parentCommentId);
           setcommententered("");
-          commentreplylist(parentCommentId);
-          
+          commentlistapi(postid,ind)
         } else {
           // const l = { ...modalpopupdata };
           //         l.show=true
@@ -305,7 +317,7 @@ const Feed = () => {
       // setmodalpopupdata({...l})
     }
   };
-  const commentreplylist = async (commentid) => {
+  const commentreplylist = async (commentid, ind) => {
     let localjson = {};
 
     localjson.commentId = commentid;
@@ -315,10 +327,16 @@ const Feed = () => {
       if (res.status === 200) {
         if (res.data.status) {
           console.log(res.data.data);
+          setcommentreplylistfl(true);
+          setopenreplylist(openreplylist === ind ? null : ind);
+
+          setcommentreplylistdata([...res?.data?.data?.commentList]);
 
           // setcommententered("");
-          
         } else {
+          setcommentreplylistdata([]);
+          setopenreplylist(null);
+          setcommentreplylistfl(false);
           // const l = { ...modalpopupdata };
           //         l.show=true
           //         l.errormsg=res.data.message
@@ -835,7 +853,7 @@ const Feed = () => {
     }
   };
 
-  console.log(selectedCategoryIds);
+  // console.log(selectedCategoryIds);
 
   const handleSpeedChange = (event) => {
     // console.log(e.target.value);
@@ -1025,6 +1043,7 @@ const Feed = () => {
         if (res.data.status) {
           setlikelistflag(!likelistflag);
           setOpenIndex(ind === openIndex ? null : ind);
+          setOpenCommentIndex(null);
           setcomment(false);
           setpostlikeslist([...res.data.data.postLikesDetails]);
         } else {
@@ -1056,10 +1075,20 @@ const Feed = () => {
     }
   };
 
+  const handleKeyPress = (
+    event,
+    postid,
+    ind,
+    parentCommentId,
+    replyemailid
+  ) => {
+    if (event.key === "Enter") {
+      if (replyflag) {
+        createreply(parentcommentid, replyemailid,postid,ind);
+      } else {
+        createcomment(postid, ind);
+      }
 
-  const handleKeyPress = (event,postid) => {
-    if (event.key === 'Enter') {
-      createcomment(postid);
       // You may also want to prevent the default behavior (e.g., form submission)
       event.preventDefault();
     }
@@ -1146,7 +1175,7 @@ const Feed = () => {
             </ul>
           </div>
           {/* </div> */}
-          {console.log(open)}
+
           <div
             class={` ${
               open === false ? "xl:w-[75%]" : "xl:w-3/5 "
@@ -1519,9 +1548,7 @@ const Feed = () => {
                               alt="chat"
                               className="h-9 w-8 cursor-pointer"
                               onClick={() => {
-                                setcomment(!comment);
-                                setOpenIndex(null);
-                                commentlistapi(ele?.postId);
+                                commentlistapi(ele?.postId, ind);
                                 setcommentcountflag(false);
                               }}
                             />
@@ -1530,14 +1557,6 @@ const Feed = () => {
                                 src={bookmark}
                                 alt="bookmark"
                                 className="h-8 w-8 cursor-pointer mt-0.5"
-                                // onClick={() => {
-                                //   setbookmarksfl(true);
-                                //   postlistapi(
-                                //     ele?.postId,
-                                //     loginDetails?.userId,
-                                //     ind
-                                //   );
-                                // }}
                                 onClick={() => {
                                   handleaddbookmarks(
                                     ele?.postId,
@@ -1603,18 +1622,18 @@ const Feed = () => {
                         </div>
                       </div>
                     </div>
-                    {comment ? (
+                    {openCommentIndex === ind ? (
                       <>
                         <div
-                          className={`max-h-44 ${
+                          className={`max-h-48 ${
                             commentList.length > 1
                               ? "overflow-y-scroll"
                               : "overflow-y-hidden"
                           } overflow-x-hidden`}
                         >
                           <div class="py-2 px-4">
-                            {commentList.map((cele) => (
-                              <div class="flex space-x-2">
+                            {commentList.map((cele, cind) => (
+                              <div class="flex space-x-2 flex-col">
                                 {/* <img
                       src="./images/avt-5.jpg"
                       alt="Profile picture"
@@ -1627,65 +1646,155 @@ const Feed = () => {
                                     </span>
                                     <span>{cele?.comment}</span>
                                   </div>
+
                                   <div class="p-2 text-xs text-gray-500 dark:text-dark-txt flex">
                                     <span>
                                       <img
                                         src={deleteicon}
                                         alt="delete"
                                         className="h-4 w-4 opacity-30 cursor-pointer"
-                                        onClick={() =>
+                                        onClick={() => {
                                           commentdeleteapi(
                                             cele?.commentId,
-                                            ele?.postId
-                                          )
-                                        }
+                                            ele?.postId,
+                                            ind
+                                          );
+                                        }}
                                       />
                                     </span>
-                                    <span class="font-semibold cursor-pointer">
-                                      Like
-                                    </span>
+                                    {cele?.replyCount>0 ? <span
+                                      class="font-semibold cursor-pointer"
+                                      onClick={() => {
+                                        commentreplylist(cele?.commentId, cind);
+                                      }}
+                                    >
+                                      View Replies
+                                    </span>:<></>}
                                     <span>.</span>
-                                    <span class="font-semibold cursor-pointer" onClick={()=>{createReply1(cele?.commentId,cele?.commentedUserData?.userName);setreplyflag(true)}}>
+                                    <span
+                                      class="font-semibold cursor-pointer"
+                                      onClick={() => {
+                                        createReply1(
+                                          cele?.commentId,
+                                          cele?.commentedUserData?.userName
+                                        );
+                                        setreplyflag(true);
+                                      }}
+                                    >
                                       Reply
                                     </span>
                                     <span>.</span>
                                     {format(cele?.commentedOn)}
                                   </div>
                                 </div>
+
+{console.log("================================>",openreplylist, "==>",cind,commentreplylistfl)}
+                                {commentreplylistfl &&
+                                openreplylist === cind ? (
+                                  <div className="h-24 overflow-y-scroll">
+                                    {commentreplylistdata &&
+                                      commentreplylistdata.map((rele) => (
+                                        <>
+                                          <div class="bg-gray-100 dark:bg-dark-third p-2 pl-6 rounded-2xl text-sm text-black">
+                                            <span class="font-semibold block">
+                                              {
+                                                rele?.commentedUserData
+                                                  ?.userName
+                                              }
+                                            </span>
+                                            <span>{rele?.comment}</span>
+                                          </div>
+
+                                          <div class="p-2 text-xs text-gray-500 dark:text-dark-txt flex">
+                                            {/* <span>
+                                      <img
+                                        src={deleteicon}
+                                        alt="delete"
+                                        className="h-4 w-4 opacity-30 cursor-pointer"
+                                        onClick={() =>
+                                        {
+                                         
+                                          commentdeleteapi(
+                                            rele?.commentId,
+                                            ele?.postId,
+                                            ind
+                                          )
+                                        }
+                                        }
+                                      />
+                                    </span> */}
+
+                                            {/* <span class="font-semibold cursor-pointer" onClick={()=>{createReply1(cele?.commentId,cele?.commentedUserData?.userName);setreplyflag(true)}}>
+                                      Reply
+                                    </span>
+                                    <span>.</span> */}
+                                            {format(rele?.commentedOn)}
+                                          </div>
+                                        </>
+                                      ))}
+                                  </div>
+                                ) : (
+                                  <></>
+                                )}
                               </div>
                             ))}
                           </div>
                         </div>
 
-                       { !commentcountflag ? <div class="py-2 px-4">
-                          <div class="flex space-x-2">
-                            <div class="flex-1 flex bg-gray-100 dark:bg-dark-third rounded-full items-center justify-between px-3">
-                              <input
-                                type="text"
-                                placeholder="Write a comment..."
-                                class="outline-none bg-transparent flex-1 text-black"
-                                onChange={(e) => onChangeComment(e)}
-                                value={commententered}
-                                onKeyPress={(e)=>handleKeyPress(e,ele?.postId)}
-                              />
-                              <div class="flex space-x-0 items-center justify-center">
-                                <img
-                                  src={send}
-                                  alt="send"
-                                  className="h-5 w-5 cursor-pointer"
-                                  onClick={() => {
-                                    replyflag===false ? createcomment(ele?.postId):createreply(parentcommentid,replyemailid);
-                                  }}
+                        {!commentcountflag || commentList.length === 0 ? (
+                          <div class="py-2 px-4">
+                            <div class="flex space-x-2">
+                              <div class="flex-1 flex bg-gray-100 dark:bg-dark-third rounded-full items-center justify-between px-3">
+                                <input
+                                  type="text"
+                                  placeholder="Write a comment..."
+                                  class="outline-none bg-transparent flex-1 text-black"
+                                  onChange={(e) => onChangeComment(e)}
+                                  value={commententered}
+                                  onKeyPress={(e) =>
+                                    handleKeyPress(
+                                      e,
+                                      ele?.postId,
+                                      ind,
+                                      parentcommentid,
+                                      replyemailid
+                                    )
+                                  }
                                 />
+
+                                {console.log(replyflag, "flagreply")}
+                                <div class="flex space-x-0 items-center justify-center">
+                                  <img
+                                    src={send}
+                                    alt="send"
+                                    className="h-5 w-5 cursor-pointer"
+                                    onClick={() => {
+                                      if (replyflag) {
+                                        createreply(
+                                          parentcommentid,
+                                          replyemailid,
+                                          ele?.postId,
+                                          ind
+                                        );
+                                      } else {
+                                        createcomment(ele?.postId, ind);
+                                      }
+                                      // !replyflag ? createcomment(ele?.postId,ind):createreply(parentcommentid,replyemailid);
+                                    }}
+                                  />
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>:<></>}
+                        ) : (
+                          <></>
+                        )}
                       </>
                     ) : (
                       <></>
                     )}
-                    {openIndex === ind ? (
+
+                    {openIndex === ind && !comment ? (
                       <div className=" h-24 overflow-x-hidden">
                         <div className="py-2 px-4 h-16 overflow-y-auto">
                           {postlikeslist.map((ele) => (

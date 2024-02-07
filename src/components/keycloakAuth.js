@@ -36,7 +36,7 @@ const keycloakAuth = () => {
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
-        <Interceptor />
+        {/* <Interceptor /> */}
       </ReactKeycloakProvider>
     </div>
   );
