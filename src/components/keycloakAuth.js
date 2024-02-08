@@ -26,7 +26,7 @@ const keycloakAuth = () => {
         <Routes>
           <Route path="/" exact element={<YtcloneLogin />}>
             <Route path="home/*" exact element={<Home />} />
-            <Route path="about/*" element={<About />} />
+            {/* <Route path="about/*" element={<About />} /> */}
             <Route path="feedback/*" element={<Contact />} />
             <Route path="classes/*" element={<Classes />} />
             <Route path="feed/*" element={<Feed />} />
@@ -36,7 +36,7 @@ const keycloakAuth = () => {
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
-        {/* <Interceptor /> */}
+        <Interceptor />
       </ReactKeycloakProvider>
     </div>
   );

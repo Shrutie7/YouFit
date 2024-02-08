@@ -53,6 +53,8 @@ const Feed = () => {
     file: "",
   };
   const playerRef = useRef(null);
+
+
   const [commentreplylistfl, setcommentreplylistfl] = useState(false);
   const [commentreplylistdata, setcommentreplylistdata] = useState([]);
   const [openCommentIndex, setOpenCommentIndex] = useState(null);
@@ -141,7 +143,7 @@ const Feed = () => {
       if (res.status === 200) {
         if (res.data.status) {
           // console.log(res.data.data);
-
+          setreplyflag(false);
           setOpenCommentIndex(null);
           setcommententered("");
           // console.log("Before commentlistapi - openCommentIndex:", openCommentIndex);
@@ -198,6 +200,9 @@ const Feed = () => {
           setcommentList([]);
           setOpenCommentIndex((prevIndex) => (prevIndex === ind ? null : ind));
           setOpenIndex(null);
+          setopenreplylist(null);
+          setcommentreplylistdata([]);
+          setcommentreplylistfl(false);
           // const l = { ...modalpopupdata };
           //         l.show=true
           //         l.errormsg=res.data.message
@@ -236,6 +241,7 @@ const Feed = () => {
       if (res.status === 200) {
         if (res.data.status) {
           setOpenCommentIndex(null);
+          setopenreplylist(null)
           // console.log(res.data.data);
           commentlistapi(postid, ind);
         } else {
@@ -279,6 +285,7 @@ const Feed = () => {
     localjson.commentDesc = commententered;
     localjson.userId = loginDetails.userId;
     localjson.parentCommentId = parentCommentId;
+
     try {
       const res = await axiosInstance.post(commentreplyurl, localjson);
 
@@ -286,9 +293,11 @@ const Feed = () => {
         if (res.data.status) {
           // console.log(res.data.data);
 
-          // commentreplylist(parentCommentId);
+          commentreplylist(parentCommentId,ind);
           setcommententered("");
-          commentlistapi(postid,ind)
+          commentlistapi(postid,ind);
+          setOpenCommentIndex(null);
+          // setopenreplylist(null)
         } else {
           // const l = { ...modalpopupdata };
           //         l.show=true
@@ -316,6 +325,7 @@ const Feed = () => {
       // l.logout=false
       // setmodalpopupdata({...l})
     }
+    setreplyflag(false)
   };
   const commentreplylist = async (commentid, ind) => {
     let localjson = {};
@@ -326,9 +336,12 @@ const Feed = () => {
 
       if (res.status === 200) {
         if (res.data.status) {
-          console.log(res.data.data);
+          console.log(res.data.data.commentList);
           setcommentreplylistfl(true);
           setopenreplylist(openreplylist === ind ? null : ind);
+
+          
+
 
           setcommentreplylistdata([...res?.data?.data?.commentList]);
 
@@ -364,6 +377,12 @@ const Feed = () => {
       // setmodalpopupdata({...l})
     }
   };
+
+
+
+
+
+
 
   const overlayRef = useRef(null);
   async function asynForEach(array, callback) {
@@ -1084,7 +1103,7 @@ const Feed = () => {
   ) => {
     if (event.key === "Enter") {
       if (replyflag) {
-        createreply(parentcommentid, replyemailid,postid,ind);
+        createreply(parentcommentid,postid,ind);
       } else {
         createcomment(postid, ind);
       }
@@ -1642,7 +1661,13 @@ const Feed = () => {
                                 <div>
                                   <div class="bg-gray-100 dark:bg-dark-third p-2 rounded-2xl text-sm text-black">
                                     <span class="font-semibold block">
-                                      {cele?.commentedUserData?.userName}
+                                      {cele?.commentedUserData?.userName}&nbsp;&nbsp;
+                                      <span className = "font-normal text-slate-600">
+                                             {
+                                                cele?.commentedUserData?.emailId
+                                              }
+                                               </span>
+
                                     </span>
                                     <span>{cele?.comment}</span>
                                   </div>
@@ -1666,6 +1691,7 @@ const Feed = () => {
                                       class="font-semibold cursor-pointer"
                                       onClick={() => {
                                         commentreplylist(cele?.commentId, cind);
+                                    
                                       }}
                                     >
                                       View Replies
@@ -1700,12 +1726,31 @@ const Feed = () => {
                                               {
                                                 rele?.commentedUserData
                                                   ?.userName
+                                              } &nbsp;
+                                             <span className = "font-normal text-slate-600">
+                                             {
+                                                rele?.commentedUserData?.emailId
                                               }
+                                               </span>
                                             </span>
+
                                             <span>{rele?.comment}</span>
                                           </div>
 
-                                          <div class="p-2 text-xs text-gray-500 dark:text-dark-txt flex">
+                                          <div class="pl-2 text-xs text-gray-500 dark:text-dark-txt flex">
+
+                                          <span
+                                      class="font-semibold cursor-pointer"
+                                      onClick={() => {
+                                        createReply1(
+                                          cele?.commentId,
+                                          cele?.commentedUserData?.userName
+                                        );
+                                        setreplyflag(true);
+                                      }}
+                                    >
+                                      Reply
+                                    </span> &nbsp;&nbsp;
                                             {/* <span>
                                       <img
                                         src={deleteicon}
@@ -1762,6 +1807,8 @@ const Feed = () => {
                                   }
                                 />
 
+                                {console.log(replyflag,"replyflag")}
+
                                 {console.log(replyflag, "flagreply")}
                                 <div class="flex space-x-0 items-center justify-center">
                                   <img
@@ -1772,7 +1819,7 @@ const Feed = () => {
                                       if (replyflag) {
                                         createreply(
                                           parentcommentid,
-                                          replyemailid,
+                                        
                                           ele?.postId,
                                           ind
                                         );
@@ -2015,3 +2062,4 @@ const Feed = () => {
 };
 
 export default Feed;
+

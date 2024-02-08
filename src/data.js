@@ -6,10 +6,6 @@ export const links = [
     path: "/portal/home",
   },
   {
-    name: "About",
-    path: "/portal/about",
-  },
-  {
     name:"Feed",
     path:"/portal/feed"
   },
