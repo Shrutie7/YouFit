@@ -51,7 +51,7 @@ const[flag,setflag] = useState(false);
         if (res.data.status) {
 
           // setnavflag(true)
-          toast("🦄 User Updated Successfully", {
+          toast(" User Updated Successfully", {
             position: "top-right",
             autoClose: 3000,
             hideProgressBar: false,

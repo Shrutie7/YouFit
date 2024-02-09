@@ -8,10 +8,15 @@ import axiosInstance from "../services/LocalAxiosInstance";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import Carousel from "./Carousel";
+import Errmsg from "../data/Errormsg.json";
+import regexData from "../commonmodules/Regextest";
 import { handleReactSelectCss } from "../commonmodules/ReactSelectCss";
 import { Addrowerror } from "../commonmodules/Addrowerror";
 import { CircularProgress } from "@material-ui/core";
 import Select from "react-select";
+import info_icon from "../assets/information-button.png"
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Popover from "react-bootstrap/Popover";
 const Registeryt = () => {
   const [showeye, setShoweye] = useState(false);
   const [imgeye, setimgeye] = useState();
@@ -21,19 +26,6 @@ const Registeryt = () => {
   };
   const slides = [regimg1, regimg2, regimg3, regimg4];
   const nav = useNavigate();
-
-  //   {
-  //     "username":"2341234",
-  //     "firstName":"Killua",
-  //     "lastName":"Zoldyck",
-  //     "emailId":"kzdyck@gmail.com",
-  //     "gender":"Male",
-  //     "password":"Kzdyck@411",
-  //     "confirmPassword":"Kzdyck@411",
-  //     "roleId":4, //based on type of user registration
-  //     "parentUserId":3, //based on gym selection and trainer selection
-  //     "locationId":3 //based on user selection of location
-  // }
 
   let sms = {
     userName: "",
@@ -64,21 +56,71 @@ const Registeryt = () => {
   const [locationdata, setlocationdata] = useState({ ...locationdaata });
   const [data, setData] = useState({ ...sms });
   const lableMandatoryData = [
-    "userName",
     "firstName",
-    "lastName",
     "gender",
     "emailId",
     "password",
     "confirmPassword",
     "roleId",
-    "locationId"
+    "locationId",
+
   ];
+  const lableMandatoryData1 = [
+    "firstName",
+    "gender",
+    "emailId",
+    "password",
+    "confirmPassword",
+    "roleId",
+    "locationId",
+    "categoryId",
+    "gymId"
+  ];
+  const re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/  ;
   const handlechange = (e, name) => {
     let l = { ...data };
-    l[name] = e.target.value;
+    const { value } = e.target;
+    if((name === "firstName" || name === "lastName" || name === "userName") &&  regexData(value, "AplhaNumericwithspace").updateState)
+    {
+      l[name] = value;
+    } 
+    if(name==="emailId"){
+      l[name] = value;
+    }
+ 
+    if((name==="password" || name==="confirmPassword")){
+      l[name] = value;
+    }
+
+
+
     setData({ ...l });
   };
+  let re1 = /^[a-zA-Z0-9 . ]+[@][a-z]+[\.][a-z]{2,3}$/;
+  const validateemailid=(email)=>{
+
+    var flag = true;
+    if(email){
+      for(let i = 0; i < email.length;i++){
+        if(re1.test(email) && i!==email.length - 1)
+        {
+         
+          let indlen = email.lastIndexOf(".")
+          let atlen = email.indexOf("@");
+          let domain = email.substring(indlen+1,email.length)
+          let domainnames=["com","in","org","co.in"]        
+          if(domainnames.includes(domain)){
+            flag=false
+          }  
+        }
+      }
+       if(email.includes(" "))
+        {
+          flag=true
+        }
+    }
+    return flag;
+  }
   function handlegender(e) {
     let l = { ...data };
     // l.gender=e.value
@@ -171,20 +213,47 @@ const Registeryt = () => {
   let locationaddressurl = "location/address";
   let gymaddressurl = "location/gymaddress";  
   let getcategoryurl = "categorylist";
-
+  const [err, seterr] = useState({ message: "" });
+  let [errcode, seterrcode] = useState("");
 
   const [flag,setflag] = useState(false);
   async function postMainData(gdata) {
     let res = Addrowerror(lableMandatoryData, data);
-    if (res?.length > 0) {
-      // var nameId = res?.at(0);
-      // document.getElementsByName(nameId)[0].focus();
-      setMandatoryData([...res]);
-      // res?.forEach((ele) => {
-      //     let doc = document.getElementsByName(ele)[0]
-      //     doc.style.border = "2px solid red"
-      // })
-    } else {
+    let res1 = Addrowerror(lableMandatoryData1, data);
+  
+     if (res?.length > 0) {
+      // if (parseInt(data.roleId)===parseInt(4)||parseInt(data.roleId)===parseInt(2)){
+        setMandatoryData([...res]);
+      // }
+      // else{
+      //   setMandatoryData([...res1]);
+      // }
+      console.log(res.length,data.roleId)
+       
+     
+       console.log("cdgvsghd")
+     }
+     
+     else if(data.password !==data.confirmPassword){
+ console.log("ppp")
+      const l = { ...err };
+      l.message = Errmsg["usrwrng01"];
+      seterrcode(l.message);
+    }
+     else if(validateemailid(data.emailId)){
+      console.log("hh")
+      seterrcode(Errmsg["wrng019"])
+
+     }
+
+     else if(!re.test(data.password)){
+      console.log("ghsvcgh")
+      seterrcode(Errmsg["wrng018"])
+     }
+ 
+    
+    else {
+      console.log("chgvhdgcv")
       const dat = { ...gdata };
       setflag(true);
       // console.log(dat);
@@ -196,7 +265,8 @@ const Registeryt = () => {
             // console.log("user created");
             
             setData({ ...sms });
-            toast(`🦄 ${parseInt(data.roleId)===parseInt(4) ? "User" : parseInt(data.roleId)===parseInt(3) ? "Trainer" :"Owner" } Created Successfully`, {
+            setlocationdata({...locationdaata})
+            toast(` ${parseInt(data.roleId)===parseInt(4) ? "User" : parseInt(data.roleId)===parseInt(3) ? "Trainer" :"Owner" } Created Successfully`, {
               position: "top-right",
               autoClose: 3000,
               hideProgressBar: false,
@@ -308,7 +378,7 @@ const Registeryt = () => {
         if (res.data.status) {
           let l = res.data.data.gymAddressList.map((d) => ({
             value: d.ownerId,
-            label: d.gymName,
+            label: d.gymName + " " +d.gymAddress,
             extrakey:d.gymId
           }));
           setoptions5([...l]);
@@ -419,7 +489,22 @@ const Registeryt = () => {
       // setmodalpopupdata({...l})
     }
   };
-
+  const popover = (
+    <Popover id="popover-basic" className="bg-gray-500 rounded-lg">
+      <Popover.Body className="text-sm font-normal p-1 m-1 ">
+        Password length: 8-14 characters Password should contain:
+        <br />
+        Atleast <strong>one</strong> integer
+        <br />
+        Atleast <strong>one</strong> lower-case character
+        <br />
+        Atleast <strong>one</strong> upper-case character
+        <br />
+        Atleast <strong>one</strong> Special Character
+        !@#$&amp;%^*_+\-=;':"/|,.?
+      </Popover.Body>
+    </Popover>
+  );
   useEffect(() => {
     // getcity();
     getstate();
@@ -484,11 +569,11 @@ const Registeryt = () => {
                       value={data.lastName}
                       name="lastName"
                       onChange={(e) => handlechange(e, "lastName")}
-                      style={
-                        mandatoryData.includes("lastName") && !data.lastName
-                          ? { border: "2px solid red" }
-                          : {}
-                      }
+                      // style={
+                      //   mandatoryData.includes("lastName") && !data.lastName
+                      //     ? { border: "2px solid red" }
+                      //     : {}
+                      // }
                     />
                   </div>
                   <div className="md:ml-2">
@@ -529,11 +614,11 @@ const Registeryt = () => {
                     <input
                       className="bg-white w-full px-3 py-2 mb-3 text-sm leading-tight text-gray-700 dark:text-black border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
                       id="userName"
-                      style={
-                        mandatoryData.includes("userName") && !data.userName
-                          ? { border: "2px solid red" }
-                          : {}
-                      }
+                      // style={
+                      //   mandatoryData.includes("userName") && !data.userName
+                      //     ? { border: "2px solid red" }
+                      //     : {}
+                      // }
                       type="text"
                       placeholder="Nick Name"
                       name="userName"
@@ -587,7 +672,16 @@ const Registeryt = () => {
                       type={showeye ? "text" : "password"}
                       placeholder="******************"
                       name="password"
-                      value={data.password}
+                      value={data.password ? data.password:""}
+                      onCopy={(e) => {
+                        e.preventDefault();
+                        return false;
+                      }}
+                      onPaste={(e) => {
+                        e.preventDefault();
+                        return false;
+                      }}
+                      maxLength={14}
                       onChange={(e) => handlechange(e, "password")}
                     />
                     <img
@@ -596,13 +690,23 @@ const Registeryt = () => {
                       alt="eye"
                       onClick={handleShoweye}
                     ></img>
-                    {/* {data.password === "" ? (
-                      <p className="text-xs italic text-red-500">
-                        Please choose a password.
-                      </p>
-                    ) : (
-                      <></>
-                    )} */}
+                   
+                    <OverlayTrigger
+                      hover="click"
+                      placement="right"
+                      overlay={popover}
+                    >
+                      <img
+                        src={info_icon}
+                        alt="info_icon"
+                        className="h-3 w-3 absolute -right-5 top-12 cursor-pointer"
+                        // className={
+                        //   false ? `${userAdd.info_disabled}` : `${userAdd.info}`
+                        // }
+                      ></img>
+                    </OverlayTrigger>
+
+                    
                   </div>
                   <div className="mr-2 md:ml-2">
                     <label
@@ -623,7 +727,7 @@ const Registeryt = () => {
                       }
                       placeholder="******************"
                       name="confirmPassword"
-                      value={data.confirmPassword}
+                      value={data.confirmPassword}  
                       onChange={(e) => handlechange(e, "confirmPassword")}
                     />
                   </div>
@@ -702,7 +806,7 @@ const Registeryt = () => {
                 </div>
 
 
-                <div className={parseInt(data.roleId)===parseInt(3) ?"mb-4 md:flex gap-6 relative z-0" :"mb-4 md:flex justify-between relative z-0"}>
+                <div className={parseInt(data.roleId)===parseInt(3) ?"mb-4 md:flex justify-between relative z-0" :"mb-4 md:flex justify-between relative z-0"}>
                   <div className="flex flex-col">
                     <label
                       className="block mb-2 text-sm font-semibold text-gray-700 dark:text-white"
@@ -815,49 +919,6 @@ const Registeryt = () => {
                     ></Select>
                   </div>
 
-                  {parseInt(data.roleId)===parseInt(3)?<div className="flex flex-col">
-                    <label
-                      className="block mb-2 text-sm font-semibold text-gray-700 dark:text-white"
-                      htmlFor="location"
-                    >
-                      Gym Address
-                    </label>
-
-                    <Select
-                      id="gymAddress"
-                      name="gymAddress"
-                      placeholder="Gym Address"
-                      className="leading-4"
-                      // styles={
-                      //   mandatoryData.includes("gender") && !data.gender
-                      //     ? handleReactSelectCss("small", true)
-                      //     : handleReactSelectCss("small", false)
-                      // }
-
-                      // styles={handleReactSelectCss("large", false)}
-
-                      styles={parseInt(data.roleId)===parseInt(3) ? handleReactSelectCss("small", false): handleReactSelectCss("large", false)}
-
-                      onChange={(e) => handlegymaddress(e)}
-                      value={
-                     
-                       locationdata.ownerId
-                          ? [
-                              {
-                                value: locationdata.ownerId,
-                                label: locationdata.gymName,
-                              },
-                            ]
-                          : []
-                      
-                      }
-                      // value={selectdraft?.id?[{"value":selectdraft.id,"label":selectdraft.desc}]:[]}
-                      menuPortalTarget={document.body}
-                      menuPosition={"fixed"}
-                      onMenuOpen={()=>getGymAddress()}
-                      options={options5}
-                    ></Select>
-                  </div>:<></>}
 
 
                   {parseInt(data.roleId)===parseInt(3)?<div className="flex flex-col">
@@ -881,7 +942,7 @@ const Registeryt = () => {
 
                       // styles={handleReactSelectCss("large", false)}
 
-                      styles={parseInt(data.roleId)===parseInt(3) ? handleReactSelectCss("small", false): handleReactSelectCss("large", false)}
+                      styles={parseInt(data.roleId)===parseInt(3) && mandatoryData.includes("categoryId") && !data.categoryId? handleReactSelectCss("small", true): handleReactSelectCss("small", false)}
 
                       onChange={(e) => handlecategory(e)}
                       value={
@@ -906,6 +967,70 @@ const Registeryt = () => {
 
 
                 </div>
+
+
+<div className="mb-4 md:flex md:justify-between relative z-0">
+  
+{parseInt(data.roleId)===parseInt(3)?<div className="flex flex-col">
+                    <label
+                      className="block mb-2 text-sm font-semibold text-gray-700 dark:text-white"
+                      htmlFor="location"
+                    >
+                      Gym Address
+                    </label>
+
+                    <Select
+                      id="gymAddress"
+                      name="gymAddress"
+                      placeholder="Gym Address"
+                      className="leading-4"
+                      // styles={
+                      //   mandatoryData.includes("gender") && !data.gender
+                      //     ? handleReactSelectCss("small", true)
+                      //     : handleReactSelectCss("small", false)
+                      // }
+
+                      // styles={handleReactSelectCss("large", false)}
+
+                      styles={parseInt(data.roleId)===parseInt(3) && mandatoryData.includes("gymId") && !data.gymId ? handleReactSelectCss("xlarge4", true): handleReactSelectCss("xlarge4", false)}
+
+                      onChange={(e) => handlegymaddress(e)}
+                      value={
+                     
+                       locationdata.ownerId
+                          ? [
+                              {
+                                value: locationdata.ownerId,
+                                label: locationdata.gymName,
+                              },
+                            ]
+                          : []
+                      
+                      }
+                      // value={selectdraft?.id?[{"value":selectdraft.id,"label":selectdraft.desc}]:[]}
+                      menuPortalTarget={document.body}
+                      menuPosition={"fixed"}
+                      onMenuOpen={()=>getGymAddress()}
+                      options={options5}
+                    ></Select>
+
+                   {data.gymId === "" ? (
+                      <p className="text-xs italic text-red-500">
+                        Please choose state,city and location.
+                      </p>
+                    ) : (
+                      <></>
+                    )}
+                  </div>:<></>}
+</div>
+ {errcode ? (
+                      <p className="text-xs italic text-red-500">
+                        {errcode}
+                      </p>
+                    ) : (
+                      <></>
+                    )}
+
                 <div className="mb-6 text-center">
                   <button
                     className="w-full px-4 py-2 font-bold text-white bg-zinc-900 rounded-full hover:bg-blue-700 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800 focus:outline-none focus:shadow-outline"

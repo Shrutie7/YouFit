@@ -168,7 +168,7 @@ setformdata({...l2})
             // console.log("user created");
 
             setformdata({ ...formjson });
-            toast(`🦄 Plan Created Successfully`, {
+            toast(` Plan Created Successfully`, {
               position: "top-right",
               autoClose: 3000,
               hideProgressBar: false,

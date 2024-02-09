@@ -786,7 +786,7 @@ const Feed = () => {
           setMetadata({ ...jsondata });
           setFile(null);
 
-          toast(`🦄 Post Created Successfully`, {
+          toast(` Post Created Successfully`, {
             position: "top-right",
             autoClose: 3000,
             hideProgressBar: false,

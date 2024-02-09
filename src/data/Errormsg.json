@@ -1,0 +1,24 @@
+{
+  "err001": "Unable to Connect. Please try again later...",
+  "err002": "Session expired. Please login again...",
+  "wrng003": "Enter only alphabets",
+  "wrng004": "Enter only numbers",
+  "wrng005": "invalid input",
+  "wrng006": "Enter only numbers and alphabets",
+  "wrng007": "Do you want to DeActivate",
+  "sucs008": "Updated Successfully",
+  "wrng009": "No Records Found",
+
+  "wrng015": "Please enter all required fields",
+
+  "wrng018": "Password policy dont match",
+"wrng019":"Email policy dont match",
+  "wrng022": "Do you want to delete ?",
+  "wrng023": "No Records Found",
+
+  "wrng025": "Provide Valid Characters",
+
+  "wrkflwerr001": "Workflow created successfully",
+  "usrwrng01": "New Password and Confirm New Password are not matching",
+  "homewrng01": "Do you want to Logout?"
+}

@@ -190,7 +190,7 @@ const Contact = () => {
       const res = await axiosInstance.post(createfdburl, localjson);
       if (res.status === 200) {
         if (res.data.status) {
-          toast(`🦄 Feedback ${parseInt(feedbackdata.feedbackTypeId)===parseInt(2) ? "for Gym":"for Trainer"} Submitted Successfully`, {
+          toast(` Feedback ${parseInt(feedbackdata.feedbackTypeId)===parseInt(2) ? "for Gym":"for Trainer"} Submitted Successfully`, {
             position: "top-right",
             autoClose: 3000,
             hideProgressBar: false,

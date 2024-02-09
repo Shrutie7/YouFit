@@ -137,7 +137,7 @@ label:"YouFit Gyms Elite"
       if (res.status === 200) {
         if (res.data.status) {
           updatefun();
-          toast("🦄 Gym Created Successfully", {
+          toast(" Gym Created Successfully", {
             position: "top-right",
             autoClose: 5000,
             hideProgressBar: false,
