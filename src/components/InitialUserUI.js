@@ -107,7 +107,7 @@ const[flag,setflag] = useState(false);
         if (res.data.status) {
           let l = res.data.data.gymAddressList.map((d) => ({
             value: d.gymId,
-            label: d.gymName,
+            label: d.gymName + " " +d.gymAddress,
             extrakey:d.ownerId
           }));
           setoptions5([...l]);
