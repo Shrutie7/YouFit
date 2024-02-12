@@ -34,6 +34,7 @@ const[flag,setflag] = useState(false);
 
     localjson.userId = parseInt(loginDetails.userId);
     localjson.firstName = loginDetails.firstName;
+    localjson.userName = loginDetails.userName;
     localjson.lastName = loginDetails.lastName;
     localjson.gender = loginDetails.gender;
     localjson.emailId = loginDetails.emailId;

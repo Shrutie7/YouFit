@@ -56,6 +56,7 @@ label:"YouFit Gyms Elite"
     localjson.userId = parseInt(loginDetails.userId);
     localjson.firstName = loginDetails.firstName;
     localjson.lastName = loginDetails.lastName;
+    localjson.userName  = loginDetails.userName;
     localjson.gender = loginDetails.gender;
     localjson.emailId = loginDetails.emailId;
     localjson.activeFlag = true;

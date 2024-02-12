@@ -115,6 +115,8 @@ const Feed = () => {
   let commentreplyurl = "post/comment/reply";
   let commentreplylisturl = "post/comment/reply/list";
 
+
+  const [archivebuttonflag , setarchivebuttonflag] = useState(false);
   const [openreplylist, setopenreplylist] = useState(null);
   const [commententered, setcommententered] = useState("");
   const [commentList, setcommentList] = useState([]);
@@ -567,7 +569,15 @@ const Feed = () => {
           flagtype === "delete"
             ? setdeletemodal(false)
             : setarchivemodal(false);
-          postlistapi();
+
+
+          if(flagtype === "dearchive"){
+            postarchivelistapi()
+          }
+          else{
+            postlistapi("archive");
+
+          }
         } else {
           // const l = { ...modalpopupdata };
           //         l.show=true
@@ -603,6 +613,10 @@ const Feed = () => {
 
     localjson.archiveFlag = true;
     localjson.userId = loginDetails.userId;
+    
+   
+    
+    setarchivebuttonflag(true)
     try {
       const res = await axiosInstance.post(archivelisturl, localjson);
 
@@ -611,7 +625,10 @@ const Feed = () => {
           console.log(res.data.data);
 
           setfeeddata([...res?.data?.data?.postList]);
+
+        
         } else {
+          setfeeddata([])
           // const l = { ...modalpopupdata };
           //         l.show=true
           //         l.errormsg=res.data.message
@@ -638,6 +655,7 @@ const Feed = () => {
       // l.logout=false
       // setmodalpopupdata({...l})
     }
+    // setarchivefl(false);
   };
   const postgetapi = async (postid, userid, ind) => {
     let localjson = {};
@@ -691,23 +709,31 @@ const Feed = () => {
     localjson.categoryId = "";
     localjson.roleId = parseInt(loginDetails.roleId);
     localjson.bookmarkFlag = typez === "bookmarks" ? true : false;
+
+    console.log(localjson)
+    setarchivefl(false);
+    if (typez === "bookmarks") {
+      setbookmarksfl(true);
+      setarchivefl(false);
+    } 
+
+    if(typez === "explore"){
+      setbookmarksfl(false);
+      setarchivefl(false);
+    }
+
+    // if(typez === "archive"){
+    //   setarchivefl(true);
+    //   setbookmarksfl(false);
+
+    // }
     try {
       const res = await axiosInstance.post(postlisturl, localjson);
 
       if (res.status === 200) {
         if (res.data.status) {
           console.log(res.data.data);
-          setarchivefl(false);
-
-          if (typez === "bookmarks") {
-            setbookmarksfl(true);
-          } else {
-            setbookmarksfl(false);
-          }
-          // if (bookmarksfl) {
-          //   postgetapi(postid, userid, ind);
-          // }
-
+        setarchivebuttonflag(false)
           if (res?.data?.data !== null) {
             setfeeddata([...res?.data?.data?.postList]);
           } else {
@@ -785,6 +811,7 @@ const Feed = () => {
 
           setMetadata({ ...jsondata });
           setFile(null);
+          setSelectedCategoryIds([])
 
           toast(` Post Created Successfully`, {
             position: "top-right",
@@ -800,7 +827,7 @@ const Feed = () => {
               setMetadata({ ...jsondata });
               setFile(null);
               setcategorydata([]);
-              postlistapi();
+              postlistapi("explore");
             },
           });
         } else {
@@ -837,7 +864,7 @@ const Feed = () => {
   }, [metadata.title, metadata.description]);
 
   useEffect(() => {
-    postlistapi();
+    postlistapi("explore");
   }, []);
 
   useEffect(() => {
@@ -1021,7 +1048,9 @@ const Feed = () => {
 
       if (res.status === 200) {
         if (res.data.status) {
-          postgetapi(postid, userid, ind);
+          // postgetapi(postid, userid, ind);
+
+          postlistapi("bookmarks");
           console.log("postliked");
         } else {
           // const l = { ...modalpopupdata };
@@ -1166,7 +1195,7 @@ const Feed = () => {
                       Menu.title === "Archived Posts"
                         ? postarchivelistapi()
                         : Menu.title === "Explore"
-                        ? postlistapi()
+                        ? postlistapi("explore")
                         : Menu.title === "Bookmarks Posts"
                         ? postlistapi("bookmarks")
                         : nav(Menu.navpath);
@@ -1178,7 +1207,7 @@ const Feed = () => {
                       Menu.title === "Archived Posts"
                         ? postarchivelistapi()
                         : Menu.title === "Explore"
-                        ? postlistapi()
+                        ? postlistapi("explore")
                         : Menu.title === "Bookmarks Posts"
                         ? postlistapi("bookmarks")
                         : nav(Menu.navpath);
@@ -1201,8 +1230,10 @@ const Feed = () => {
             } -mt-12 w-full lg:w-full lg:mt-4 lg:w-2/3 pt-32 lg:pt-16 px-2 `}
           >
             {console.log(
-              parseInt(loginDetails?.roleId) === parseInt(3) && !archivefl
-            )}
+              parseInt(loginDetails?.roleId) === parseInt(2) && !archivefl && !bookmarksfl
+            ,archivefl , bookmarksfl , "==========>")}
+
+
             {(parseInt(loginDetails?.roleId) === parseInt(3) &&
               !archivefl &&
               !bookmarksfl) ||
@@ -1461,7 +1492,7 @@ const Feed = () => {
                                 }}
                                 className="block px-4 py-2 text-gray-800 hover:bg-gray-200 focus:outline-none"
                               >
-                                Archive
+                               {archivebuttonflag ?"DeArchive":"Archive"}
                               </div>
                             ) : (
                               <></>
@@ -2038,7 +2069,7 @@ const Feed = () => {
                   data-modal-hide="popup-modal"
                   type="button"
                   class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center me-2"
-                  onClick={() => deleteandarchiveapi("archive", datadel)}
+                  onClick={() => {archivebuttonflag ? deleteandarchiveapi("dearchive", datadel):deleteandarchiveapi("archive",datadel)}}
                 >
                   Yes, I'm sure
                 </button>
