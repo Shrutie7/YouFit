@@ -64,7 +64,7 @@ label:"YouFit Gyms Elite"
     localjson.locationId = parseInt(loginDetails.locationDetails.locationId);
     localjson.gymId = "";
 
-    console.log(localjson)
+    console.log(localjson,"jhh")
 
     try {
       const res = await axiosInstance.post(updateurl, localjson);
