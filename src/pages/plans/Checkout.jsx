@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-
+import upi from "../../assets/upi1.png"
 
 
 import {useNavigate} from "react-router-dom"
@@ -30,7 +30,7 @@ const nav = useNavigate();
             <div class="px-2">
                 <label for="type2" class="flex items-center cursor-pointer">
                     <input type="radio" class="form-radio h-5 w-5 text-indigo-500" name="type" id="type2"/>
-                    <img src="https://www.sketchappsources.com/resources/source-image/PayPalCard.png" class="h-8 ml-3"/>
+                    <img src={upi} class="h-24 ml-3"/>
                 </label>
             </div>
         </div>

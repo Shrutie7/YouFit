@@ -1,4 +1,4 @@
-export const handleReactSelectCss = (name,error, flag, type) => {
+export const handleReactSelectCss = (name,error, flag, type,settings) => {
     var pointers = "fill";
     var pointer1 = "";
     if (type === "view") {
@@ -43,6 +43,11 @@ export const handleReactSelectCss = (name,error, flag, type) => {
         reactslctw = "49.5rem";
         break;
       }
+
+      case "xlarge5": {
+        reactslctw = "18.5rem";
+        break;
+      }
       default:
         reactslctw = "392px";
         break;
@@ -58,7 +63,7 @@ export const handleReactSelectCss = (name,error, flag, type) => {
         fontSize: "16px",
         marginTop: "-2px",
         border: error?"2px solid red !important":state.isFocused ? "none" : "none",
-        backgroundColor:flag===true ?" rgb(229 231 235 / var(--tw-bg-opacity))":"white",
+        backgroundColor:flag===true ?" rgb(229 231 235 / var(--tw-bg-opacity))":settings===true?"#3b3b3b":"white",
         // outline: state.isFocused?"none !important":"none",
         // filter: state.isFocused
         //   ? "drop-shadow(5px 5px 2px black) !important"
@@ -70,7 +75,7 @@ export const handleReactSelectCss = (name,error, flag, type) => {
         outline: "none",
         paddingLeft: "5px",
         paddingRight: "5px",
-        color: "black",
+       
         // boxShadow: "inset 0 0 0.2vh 0.1vh rgb(0, 0, 0, 0.6)",
       }),
       menuPortal: (provided) => ({ ...provided, zIndex: 9999 }),
@@ -123,7 +128,8 @@ export const handleReactSelectCss = (name,error, flag, type) => {
       valueContainer: (styles, state) => ({
         ...styles,
         padding: "0 0.1vw 0.1vh 0.3vh",
-        pointerEvents: pointers
+        pointerEvents: pointers,
+        color:"black"
       }),
   
       indicatorSeparator: (state) => ({
@@ -131,12 +137,17 @@ export const handleReactSelectCss = (name,error, flag, type) => {
       }),
       indicatorsContainer: (provided, state) => ({
         ...provided,
+        color:"black"
         //   display: "none",
       }),
   
       input: (provided, state) => ({
         ...provided,
-        color: "#0d4459",
+        color: "black",
+      }),
+      singleValue: (provided, state) => ({
+        ...provided,
+        color:  settings===true ? "white":"black", // Change 'white' and 'black' to desired colors
       }),
     };
   };

@@ -6,6 +6,8 @@ import explore from "../../assets/explore.png";
 import archived from "../../assets/archived.png";
 import bookmarks from "../../assets/bookmarks.png";
 import settings from "../../assets/settings (2).png";
+import myfeed from "../../assets/activity-feed-64.png";
+import categories from "../../assets/icons8-categorize-100.png";
 import chat from "../../assets/comment.png";
 import bookmarkfill from "../../assets/bookmark.png";
 import bookmark from "../../assets/save-instagram.png";
@@ -55,6 +57,8 @@ const Feed = () => {
   const playerRef = useRef(null);
 
 
+  const [categorysele , setcategorysele] = useState(null);
+  const [categoriespostflag,setcategoriespostflag] = useState(false);
   const [commentreplylistfl, setcommentreplylistfl] = useState(false);
   const [commentreplylistdata, setcommentreplylistdata] = useState([]);
   const [openCommentIndex, setOpenCommentIndex] = useState(null);
@@ -69,11 +73,18 @@ const Feed = () => {
   const descRef = useRef();
   let videoRef = createRef();
   const [categorydata, setcategorydata] = useState([]);
-  console.log(loginDetails);
+ const [myfeedflag,setmyfeedflag] = useState(false);
   const [file, setFile] = useState(null);
   const [selectedCategoryIds, setSelectedCategoryIds] = useState([]);
   const isCategorySelected = (categoryId) =>
     selectedCategoryIds.includes(categoryId);
+
+
+    const isCategorySelectedsingle = (categoryId) => {
+      return categorysele === categoryId;
+    };
+
+
   const [open, setOpen] = useState(true);
   const [activeTab, setActiveTab] = useState("Explore");
   const Menus = [
@@ -81,6 +92,8 @@ const Feed = () => {
     { title: "Settings", src: settings, navpath: "/portal/settings" },
     { title: "Archived Posts", src: archived },
     { title: "Bookmarks Posts", src: bookmarks },
+    {title : "My Feed", src: myfeed},
+    {title:"Category Posts" , src:categories}
   ];
   const [playbackRate, setplaybackRate] = useState(1.0);
   const [comment, setcomment] = useState(false);
@@ -198,6 +211,7 @@ const Feed = () => {
           setOpenIndex(null);
           // setlikelistflag(false);
           setcommentList([...res?.data?.data?.commentList]);
+          postlistapi("explore")
         } else {
           setcommentList([]);
           setOpenCommentIndex((prevIndex) => (prevIndex === ind ? null : ind));
@@ -205,6 +219,7 @@ const Feed = () => {
           setopenreplylist(null);
           setcommentreplylistdata([]);
           setcommentreplylistfl(false);
+          postlistapi("explore")
           // const l = { ...modalpopupdata };
           //         l.show=true
           //         l.errormsg=res.data.message
@@ -338,7 +353,7 @@ const Feed = () => {
 
       if (res.status === 200) {
         if (res.data.status) {
-          console.log(res.data.data.commentList);
+       
           setcommentreplylistfl(true);
           setopenreplylist(openreplylist === ind ? null : ind);
 
@@ -558,13 +573,13 @@ const Feed = () => {
     localjson.activeFlag = flagtype === "delete" ? false : true;
     localjson.archiveFlag = flagtype === "archive" ? true : false;
     localjson.remarks = ele?.remarks;
-    console.log(localjson);
+
     try {
       const res = await axiosInstance.post(deletearchiveurl, localjson);
 
       if (res.status === 200) {
         if (res.data.status) {
-          console.log("deleted");
+          
 
           flagtype === "delete"
             ? setdeletemodal(false)
@@ -607,22 +622,31 @@ const Feed = () => {
     }
   };
 
-  const postarchivelistapi = async () => {
+  const postarchivelistapi = async (type) => {
     setarchivefl(true);
+    setcategorysele(null)
+
+    setcategoriespostflag(false);
     let localjson = {};
 
-    localjson.archiveFlag = true;
+    localjson.archiveFlag = type==="myfeed" ? false:true;
     localjson.userId = loginDetails.userId;
     
    
     
     setarchivebuttonflag(true)
+
+    if(type === "myfeed")
+    {
+      setmyfeedflag(true);
+      setcategorysele(null)
+    }
     try {
       const res = await axiosInstance.post(archivelisturl, localjson);
 
       if (res.status === 200) {
         if (res.data.status) {
-          console.log(res.data.data);
+         
 
           setfeeddata([...res?.data?.data?.postList]);
 
@@ -666,7 +690,7 @@ const Feed = () => {
 
       if (res.status === 200) {
         if (res.data.status) {
-          console.log(res.data.data);
+         
 
           let newArray = [
             ...feeddata.slice(0, ind),
@@ -703,23 +727,34 @@ const Feed = () => {
       // setmodalpopupdata({...l})
     }
   };
-  const postlistapi = async (typez) => {
+  const postlistapi = async (typez,categoryty) => {
     let localjson = {};
     localjson.userId = parseInt(loginDetails.userId);
-    localjson.categoryId = "";
+    localjson.categoryId = typez === "categories"?categoryty :"" ;
     localjson.roleId = parseInt(loginDetails.roleId);
     localjson.bookmarkFlag = typez === "bookmarks" ? true : false;
 
-    console.log(localjson)
+
+    console.log(localjson);
+
     setarchivefl(false);
+    setmyfeedflag(false); 
     if (typez === "bookmarks") {
       setbookmarksfl(true);
       setarchivefl(false);
+      setcategoriespostflag(false);
+      setcategorysele(null)
     } 
 
     if(typez === "explore"){
       setbookmarksfl(false);
       setarchivefl(false);
+      setcategoriespostflag(false);
+      setcategorysele(null)
+    }
+
+    if(typez === "categories"){
+      setcategoriespostflag(true);
     }
 
     // if(typez === "archive"){
@@ -732,7 +767,7 @@ const Feed = () => {
 
       if (res.status === 200) {
         if (res.data.status) {
-          console.log(res.data.data);
+          
         setarchivebuttonflag(false)
           if (res?.data?.data !== null) {
             setfeeddata([...res?.data?.data?.postList]);
@@ -747,6 +782,8 @@ const Feed = () => {
           //         l.logout=false
           //         setmodalpopupdata({...l})
         }
+
+        
       } else if (res.response.status === 401) {
         // const l = { ...modalpopupdata };
         // l.show=true
@@ -767,6 +804,8 @@ const Feed = () => {
       // l.logout=false
       // setmodalpopupdata({...l})
     }
+
+    
   };
 
   const postcreateapi = async () => {
@@ -784,21 +823,20 @@ const Feed = () => {
     localjson.title = metadata.title;
     localjson.description = metadata.description;
 
-    console.log(localjson);
+  
     const bodyFormData = new FormData();
     bodyFormData.append("content", file);
 
-    console.log(bodyFormData);
+    
     const metadataJson = JSON.stringify({
       ...localjson,
     });
-    console.log(metadataJson);
+  
     const _metadata = new Blob([metadataJson], {
       type: "application/json",
     });
     bodyFormData.append("jsonData", _metadata);
 
-    console.log(bodyFormData);
     setflag(true);
     try {
       const res = await axiosInstance.post(postcreateurl, bodyFormData, {
@@ -807,7 +845,7 @@ const Feed = () => {
 
       if (res.status === 200) {
         if (res.data.status) {
-          console.log(res.data.message);
+
 
           setMetadata({ ...jsondata });
           setFile(null);
@@ -899,6 +937,19 @@ const Feed = () => {
     }
   };
 
+  const selectsinglecategory = (ele,index)=>{
+        // Check if the clicked category is already selected
+        if (categorysele === ele?.categoryId) {
+          // If it is, unselect it
+          setcategorysele(null);
+        } else {
+          // If it's not, select it
+          setcategorysele(ele?.categoryId);
+          postlistapi("categories",ele?.categoryId)
+        }
+
+
+  }
   // console.log(selectedCategoryIds);
 
   const handleSpeedChange = (event) => {
@@ -930,7 +981,7 @@ const Feed = () => {
         if (res.data.status) {
           // postlistapi();
           postgetapi(postid, userid, ind);
-          console.log("postliked");
+          
         } else {
           // const l = { ...modalpopupdata };
           //         l.show=true
@@ -970,7 +1021,7 @@ const Feed = () => {
         if (res.data.status) {
           // postlistapi();
           postgetapi(postid, userid, ind);
-          console.log("postliked");
+         
         } else {
           // const l = { ...modalpopupdata };
           //         l.show=true
@@ -1010,7 +1061,7 @@ const Feed = () => {
       if (res.status === 200) {
         if (res.data.status) {
           postgetapi(postid, userid, ind);
-          console.log("postliked");
+       
         } else {
           // const l = { ...modalpopupdata };
           //         l.show=true
@@ -1050,8 +1101,17 @@ const Feed = () => {
         if (res.data.status) {
           // postgetapi(postid, userid, ind);
 
-          postlistapi("bookmarks");
-          console.log("postliked");
+          if(archivefl)
+          {
+            postgetapi(postid, userid, ind)
+          }
+          else{
+            postlistapi("bookmarks");
+
+          }
+
+       
+          
         } else {
           // const l = { ...modalpopupdata };
           //         l.show=true
@@ -1185,33 +1245,51 @@ const Feed = () => {
                 ${Menu.gap ? "mt-9" : "mt-5"} ${
                     index === 0 && "bg-light-white"
                   } `}
+
+                  onClick={() => {
+                      setActiveTab(Menu.title);
+                      Menu.title === "Archived Posts"
+                        ? postarchivelistapi()
+                        : Menu.title === "Explore"
+                        ? postlistapi("explore")
+                        : Menu.title === "Bookmarks Posts"
+                        ? postlistapi("bookmarks"):
+                        Menu.title === "My Feed"?
+                        postarchivelistapi("myfeed"):
+                        Menu.title === "Category Posts"?
+                        postlistapi("categories")
+
+                        : nav(Menu.navpath);
+                    }}
+                  
+
                 >
                   <img
                     src={Menu.src}
                     alt="icon"
                     className="h-6 w-6 lg:h-6 lg:w-6 lg:border-red-400 border-2"
-                    onClick={() => {
-                      setActiveTab(Menu.title);
-                      Menu.title === "Archived Posts"
-                        ? postarchivelistapi()
-                        : Menu.title === "Explore"
-                        ? postlistapi("explore")
-                        : Menu.title === "Bookmarks Posts"
-                        ? postlistapi("bookmarks")
-                        : nav(Menu.navpath);
-                    }}
+                    // onClick={() => {
+                    //   setActiveTab(Menu.title);
+                    //   Menu.title === "Archived Posts"
+                    //     ? postarchivelistapi()
+                    //     : Menu.title === "Explore"
+                    //     ? postlistapi("explore")
+                    //     : Menu.title === "Bookmarks Posts"
+                    //     ? postlistapi("bookmarks")
+                    //     : nav(Menu.navpath);
+                    // }}
                   />
                   <span
-                    onClick={() => {
-                      setActiveTab(Menu.title);
-                      Menu.title === "Archived Posts"
-                        ? postarchivelistapi()
-                        : Menu.title === "Explore"
-                        ? postlistapi("explore")
-                        : Menu.title === "Bookmarks Posts"
-                        ? postlistapi("bookmarks")
-                        : nav(Menu.navpath);
-                    }}
+                    // onClick={() => {
+                    //   setActiveTab(Menu.title);
+                    //   Menu.title === "Archived Posts"
+                    //     ? postarchivelistapi()
+                    //     : Menu.title === "Explore"
+                    //     ? postlistapi("explore")
+                    //     : Menu.title === "Bookmarks Posts"
+                    //     ? postlistapi("bookmarks")
+                    //     : nav(Menu.navpath);
+                    // }}
                     className={`${
                       !open && "hidden"
                     } origin-left duration-200 text-lg font-sans`}
@@ -1233,13 +1311,27 @@ const Feed = () => {
               parseInt(loginDetails?.roleId) === parseInt(2) && !archivefl && !bookmarksfl
             ,archivefl , bookmarksfl , "==========>")}
 
-
-            {(parseInt(loginDetails?.roleId) === parseInt(3) &&
+{
+  categoriespostflag ? <div className="flex flex-wrap gap-3 mt-4 bg-white p-5 ">    {categorydata.map((ele, ind) => (
+                        <div
+                          key={ind}
+                          // onClick={() => selectcategory(ele, ind)}
+                           onClick={()=> selectsinglecategory(ele, ind)}
+                          className={`text-black border-black border-solid border-2 rounded-md p-2 cursor-pointer bg-green-400 ${
+                            isCategorySelectedsingle(ele?.categoryId)
+                              ? "bg-green-300 opacity-65"
+                              : "bg-green-600 hover:bg-green-500"
+                          }`}
+                        >
+                          {ele?.categoryName}
+                        </div>
+                      ))}</div> : <>
+                      {(parseInt(loginDetails?.roleId) === parseInt(3) &&
               !archivefl &&
-              !bookmarksfl) ||
+              !bookmarksfl && !myfeedflag) ||
             (parseInt(loginDetails?.roleId) === parseInt(2) &&
               !archivefl &&
-              !bookmarksfl) ? (
+              !bookmarksfl && !myfeedflag) ? (
               <div class="px-4 mt-4 shadow rounded-lg bg-white">
                 <div class="p-2 border-b border-gray-300 flex flex-col gap-2">
                   <input
@@ -1442,6 +1534,10 @@ const Feed = () => {
             ) : (
               <></>
             )}
+                      </>
+}
+
+
 
             <div>
               {feeddata.length > 0 ? (
@@ -1645,16 +1741,19 @@ const Feed = () => {
                         </div>
                         <div class="text-gray-500 dark:text-dark-txt">
                           <span
-                            className="italic hover:underline cursor-pointer"
-                            onClick={() => {
-                              setcommentcountflag(true);
-                              setcomment(!comment);
-                              setOpenIndex(null);
-                              commentlistapi(ele?.postId);
-                            }}
+                            className="italic "
+                            // onClick={() => {
+                            //   setcommentcountflag(true);
+                            //   setcomment(!comment);
+                            //   setOpenIndex(null);
+                            //   commentlistapi(ele?.postId);
+                              
+                            // }}
                           >
-                            {ele?.commentsCount} Comments{" "}
-                          </span>
+                           {ele?.commentsCount} {ele?.commentsCount === 1 ? "Comment":"Comments"} 
+
+
+                          </span> &nbsp;
                           <span
                             onClick={() =>
                               handlepostlikeslist(
@@ -1672,11 +1771,12 @@ const Feed = () => {
                         </div>
                       </div>
                     </div>
+                    {console.log(commentList,commentList[0]?.replyCount,openreplylist )}
                     {openCommentIndex === ind ? (
                       <>
                         <div
                           className={`max-h-48 ${
-                            commentList.length > 1
+                            commentList.length > 1 || (commentList[0]?.replyCount>=1 && openreplylist!==null)
                               ? "overflow-y-scroll"
                               : "overflow-y-hidden"
                           } overflow-x-hidden`}
@@ -1721,7 +1821,7 @@ const Feed = () => {
                                     {cele?.replyCount>0 ? <span
                                       class="font-semibold cursor-pointer"
                                       onClick={() => {
-                                        commentreplylist(cele?.commentId, cind);
+                                        commentreplylist(cele?.commentId, ind);
                                     
                                       }}
                                     >
@@ -1747,8 +1847,8 @@ const Feed = () => {
 
 {console.log("================================>",openreplylist, "==>",cind,commentreplylistfl)}
                                 {commentreplylistfl &&
-                                openreplylist === cind ? (
-                                  <div className="h-24 overflow-y-scroll">
+                                openreplylist === ind ? (
+                                  <div className="">
                                     {commentreplylistdata &&
                                       commentreplylistdata.map((rele) => (
                                         <>
@@ -1774,8 +1874,8 @@ const Feed = () => {
                                       class="font-semibold cursor-pointer"
                                       onClick={() => {
                                         createReply1(
-                                          cele?.commentId,
-                                          cele?.commentedUserData?.userName
+                                          rele?.commentId,
+                                          rele?.commentedUserData?.userName
                                         );
                                         setreplyflag(true);
                                       }}
@@ -1840,7 +1940,7 @@ const Feed = () => {
 
                                 {console.log(replyflag,"replyflag")}
 
-                                {console.log(replyflag, "flagreply")}
+                                
                                 <div class="flex space-x-0 items-center justify-center">
                                   <img
                                     src={send}
@@ -1857,7 +1957,6 @@ const Feed = () => {
                                       } else {
                                         createcomment(ele?.postId, ind);
                                       }
-                                      // !replyflag ? createcomment(ele?.postId,ind):createreply(parentcommentid,replyemailid);
                                     }}
                                   />
                                 </div>
@@ -2063,7 +2162,7 @@ const Feed = () => {
                   />
                 </svg>
                 <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-                  Are you sure you want to archive this Post?
+                 {`Are you sure you want to ${archivebuttonflag ?"DeArchive":"Archive"} this Post?`}
                 </h3>
                 <button
                   data-modal-hide="popup-modal"

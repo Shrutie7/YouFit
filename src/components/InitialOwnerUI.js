@@ -62,7 +62,7 @@ label:"YouFit Gyms Elite"
     localjson.activeFlag = true;
     localjson.parentUserId = 1;
     localjson.locationId = parseInt(loginDetails.locationDetails.locationId);
-    localjson.gymId = "";
+    localjson.gymId = gymdata.gymId;
 
     console.log(localjson,"jhh")
 

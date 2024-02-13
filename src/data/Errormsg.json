@@ -9,8 +9,8 @@
   "sucs008": "Updated Successfully",
   "wrng009": "No Records Found",
 
+  "wrng027":"Current Password and New Password are matching",
   "wrng015": "Please enter all required fields",
-
   "wrng018": "Password policy dont match",
 "wrng019":"Email policy dont match",
   "wrng022": "Do you want to delete ?",
