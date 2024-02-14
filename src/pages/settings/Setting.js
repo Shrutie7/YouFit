@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux';
 import axiosInstance from "../../services/LocalAxiosInstance";
 import { Addrowerror } from "../../commonmodules/Addrowerror";
@@ -8,6 +8,8 @@ import { ToastContainer, toast } from "react-toastify";
 import { CircularProgress } from "@material-ui/core";
 import Select from "react-select";
 import { handleReactSelectCss } from "../../commonmodules/ReactSelectCss";
+import PencilIcon from '../../commonmodules/PencilIcon';
+import ModalDp from '../../commonmodules/ModalDp';
 
 
 const Setting = () => {
@@ -17,7 +19,12 @@ const Setting = () => {
   let cityurl = "location/city";
   let locationaddressurl = "location/address";
   let gymaddressurl = "location/gymaddress";  
+  const avatarUrl = useRef(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
+  const updateAvatar = (imgSrc) => {
+    avatarUrl.current = imgSrc;
+  };
 
   const loginDetails = useSelector((e)=>e.logindetails.data);
 
@@ -741,12 +748,29 @@ if(tab==="planupdate"){
           </div>
 
           <hr class="border-gray-200"/>
-          <div class="py-8 px-16 clearfix">
-            <label for="photo" class="text-sm text-gray-600 w-full block">Photo</label>
-            <img class="rounded-full w-16 h-16 border-4 mt-2 border-gray-200 float-left" id="photo" src="https://pbs.twimg.com/profile_images/1163965029063913472/ItoFLWys_400x400.jpg" alt="photo"/>
-            <div class="bg-gray-200 text-gray-500 text-xs mt-5 ml-3 font-bold px-4 py-2 rounded-lg float-left hover:bg-gray-300 hover:text-gray-600 relative overflow-hidden cursor-pointer">
-              <input type="file" name="photo" onchange="loadFile(event)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"/> Change Photo
+          <div class="-mx-3 md:flex mb-6">
+          <div class=" text-gray-500 text-xs mt-1 ml-3 font-bold px-1 py-4 rounded-lg float-left  hover:text-gray-600 relative overflow-hidden cursor-pointer">
+              {/* <input type="file" name="photo" onchange="loadFile(event)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"/> Change Photo */}
+
+              <div className="relative">
+        <img
+          src={avatarUrl.current}
+          alt="Avatar"
+          className="w-[90px] h-[80px] rounded-full border-2 border-gray-400"
+        />
+        <button
+          className="absolute -bottom-3 left-0 right-0 m-auto w-fit p-[.35rem] rounded-full bg-gray-800 hover:bg-gray-700 border border-gray-600"
+          title="Change photo"
+          onClick={() => setModalOpen(true)}
+        >
+          <PencilIcon />
+        </button>
+      </div>
+
             </div>
+            <label for="photo" class="text-sm text-gray-600 w-full block">Change Photo</label>
+            {/* <img class="rounded-full w-16 h-16 border-4 mt-2 border-gray-200 float-left" id="photo" src="https://pbs.twimg.com/profile_images/1163965029063913472/ItoFLWys_400x400.jpg" alt="photo"/> */}
+         
           </div>
 
         </div>:tab==="passwordupdate" ? 
@@ -897,6 +921,13 @@ if(tab==="planupdate"){
         theme="light"
         className="toast"
       />
+
+{modalOpen && (
+        <ModalDp
+          updateAvatar={updateAvatar}
+          closeModal={() => setModalOpen(false)}
+        />
+      )}
   </div>
 
   )
