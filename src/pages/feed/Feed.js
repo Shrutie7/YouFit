@@ -1615,7 +1615,7 @@ const Feed = () => {
                         {ele?.description}
                       </span>
                     </div>
-                    <div class="py-2">
+                    {ele?.contentUrl !== "" ?<div class="py-2">
                       {ele?.contentType === "image" ? (
                         <img
                           src={
@@ -1656,7 +1656,7 @@ const Feed = () => {
                           </Player>
                         </div>
                       )}
-                    </div>
+                    </div>:<></>}
                     <div class="px-4 py-1">
                       <div class="flex items-center justify-between">
                         <div class="flex flex-row-reverse items-center">

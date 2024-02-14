@@ -25,7 +25,8 @@ const Setting = () => {
   const [options3, setoptions3] = useState([]);
   const [options4, setoptions4] = useState([]);
   const [options5, setoptions5] = useState([]);
-    const [tab,settab] = useState("profileinfo");
+  const [options6, setoptions6] = useState([]);
+  const [tab,settab] = useState("profileinfo");
   const [showeye, setShoweye] = useState(false);
   const [showeye2, setShoweye2] = useState(false);
   const [showeye3, setShoweye3] = useState(false);
@@ -524,7 +525,7 @@ if(tab==="planupdate"){
   return (
     
 
-  <div class=" container mx-auto max-w-3xl mt-20 h-screen pt-3" >
+  <div class="container mx-auto max-w-3xl mt-20 h-screen pt-3" >
     {/* <h1 class="text-3xl font-bold font-sans text-white px-6 md:px-0">Account Settings</h1> */}
     <div className='lg:bg-gray-200 sm:bg-gray-200 md:bg-gray-200 h-[85%] overflow-x-hidden overflow-y-hidden bg-gray-200'>
     <ul class="flex border-b border-gray-300 text-sm font-medium text-gray-600 mt-3 px-6 md:px-6">
@@ -834,7 +835,38 @@ if(tab==="planupdate"){
           {errcode?<p className="text-sm italic text-red-500 text-center">{errcode}</p>:<></>}
 </div>
 
-:<div></div> }
+:<div class="mx-2 md:mb-6 my-8 border-solid w-2/3 py-12">
+
+<div class="md:w-full px-3 mb-6 md:mb-0">
+<div className='text-lg font-semibold font-sans text-gray-600 w-96 flex flex-row justify-evenly'>
+  
+  <div className='flex flex-col gap-y-10'>
+   <div>
+      Plan Type
+      </div>
+      <div>
+      Time Remaining
+      </div>
+    </div>
+ <div className='flex flex-col gap-y-10'>
+<div>:</div>
+<div>:</div>
+ </div>
+
+
+<div className='flex flex-col gap-y-10'>
+<div>{loginDetails?.planDetails?.planName}</div>
+<div>{loginDetails?.planDetails?.planName}</div>
+</div>
+
+</div>
+
+  </div>
+
+
+
+
+</div> }
 
       </div>
       <div class="p-7 pt-8 bg-gray-300 clearfix rounded-b-lg border-t border-gray-200 ">

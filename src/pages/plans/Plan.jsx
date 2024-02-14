@@ -4,10 +4,11 @@ import HeaderImage from "../../images/header_bg_4.jpg";
 import Card from "../../UI/Card";
 import { plan, plans } from "../../data";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import axiosInstance from "../../services/LocalAxiosInstance";
 import { useEffect, useState } from "react";
 import LoadingPopup from "../../commonmodules/Loading";
+import { addloc } from "../../store/location";
 const Plan = () => {
   const loginDetails = useSelector((e) => e.logindetails.data);
   const nav = useNavigate();
@@ -16,6 +17,8 @@ const Plan = () => {
   const [planlist,setplanlist] = useState([]);
   let [loading, setLoading] = useState(false);
 
+
+  const dispatch = useDispatch();
   const getplanlist = async () => {
     setLoading(true)
     try {
@@ -112,8 +115,8 @@ const Plan = () => {
               
               {
                 planlist.map((ele)=>(
-                    <div class="flex flex-col p-6 mx-auto max-w-lg text-center text-gray-900 bg-white rounded-lg border border-gray-100 shadow dark:border-gray-600 xl:p-8 dark:bg-gray-800    dark:text-white">
-              {console.log(ele)}
+                    <div class="flex flex-col p-6 mx-auto max-w-96 min-w-96 text-center text-gray-900 bg-white rounded-lg border border-gray-100 shadow dark:border-gray-600 xl:p-8 dark:bg-gray-800    dark:text-white">
+              
               <h3 class="mb-4 text-2xl font-semibold text-white">{ele?.PlanName}</h3>
               <p class="font-light text-gray-500 sm:text-lg dark:text-gray-400">
                {ele?.planDescription}
@@ -228,8 +231,8 @@ const Plan = () => {
                 }
               </ul>
               <button
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                onClick={() => nav("checkout")}
+                className={` text-white font-bold py-2 px-4 rounded ${loginDetails?.planDetails?.planId==="" ?"bg-blue-500 hover:bg-blue-700":"bg-blue-500 opacity-50 pointer-events-none" }`}
+                onClick={() => {nav("checkout");dispatch(addloc({state:{"planId":ele?.planId}}))}}
               >
                 Buy Now
               </button>

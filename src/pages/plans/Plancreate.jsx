@@ -108,7 +108,7 @@ setformdata({...l2})
   ];
   const nav = useNavigate();
   const [options6, setoptions6] = useState([]);
-  let getcategoryurl = "categorylist";
+  let getcategoryurl = "categorylist/filter";
 
   const getcategory = async () => {
     try {

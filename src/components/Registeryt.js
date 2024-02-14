@@ -210,9 +210,9 @@ const Registeryt = () => {
   let createuserurl = "users/create";
   let stateurl = "location/state";
   let cityurl = "location/city";
-  let locationaddressurl = "location/address";
+  let locationaddressurl = "location/address/filter";
   let gymaddressurl = "location/gymaddress";  
-  let getcategoryurl = "categorylist";
+  let getcategoryurl = "/user/category/list";
   const [err, seterr] = useState({ message: "" });
   let [errcode, seterrcode] = useState("");
 
@@ -372,7 +372,7 @@ const Registeryt = () => {
   };
   const getGymAddress = async () => {
     try {
-      const res = await axiosInstance.post(gymaddressurl, { location_id:locationdata.locationId});
+      const res = await axiosInstance.post(gymaddressurl, { locationId:locationdata.locationId});
 
       if (res.status === 200) {
         if (res.data.status) {
@@ -411,8 +411,10 @@ const Registeryt = () => {
     }
   };
   const getcategory = async () => {
+
+
     try {
-      const res = await axiosInstance.get(getcategoryurl);
+      const res = await axiosInstance.post(getcategoryurl,{gymId:data?.gymId});
 
       if (res.status === 200) {
         if (res.data.status) {

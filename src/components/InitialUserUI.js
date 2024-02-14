@@ -7,9 +7,11 @@ import Select from "react-select";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import { CircularProgress } from "@material-ui/core";
+
+
 const InitialUserUI = ({setnavflag,navflag}) => {
   let trainerurl = "/users/trainerlist";
-  let gymaddressurl = "location/gymaddress";
+  let gymaddressurl = "location/gymaddress/filter";
   let submiturl = "users/update";
 
   const nav = useNavigate();
@@ -101,7 +103,7 @@ const[flag,setflag] = useState(false);
   const getGymAddress = async () => {
     try {
       const res = await axiosInstance.post(gymaddressurl, {
-        location_id: loginDetails?.locationDetails?.locationId,
+        locationId: loginDetails?.locationDetails?.locationId,
       });
 
       if (res.status === 200) {
