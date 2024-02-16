@@ -102,11 +102,16 @@ const Setting = () => {
   }
 
   const onchangehandler2 = (e,name)=>{
+    console.log(e,name)
     let l = {...userdetails};
     l[name] = e.target.value;
+    console.log(l)
     setuserdetails({...l})
 
   }
+
+
+
 
   const getvalue = (name,opt) =>{
 
@@ -123,7 +128,11 @@ const Setting = () => {
 
   const getvalue1 = ()=>{
 
- 
+    let m = options5.filter((m)=>m.extrakey === loginDetails?.gymId)
+    m = m.map((d)=>({"value":d.value,"label":d.label}));
+
+    console.log(m)
+    return m ; 
 
   }
 
@@ -160,15 +169,16 @@ const Setting = () => {
 
     let localjson = {};
     localjson.userId = loginDetails?.userId;
-    localjson.userName = loginDetails?.userName;
-    localjson.firstName = loginDetails?.firstName;
-    localjson.lastName = loginDetails?.lastName;
+    localjson.userName = userdetails?.userName;
+    localjson.firstName = userdetails?.firstName;
+    localjson.lastName = userdetails?.lastName;
     localjson.gender = loginDetails?.gender;
     localjson.emailId = loginDetails?.emailId;
     localjson.parentUserId = loginDetails?.parentUserId;
     localjson.locationId = loginDetails?.locationId;
     localjson.activeFlag = true;
     localjson.gymId = loginDetails?.gymId;
+    localjson.image = userdetails?.image;
 
     try {
       const res = await axiosInstance.post(updateuserurl, localjson);
@@ -337,7 +347,7 @@ if(tab==="planupdate"){
 
   const getGymAddress = async () => {
     try {
-      const res = await axiosInstance.post(gymaddressurl, { location_id:userdetails?.locationId});
+      const res = await axiosInstance.post(gymaddressurl, { locationId:loginDetails?.locationDetails?.locationId});
 
       if (res.status === 200) {
         if (res.data.status) {
@@ -501,6 +511,7 @@ if(tab==="planupdate"){
     getstate();
     getcity();
     getlocation();
+    getGymAddress();
   }, []);
   function handlelocation(e, name) {
     let l = { ...locationdata };
@@ -529,6 +540,30 @@ if(tab==="planupdate"){
     // setlocationdata({ ...l });
   }
 
+
+  // const [base64Image, setBase64Image] = useState('');
+
+  // const handleFileChange = (event) => {
+  //   const file = event.target.files[0];
+
+  //   if (file) {
+  //     const reader = new FileReader();
+
+  //     reader.onloadend = () => {
+  //       // The result property contains the data URL as a base64 encoded string
+  //       const base64String = reader.result;
+  //       setBase64Image(base64String);
+  //     };
+
+  //     // Read the image file as a data URL
+  //     reader.readAsDataURL(file);
+  //   }
+  // };
+  // <input type="file" onChange={handleFileChange} />
+
+
+  console.log(avatarUrl.current);
+
   return (
     
 
@@ -545,7 +580,7 @@ if(tab==="planupdate"){
           <h2 class="font-medium text-md text-gray-700 mb-4 tracking-wide">{tab==="profileinfo" ?"Profile Info":tab==="passwordupdate" ? "Password Update":"Plan Details"}</h2>
           <p class="text-xs text-gray-500">{tab==="profileinfo" ?"Update your basic profile information such as Email Address, Name, and Image.":tab==="passwordupdate" ? "Update your Password":"Update your Plan to switch to a newer and better Plan"}</p>
         </div>
-        {tab==="profileinfo"?<div class="md:w-2/3 w-full px-8 pt-6 pb-8 mb-4  flex flex-col">
+        {tab==="profileinfo"?<div className='flex'><div class="md:w-5/6 w-full px-8 pt-6 pb-8 mb-4  flex flex-col">
         <div class="-mx-3 md:flex mb-6">
           <div class="md:w-1/2 px-3 mb-6 md:mb-0">
             <label for="name" class="text-sm text-gray-600">First Name</label>
@@ -557,36 +592,47 @@ if(tab==="planupdate"){
             <input placeholder='Last Name' class="mt-2 border-2 border-gray-200 px-3 py-2 block w-full rounded-lg text-base text-gray-900 focus:outline-none focus:border-indigo-500 dark:text-white" type="text" value={userdetails?.lastName} onChange={(e)=>onchangehandler2(e,"lastName")} />
           </div>
           {/* <hr class="border-gray-200"/> */}
-          <div class="md:w-1/2 px-3 mb-6 md:mb-0">
+      
+
+          </div>
+        <div class="-mx-3 md:flex mb-6">
+        <div class="md:w-1/2 px-3 mb-6 md:mb-0">
             <label for="email" class="text-sm text-gray-600">UserName</label>
             <input placeholder='UserName' class="mt-2 border-2 border-gray-200 px-3 py-2 block w-full rounded-lg text-base text-gray-900 focus:outline-none focus:border-indigo-500 dark:text-white" type="email" value={userdetails?.userName} onChange={(e)=>onchangehandler2(e,"userName")}/>
           </div>
-          </div>
-        <div class="-mx-3 md:flex mb-6">
-
         <div class="md:w-1/2 px-3 mb-6 md:mb-0">
             <label for="email" class="text-sm text-gray-600">Email Address</label>
             <input placeholder='Email' class="mt-2 border-2 border-gray-200 px-3 py-2 block w-full rounded-lg text-base text-gray-900 focus:outline-none focus:border-indigo-500 dark:text-white" type="email" value={userdetails?.emailId} readOnly/>
           </div>
-          <div class="md:w-1/2 px-3 mb-6 md:mb-0">
-            <label for="name" class="text-sm text-gray-600">Gender</label>
-            <input class="mt-2 border-2 border-gray-200 px-3 py-2 block w-full rounded-lg text-base text-gray-900 focus:outline-none focus:border-indigo-500 dark:text-white" type="text" value={userdetails?.gender} readOnly/>
-          </div>
-          <div class="md:w-1/2 px-3 mb-6 md:mb-0">
-            <label for="name" class="text-sm text-gray-600">Trainer</label>
-            <input class="mt-2 border-2 border-gray-200 px-3 py-2 block w-full rounded-lg text-base text-gray-900 focus:outline-none focus:border-indigo-500 dark:text-white" type="text" value={userdetails?.gender} readOnly/>
-          </div>
+          {/* <div class="md:w-1/2 px-3 mb-6 md:mb-0">
+           
+          </div> */}
          
           </div>
 
           <div class="-mx-3 md:flex mb-6">
-          <div class="md:w-1/2 px-3 mb-6 md:mb-0">
+          <div class="md:w-3/4 px-3 mb-6 md:mb-0">
+            <label for="name" class="text-sm text-gray-600">Gender</label>
+            <input class="mt-2 border-2 border-gray-200 px-3 py-2 block w-full rounded-lg text-base text-gray-900 focus:outline-none focus:border-indigo-500 dark:text-white" type="text" value={userdetails?.gender} readOnly/>
+          </div>
+          <div class="md:w-3/4 px-3 mb-6 md:mb-0">
+            <label for="name" class="text-sm text-gray-600">Trainer</label>
+            <input class="mt-2 border-2 border-gray-200 px-3 py-2 block w-full rounded-lg text-base text-gray-900 focus:outline-none focus:border-indigo-500 dark:text-white" type="text" value={userdetails?.gender} readOnly/>
+          </div>
+         
+          
+         
+          </div>
+
+          <div class="-mx-3 md:flex mb-6">
+          <div class="md:w-3/4 px-3 mb-6 md:mb-0">
             <label for="name" class="text-sm text-gray-600">State</label>
             {/* <input class="mt-2 border-2 border-gray-200 px-3 py-2 block w-full rounded-lg text-base text-gray-900 focus:outline-none focus:border-indigo-500 dark:text-white" type="text" /> */}
             <Select
                       id="state"
                       name="state"
                       placeholder="State"
+                      isDisabled
                       
                       onChange={(e) => handlelocation(e, "state")}
                       value={
@@ -613,7 +659,7 @@ if(tab==="planupdate"){
                     ></Select>
           </div>
           {/* <hr class="border-gray-200"/> */}
-          <div class="md:w-1/2 px-3 mb-6 md:mb-0">
+          <div class="md:w-3/4 px-3 mb-6 md:mb-0">
             <label for="email" class="text-sm text-gray-600">City</label>
 
 
@@ -622,7 +668,8 @@ if(tab==="planupdate"){
                       name="city"
                       placeholder="City"
                       className='pt-2'
-
+                      isDisabled
+                      
                       // styles={
                       //   mandatoryData.includes("gender") && !data.gender
                       //     ? handleReactSelectCss("small", true)
@@ -655,14 +702,23 @@ if(tab==="planupdate"){
 
             {/* <input class="mt-2 border-2 border-gray-200 px-3 py-2 block w-full rounded-lg text-base text-gray-900 focus:outline-none focus:border-indigo-500 dark:text-white" type="email" name="email"/> */}
           </div>
+   
+          
+          
+          </div>
 
-          <div class="md:w-1/2 px-3 mb-6 md:mb-0">
-            <label for="email" class="text-sm text-gray-600">Location</label>
+          
+          <div class="-mx-3 md:flex mb-6">
+
+          <div class="md:w-3/4 px-3 mb-6 md:mb-0">
+            <label for="location" class="text-sm text-gray-600">Location</label>
             <Select
                       id="location"
                       name="location"
                       placeholder="Location"
                       className='pt-2'
+                      isDisabled
+                      
                       // styles={
                       //   mandatoryData.includes("gender") && !data.gender
                       //     ? handleReactSelectCss("small", true)
@@ -699,11 +755,7 @@ if(tab==="planupdate"){
 
             {/* <input class="mt-2 border-2 border-gray-200 px-3 py-2 block w-full rounded-lg text-base text-gray-900 focus:outline-none focus:border-indigo-500 dark:text-white" type="email" name="email"/> */}
           </div>
-          </div>
-
-          
-          <div class="-mx-3 md:flex mb-6">
-          <div class="md:w-full px-3 mb-6 md:mb-0">
+          <div class="md:w-3/4 px-3 mb-6 md:mb-0">
             <label for="name" class="text-sm text-gray-600">Gym Address</label>
 
             <Select
@@ -711,6 +763,8 @@ if(tab==="planupdate"){
                       name="gymAddress"
                       placeholder="Gym Address"
                       className="leading-4 pt-2"
+                 isDisabled
+                      
                       // styles={
                       //   mandatoryData.includes("gender") && !data.gender
                       //     ? handleReactSelectCss("small", true)
@@ -719,20 +773,20 @@ if(tab==="planupdate"){
 
                       // styles={handleReactSelectCss("large", false)}
 
-                      styles={handleReactSelectCss("xlarge4", false,false,false,true)}
+                      styles={handleReactSelectCss("xlarge5", false,false,false,true)}
 
                       onChange={(e) => handlegymaddress(e)}
                       value={
                      
-                       locationdata.ownerId
-                          ? [
-                              {
-                                value: locationdata.ownerId,
-                                label: locationdata.gymName,
-                              },
-                            ]
-                          : []
-                      // userdetails.gymId ? getgymvalue("location",options4) : []
+                      //  locationdata.ownerId
+                      //     ? [
+                      //         {
+                      //           value: locationdata.ownerId,
+                      //           label: locationdata.gymName,
+                      //         },
+                      //       ]
+                      //     : []
+                      userdetails.gymId ? getvalue1() : []
 
                       
                       }
@@ -744,22 +798,28 @@ if(tab==="planupdate"){
                     ></Select>
             {/* <input class="mt-2 border-2 border-gray-200 px-3 py-2 block w-full rounded-lg text-base text-gray-900 focus:outline-none focus:border-indigo-500 dark:text-white" type="text" /> */}
           </div>
+ 
+
          
           </div>
 
           <hr class="border-gray-200"/>
-          <div class="-mx-3 md:flex mb-6">
-          <div class=" text-gray-500 text-xs mt-1 ml-3 font-bold px-1 py-4 rounded-lg float-left  hover:text-gray-600 relative overflow-hidden cursor-pointer">
+ 
+
+        </div>
+                  <div class="md:w-1/2  mb-6 md:mb-0 py-11 text-center -ml-2">
+          
+          <div class=" text-gray-500 text-xs mt-1 font-bold px-1 py-2 rounded-lg float-left  hover:text-gray-600 relative overflow-hidden cursor-pointer">
               {/* <input type="file" name="photo" onchange="loadFile(event)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"/> Change Photo */}
 
               <div className="relative">
         <img
           src={avatarUrl.current}
           alt="Avatar"
-          className="w-[90px] h-[80px] rounded-full border-2 border-gray-400"
+          className="w-[120px] h-[120px] rounded-full border-2 border-gray-400 "
         />
         <button
-          className="absolute -bottom-3 left-0 right-0 m-auto w-fit p-[.35rem] rounded-full bg-gray-800 hover:bg-gray-700 border border-gray-600"
+          className="absolute -bottom-2 -left-0 right-0 m-auto w-fit p-[.35rem] rounded-full bg-gray-800 hover:bg-gray-700 border border-gray-600"
           title="Change photo"
           onClick={() => setModalOpen(true)}
         >
@@ -768,12 +828,13 @@ if(tab==="planupdate"){
       </div>
 
             </div>
-            <label for="photo" class="text-sm text-gray-600 w-full block">Change Photo</label>
-            {/* <img class="rounded-full w-16 h-16 border-4 mt-2 border-gray-200 float-left" id="photo" src="https://pbs.twimg.com/profile_images/1163965029063913472/ItoFLWys_400x400.jpg" alt="photo"/> */}
          
-          </div>
-
-        </div>:tab==="passwordupdate" ? 
+</div>
+        
+        
+        </div>
+        
+        :tab==="passwordupdate" ? 
 <div className='md:w-2/3 w-full px-8 pt-28 pb-8 mb-4  flex flex-col'>
 <div class="-mx-3 md:flex mb-6 justify-center items-center">
           <div class="md:w-1/2 px-3 mb-6 md:mb-0">
