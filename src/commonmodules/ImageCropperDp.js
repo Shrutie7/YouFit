@@ -100,7 +100,7 @@ const ImageCropper = ({ closeModal, updateAvatar }) => {
               );
               const dataUrl = previewCanvasRef.current.toDataURL();
               updateAvatar(dataUrl);
-              closeModal();
+              closeModal();  
             }}
           >
             Crop Image

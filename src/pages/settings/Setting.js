@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import axiosInstance from "../../services/LocalAxiosInstance";
 import { Addrowerror } from "../../commonmodules/Addrowerror";
 import Errmsg from "../../data/Errormsg.json";
@@ -10,6 +10,7 @@ import Select from "react-select";
 import { handleReactSelectCss } from "../../commonmodules/ReactSelectCss";
 import PencilIcon from '../../commonmodules/PencilIcon';
 import ModalDp from '../../commonmodules/ModalDp';
+import { addLoginReducer } from '../../store/LoginDetails';
 
 
 const Setting = () => {
@@ -20,11 +21,13 @@ const Setting = () => {
   let locationaddressurl = "location/address";
   let gymaddressurl = "location/gymaddress";  
   const avatarUrl = useRef(null);
+
   const [modalOpen, setModalOpen] = useState(false);
 
-  const updateAvatar = (imgSrc) => {
-    avatarUrl.current = imgSrc;
-  };
+
+  let dispatch = useDispatch();
+
+  const logindetailsurl = "users/getuser";
 
   const loginDetails = useSelector((e)=>e.logindetails.data);
 
@@ -77,7 +80,17 @@ const Setting = () => {
     setShoweye3(!showeye3);
   };
 
+  const updateAvatar = (imgSrc) => {
+    let l ={...userdetails};
+   
+    avatarUrl.current = imgSrc;
+    console.log(imgSrc);
+    console.log(avatarUrl.current.slice(avatarUrl.current?.toString()?.indexOf(",")+1))
+   
+    l.image = avatarUrl.current.slice(avatarUrl.current?.toString()?.indexOf(",")+1)
+    setuserdetails({...l});
 
+  };
 
   const re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/  ;
 
@@ -111,7 +124,55 @@ const Setting = () => {
   }
 
 
+const logindetailsapi = async (emailId) => {
+  // setloaded(true)
+  const res = await axiosInstance.post(logindetailsurl, {
+    emailId: emailId
+  });
 
+  try {
+    if (res.status === 200) {
+      if (res.data.status) {
+        let l = res.data.data;
+
+        console.log(l)
+        
+        dispatch(addLoginReducer({ ...res.data.data }));
+        
+      } else {
+   
+        // const l = { ...err };
+        // // setloaded(false)
+        // setshow(true);
+        // setnavpath("/");
+        // setmodalType("errormodal");
+        // l.message = res.data.message;
+        // seterrcode(l.message);
+        // setlogout(true);
+      
+      }
+    } else if (res?.response.status === 401) {
+      // seterrcode(Errmsg["err002"]);
+
+      // setshow(true);
+      // setlogout(true);
+      // setnavpath("/");
+
+      // setmodalType("errormodal");
+    } else {
+      // seterrcode(Errmsg["err001"]);
+      // setlogout(true);
+      // setshow(true);
+      // setmodalType("errormodal");
+    }
+  } catch (err) {
+  
+    // seterrcode(Errmsg["err001"]);
+    // setlogout(true);
+    // setshow(true);
+    // setmodalType("errormodal");
+  }
+};
 
   const getvalue = (name,opt) =>{
 
@@ -180,6 +241,8 @@ const Setting = () => {
     localjson.gymId = loginDetails?.gymId;
     localjson.image = userdetails?.image;
 
+    console.log(localjson);
+
     try {
       const res = await axiosInstance.post(updateuserurl, localjson);
 
@@ -197,9 +260,11 @@ const Setting = () => {
             theme: "light",
             onClose: () => {
               // nav("/portal");
+              logindetailsapi(loginDetails?.emailId);
+
             },
           });
-
+        
         } else {
           // const l = { ...modalpopupdata };
           //         l.show=true
@@ -512,6 +577,10 @@ if(tab==="planupdate"){
     getcity();
     getlocation();
     getGymAddress();
+
+    
+
+
   }, []);
   function handlelocation(e, name) {
     let l = { ...locationdata };
@@ -562,8 +631,9 @@ if(tab==="planupdate"){
   // <input type="file" onChange={handleFileChange} />
 
 
-  console.log(avatarUrl.current);
 
+
+  // console.log(avatarUrl.current?.toString()?.slice(avatarUrl.current?.toString()?.indexOf(",")+1));
   return (
     
 
@@ -645,7 +715,7 @@ if(tab==="planupdate"){
                         //     ]
                         //   : []
 
-                      userdetails.locationDetails.state ? getvalue("state",options2) : []
+                      userdetails?.locationDetails?.state ? getvalue("state",options2) : []
                       }
                       menuPortalTarget={document.body}
                       menuPosition={"fixed"}
@@ -691,7 +761,7 @@ if(tab==="planupdate"){
                         //   : []
 
                         
-                      userdetails.locationDetails.city ? getvalue("city",options3) : []
+                      userdetails?.locationDetails?.city ? getvalue("city",options3) : []
                       }
                       // value={selectdraft?.id?[{"value":selectdraft.id,"label":selectdraft.desc}]:[]}
                       menuPortalTarget={document.body}
@@ -741,7 +811,7 @@ if(tab==="planupdate"){
                         //     ]
                         //   : []
 
-                        userdetails.locationDetails.locationId ? getvalue("location",options4) : []
+                        userdetails?.locationDetails?.locationId ? getvalue("location",options4) : []
                       
                       }
                       // value={selectdraft?.id?[{"value":selectdraft.id,"label":selectdraft.desc}]:[]}
@@ -814,7 +884,8 @@ if(tab==="planupdate"){
 
               <div className="relative">
         <img
-          src={avatarUrl.current}
+          src={"data:image/png;base64," + userdetails?.image}
+          // src={avatarUrl.current}
           alt="Avatar"
           className="w-[120px] h-[120px] rounded-full border-2 border-gray-400 "
         />
