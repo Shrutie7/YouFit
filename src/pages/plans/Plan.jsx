@@ -12,29 +12,36 @@ import { addloc } from "../../store/location";
 const Plan = () => {
   const loginDetails = useSelector((e) => e.logindetails.data);
   const nav = useNavigate();
-
+const [errcode,seterrcode] = useState()
   const planlisturl = "plan/list";
   const [planlist,setplanlist] = useState([]);
   let [loading, setLoading] = useState(false);
   const [plantype,setplantype] = useState("pro")
 
 const onClickhandlerplan = (name)=>{
+  let str = ""
   if(name==="elite"){
-    setplantype("elite")
+    getplanlist("elite")
+  str = "elite";
   }
   if(name === "pro")
   {
-    setplantype("pro")
+    getplanlist("pro")
+   str = "pro";
   }
+
+
+  console.log(str);
+  setplantype(str);
 
 }
 
   const dispatch = useDispatch();
-  const getplanlist = async () => {
+  const getplanlist = async (strr) => {
     setLoading(true)
     try {
       const res = await axiosInstance.post(planlisturl, {
-        gymTypeId: loginDetails.roleId===parseInt(loginDetails.userId) ? loginDetails.gymtypeId:2,
+        gymTypeId: parseInt(loginDetails?.roleId) === 1 ? (strr === "pro" ? 1 : 2) : loginDetails?.gymTypeId ,
       });
 
       if (res.status === 200) {
@@ -42,6 +49,8 @@ const onClickhandlerplan = (name)=>{
           console.log(res?.data?.data);
           setplanlist([...res?.data?.data?.ListOfPlans]);
         } else {
+          setplanlist([])
+          seterrcode("No plans Found");
           // const l = { ...modalpopupdata };
           //         l.show=true
           //         l.errormsg=res.data.message
@@ -72,7 +81,11 @@ const onClickhandlerplan = (name)=>{
   };
 
   useEffect(() => {
-    getplanlist();
+    getplanlist("pro");
+    setplantype("pro");
+
+
+    console.log(plantype);
   }, []);
   return (
     <>
@@ -81,7 +94,7 @@ const onClickhandlerplan = (name)=>{
       </Header>
    
 
-      {loginDetails.roleId !== parseInt(1) ? <div class=" mt-0 border-solid">
+      {parseInt(loginDetails.roleId) !== parseInt(1) ? <div class=" mt-0 border-solid">
         <div class="py-8 px-4 lg:py-10 lg:px-6">
           <div class="mx-auto max-w-screen-md text-center mb-8 lg:mb-12">
             <h2 class="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">
@@ -149,17 +162,17 @@ const onClickhandlerplan = (name)=>{
         </div>
       </div>:<div class="py-8 px-4 lg:py-10 lg:px-6">
 
-        <div className="flex flex-col">
+        <div className="flex justify-center items-center">
 
-<div className="p-2 m-2 h-16 bg-blue-600 " onClick={()=>onClickhandlerplan("pro")}>Pro Plan</div>
+<div className={`p-2 m-2 h-12 cursor-pointer text-center w-80 text-lg leading-8 rounded-lg ${plantype==="pro"?"bg-blue-300":"bg-blue-600"}`} onClick={()=>onClickhandlerplan("pro")}>Pro Plan</div>
 
 
 
-<div className="p-2 m-2 h-16 bg-blue-600" onClick={()=>onClickhandlerplan("elite")}>Elite Plans</div>
+<div className={`p-2 m-2 h-12 cursor-pointer text-center w-80 text-lg leading-8 rounded-lg ${plantype==="elite"?"bg-blue-300":"bg-blue-600"}`} onClick={()=>onClickhandlerplan("elite")}>Elite Plans</div>
 
         </div>
 
-        <div class="space-y-8 lg:grid lg:grid-cols-4 sm:gap-6 xl:gap-16 lg:space-y-0">
+        {planlist.length>0 ?<div class="space-y-8 lg:grid lg:grid-cols-4 sm:gap-6 xl:gap-16 lg:space-y-0">
          
               
          {
@@ -204,8 +217,12 @@ const onClickhandlerplan = (name)=>{
 
 
        
+     </div>:<></>}
+
+     <div className="flex items-center m-6">
+     <button onClick={()=>{nav("plancreate");dispatch(addloc({state:plantype}))}} className= {`bg-blue-700 p-2 rounded-lg text-center m-auto w-72`}>Create Plan</button>
+
      </div>
-        
         
         
         

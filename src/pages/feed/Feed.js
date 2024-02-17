@@ -1821,7 +1821,7 @@ const Feed = () => {
                                     {cele?.replyCount>0 ? <span
                                       class="font-semibold cursor-pointer"
                                       onClick={() => {
-                                        commentreplylist(cele?.commentId, ind);
+                                        commentreplylist(cele?.commentId, cind);
                                     
                                       }}
                                     >
@@ -1847,7 +1847,7 @@ const Feed = () => {
 
 {console.log("================================>",openreplylist, "==>",cind,commentreplylistfl)}
                                 {commentreplylistfl &&
-                                openreplylist === ind ? (
+                                openreplylist === cind ? (
                                   <div className="">
                                     {commentreplylistdata &&
                                       commentreplylistdata.map((rele) => (

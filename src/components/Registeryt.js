@@ -19,10 +19,14 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Popover from "react-bootstrap/Popover";
 const Registeryt = () => {
   const [showeye, setShoweye] = useState(false);
+  const [showeye1, setShoweye1] = useState(false);
   const [imgeye, setimgeye] = useState();
   const [mandatoryData, setMandatoryData] = useState([]);
   const handleShoweye = () => {
     setShoweye(!showeye);
+  };
+  const handleShoweye1 = () => {
+    setShoweye1(!showeye1);
   };
   const slides = [regimg1, regimg2, regimg3, regimg4];
   const nav = useNavigate();
@@ -85,7 +89,7 @@ const Registeryt = () => {
       l[name] = value;
     } 
     if(name==="emailId"){
-      l[name] = value;
+      l[name] = value.toLowerCase();
     }
  
     if((name==="password" || name==="confirmPassword")){
@@ -211,6 +215,7 @@ const Registeryt = () => {
   let stateurl = "location/state";
   let cityurl = "location/city";
   let locationaddressurl = "location/address/filter";
+  let locationaddressurl2 = "location/address";
   let gymaddressurl = "location/gymaddress";  
   let getcategoryurl = "/user/category/list";
   const [err, seterr] = useState({ message: "" });
@@ -334,6 +339,47 @@ const Registeryt = () => {
   const getlocation = async () => {
     try {
       const res = await axiosInstance.post(locationaddressurl, { state: locationdata.state,city:locationdata.city });
+
+      if (res.status === 200) {
+        if (res.data.status) {
+          let l = res.data.data.addressList.map((d) => ({
+            value: d.locationId,
+            label: d.locationAddress,
+          }));
+          setoptions4([...l]);
+        } else {
+          // const l = { ...modalpopupdata };
+          //         l.show=true
+          //         l.errormsg=res.data.message
+          //         l.logout=false
+          //         setmodalpopupdata({...l})
+        }
+      } else if (res.response.status === 401) {
+        // const l = { ...modalpopupdata };
+        // l.show=true
+        // l.errormsg="Session Expired. Please login again..."
+        // l.logout=true
+        // setmodalpopupdata({...l})
+      } else {
+        // const l = { ...modalpopupdata };
+        // l.show=true
+        // l.errormsg="Unable to Connect.Please try again later"
+        // l.logout=false
+        // setmodalpopupdata({...l})
+      }
+    } catch (err) {
+      // const l = { ...modalpopupdata };
+      // l.show=true
+      // l.errormsg="Unable to Connect.Please try again later"
+      // l.logout=false
+      // setmodalpopupdata({...l})
+    }
+  };
+
+
+  const getlocation2 = async () => {
+    try {
+      const res = await axiosInstance.post(locationaddressurl2, { state: locationdata.state,city:locationdata.city });
 
       if (res.status === 200) {
         if (res.data.status) {
@@ -546,6 +592,7 @@ const Registeryt = () => {
                       id="firstName"
                       type="text"
                       placeholder="First Name"
+                      autoComplete="off"
                       name="firstName"
                       value={data.firstName}
                       onChange={(e) => handlechange(e, "firstName")}
@@ -568,6 +615,7 @@ const Registeryt = () => {
                       id="lastName"
                       type="text"
                       placeholder="Last Name"
+                      autoComplete="off"
                       value={data.lastName}
                       name="lastName"
                       onChange={(e) => handlechange(e, "lastName")}
@@ -622,6 +670,7 @@ const Registeryt = () => {
                       //     : {}
                       // }
                       type="text"
+                      autoComplete="off"
                       placeholder="Nick Name"
                       name="userName"
                       value={data.userName}
@@ -646,6 +695,7 @@ const Registeryt = () => {
                     }
                     type="email"
                     placeholder="Email"
+                    autoComplete="off"
                     value={data.emailId}
                     name="emailId"
                     onChange={(e) => handlechange(e, "emailId")}
@@ -674,6 +724,7 @@ const Registeryt = () => {
                       type={showeye ? "text" : "password"}
                       placeholder="******************"
                       name="password"
+                      autoComplete="off"
                       value={data.password ? data.password:""}
                       onCopy={(e) => {
                         e.preventDefault();
@@ -710,7 +761,7 @@ const Registeryt = () => {
 
                     
                   </div>
-                  <div className="mr-2 md:ml-2">
+                  <div className="mb-4 md:mr-2 md:mb-0 z-0 relative">
                     <label
                       className="block mb-2 text-sm font-semibold text-gray-700 dark:text-white"
                       htmlFor="confirmPassword"
@@ -718,9 +769,15 @@ const Registeryt = () => {
                       Confirm Password
                     </label>
                     <input
-                      className="bg-white w-full px-3 py-2 mb-3 text-sm leading-tight text-gray-700 dark:text-black border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+                      // className="bg-white w-full px-3 py-2 mb-3 text-sm leading-tight text-gray-700 dark:text-black border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+                      className={
+                        data.confirmPassword === ""
+                          ? " bg-white relative w-full z-0 px-3 py-2 mb-3 text-sm leading-tight text-gray-700 dark:text-black border-red-500 rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+                          : "bg-white relative w-full  z-0 px-3 py-2 mb-3 text-sm leading-tight text-gray-700 dark:text-black  rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+                      }
                       id="confirmPassword"
-                      type="password"
+                      type={showeye1 ? "text" : "password"}
+                      autoComplete="off"
                       style={
                         mandatoryData.includes("confirmPassword") &&
                         !data.confirmPassword
@@ -730,8 +787,24 @@ const Registeryt = () => {
                       placeholder="******************"
                       name="confirmPassword"
                       value={data.confirmPassword}  
+                      onCopy={(e) => {
+                        e.preventDefault();
+                        return false;
+                      }}
+                      onPaste={(e) => {
+                        e.preventDefault();
+                        return false;
+                      }}
+                      maxLength={14}
                       onChange={(e) => handlechange(e, "confirmPassword")}
                     />
+                          <img
+                      className="h-5 w-5 z-[100] -mt-10 cursor-pointer absolute right-2"
+                      src={eyeimgon}
+                      alt="eye"
+                      onClick={handleShoweye1}
+                    ></img>
+                   
                   </div>
               
                
@@ -779,7 +852,7 @@ const Registeryt = () => {
                       value={4}
                     />
                     <label className="text-white font-semibold text-sm">
-                      Request User Register
+                       Register As User
                     </label>
                   </div>
                   <div className="flex gap-2">
@@ -791,7 +864,7 @@ const Registeryt = () => {
                       value={3}
                     />
                     <label className="text-white font-semibold text-sm">
-                      Request Trainer Register
+                    Register Request Trainer
                     </label>
                   </div>
                   <div className="flex gap-2">
@@ -802,7 +875,7 @@ const Registeryt = () => {
                       value={2}
                     />
                     <label className="text-white font-semibold text-sm">
-                      Request Owner Register
+                      Register Request Owner
                     </label>
                   </div>
                 </div>
@@ -916,7 +989,7 @@ const Registeryt = () => {
                       // value={selectdraft?.id?[{"value":selectdraft.id,"label":selectdraft.desc}]:[]}
                       menuPortalTarget={document.body}
                       menuPosition={"fixed"}
-                      onMenuOpen={()=>getlocation()}
+                      onMenuOpen={()=>parseInt(data.roleId)===parseInt(2)?getlocation2():getlocation()}
                       options={options4}
                     ></Select>
                   </div>

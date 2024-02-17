@@ -6,13 +6,18 @@ import { useNavigate } from "react-router-dom";
 import { Addrowerror } from "../../commonmodules/Addrowerror";
 import { ToastContainer, toast } from "react-toastify";
 import { CircularProgress } from "@material-ui/core";
+import { useSelector } from "react-redux";
 const Plancreate = () => {
+
+  const loc = useSelector((e)=>e.location.state);
+
+  console.log(loc);
   let formjson = {
     planName: "",
     planPrice: "",
     planDescription: "",
     planDuration: "",
-    gymTypeId: "2",
+    gymTypeId: loc.state ==="pro" ? "1" : "2" ,
     categoryId: [],
     features: ""
   };
@@ -301,8 +306,8 @@ setformdata({...l2})
                   styles={
                     mandatoryData.includes("planDuration") &&
                       !formdata?.planDuration
-                      ? handleReactSelectCss("xlarge3", true, true)
-                      : handleReactSelectCss("xlarge3", false, true)
+                      ? handleReactSelectCss("xlarge1", true, true)
+                      : handleReactSelectCss("xlarge1", false, true)
                   }
                   // onChange={(e) => handlegender(e)}
                   onChange={(e) =>
