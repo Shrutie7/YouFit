@@ -1,29 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../../services/LocalAxiosInstance";
+import ClassesAdminModal from "./ClassesAdminModal";
 
 const ClassesAdminOwner = () => {
   const classmasterlisturl = "class/master/list";
   const [addflag,setaddflag] = useState(false);
-  let classesadd = [
-    // {
-    //   classes: "",
-    // },
-  ];
-  let [classest, setclassest] = useState([...classesadd]);
-  const addclasses = () => {
-    let l = [...classest];
-    l.push({
-      classes: "",
-    });
-    setclassest([...l]);
-  };
-  const deleteclasses = (ind) => {
-    let l = [...classest];
-    l.splice(ind, 1);
-    setclassest([...l]);
-  };
-
-  const [classdata, setclassdata] = useState([]);
+ 
+  const [classdata,setclassdata] = useState([]);
   const getclassmasterlist = async () => {
     try {
       const res = await axiosInstance.get(classmasterlisturl);
@@ -79,56 +62,23 @@ const ClassesAdminOwner = () => {
           <button
             className={`p-2 m-2 h-12 cursor-pointer text-center w-80 text-xl font-semibold leading-8 rounded-lg bg-blue-600 hover:bg-blue-500`}
           // onClick={()=>setaddflag(true)}
-          onClick={()=>{setaddflag(true) ;addclasses()}}
+          onClick={()=>{setaddflag(true)}}
           >
             Add Class
           </button>
 
-          <div class="md:w-full px-3 mb-6 md:mb-0">
-            <div className="flex justify-between ">
-              <div
-                className="cursor-pointer bg-gray-600 text-white text-center rounded-[50%] w-6 h-6"
-                onClick={() => addclasses()}
-              >
-                +
-              </div>
-            </div>
 
-            {addflag?<div className={`h-72 overflow-y-scroll`}>
-              {classest.map((ele, ind) => (
-                <div className="flex ">
-                  <label className="text-center text-black">{ind + 1}</label>
-                  <input
-                    class="w-full bg-gray-200 text-black border border-gray-200 rounded py-3 px-4 mb-2"
-                    id="company"
-                    type="text"
-                    placeholder={`Add Class ${ind + 1}`}
-
-                    // onChange={(e) => {
-                    //   handlechange1(e,ind);
-                    // }}
-                    // value={formdata?.features?.at(ind)}
-                  />
-                  {classest.length !== 1 ? (
-                    <div
-                      onClick={() => deleteclasses(ind)}
-                      className="cursor-pointer text-black"
-                    >
-                      D
-                    </div>
-                  ) : (
-                    <></>
-                  )}
-                </div>
-              ))}
-            </div>:<></>}
-          </div>
         </div>
 
-        <div className="pt-8">
-          <button   class="md:w-full bg-gray-900 text-white font-bold py-2 px-4 border-b-4 hover:border-b-2 border-gray-500 hover:border-gray-100 rounded-full">Submit</button>
-        </div>
+     
       </div>
+
+      {
+        addflag && <ClassesAdminModal
+        closeModal={() => setaddflag(false)}
+
+        />
+      }
     </div>
   );
 };
