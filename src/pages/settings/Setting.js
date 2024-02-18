@@ -36,7 +36,7 @@ const Setting = () => {
   const [options4, setoptions4] = useState([]);
   const [options5, setoptions5] = useState([]);
   const [options6, setoptions6] = useState([]);
-  const [tab,settab] = useState("profileinfo");
+  const [tab,settab] = useState(parseInt(loginDetails?.roleId)!==1 ? "profileinfo":"passwordupdate");
   const [showeye, setShoweye] = useState(false);
   const [showeye2, setShoweye2] = useState(false);
   const [showeye3, setShoweye3] = useState(false);
@@ -242,7 +242,7 @@ const logindetailsapi = async (emailId) => {
     localjson.image = userdetails?.image;
 
     console.log(localjson);
-
+    setflag(true);
     try {
       const res = await axiosInstance.post(updateuserurl, localjson);
 
@@ -292,6 +292,7 @@ const logindetailsapi = async (emailId) => {
       // l.logout=false
       // setmodalpopupdata({...l})
     }
+    setflag(false);
   };
 
 
@@ -641,9 +642,9 @@ if(tab==="planupdate"){
     {/* <h1 class="text-3xl font-bold font-sans text-white px-6 md:px-0">Account Settings</h1> */}
     <div className='lg:bg-gray-200 sm:bg-gray-200 md:bg-gray-200 h-[85%] overflow-x-hidden overflow-y-hidden bg-gray-200'>
     <ul class="flex border-b border-gray-300 text-sm font-medium text-gray-600 mt-3 px-6 md:px-6">
-      <li class="mr-8 text-gray-900 border-b-2 border-gray-800"><a href="#_" class= {`${tab==="profileinfo" ? "underline":"no-underline"} py-4 inline-block text-black text-base font-sans font-semibold`} onClick={()=>settab("profileinfo")}>Profile Info</a></li>
+     {parseInt(loginDetails?.roleId) !== 1 ?  <li class="mr-8 text-gray-900 border-b-2 border-gray-800"><a href="#_" class= {`${tab==="profileinfo" ? "underline":"no-underline"} py-4 inline-block text-black text-base font-sans font-semibold`} onClick={()=>settab("profileinfo")}>Profile Info</a></li>:<></>}
       <li class="mr-8 hover:text-gray-900"><a href="#_" class={`${tab==="passwordupdate" ? "underline":"no-underline"} py-4 inline-block text-black text-base font-sans font-semibold`} onClick={()=>settab("passwordupdate")}>Password Update</a></li>
-      <li class="mr-8 hover:text-gray-900"><a href="#_" class={`${tab==="planupdate" ? "underline":"no-underline"} py-4 inline-block text-black text-base font-sans font-semibold`} onClick={()=>settab("planupdate")}>Plan Details</a></li>
+      {parseInt(loginDetails?.roleId)!==1?<li class="mr-8 hover:text-gray-900"><a href="#_" class={`${tab==="planupdate" ? "underline":"no-underline"} py-4 inline-block text-black text-base font-sans font-semibold`} onClick={()=>settab("planupdate")}>Plan Details</a></li>:<></>}
     </ul>
      <div class="w-full bg-white rounded-lg mx-auto mt-8 flex h-[72%] overflow-y-auto rounded-b-none">
         <div class="w-1/3 bg-gray-100 p-8 hidden md:inline-block">

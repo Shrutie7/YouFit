@@ -155,11 +155,10 @@ const Trainers = () => {
 
   return (
     <>
-      <Header title="Our Trainers" image={HeaderImage}>
-        {/* Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc lacinia, augue ac laoreet ultricies,
-        nulla velit elementum lorem,at aliquam ante leo eu risus. Duis quis magna leo. Suspendisse potenti. */}
-      </Header>
-      <section className="trainers">
+      {/* <Header title="Our Trainers" image={HeaderImage}> */}
+
+      {/* </Header> */}
+      <section className="trainers ">
         <div className="container trainerstocontainer">
           {/* {
             trainers.map(({id, image, name, job, socials}) => {

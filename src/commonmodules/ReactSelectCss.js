@@ -27,6 +27,10 @@ export const handleReactSelectCss = (name,error, flag, type,settings) => {
         reactslctw = "13rem";
         break;
       }
+      case "xlarge":{
+        reactslctw = "25.5rem";
+        break;
+      }
       case "xlarge1": {
         reactslctw = "24rem";
         break;
@@ -46,6 +50,10 @@ export const handleReactSelectCss = (name,error, flag, type,settings) => {
 
       case "xlarge5": {
         reactslctw = "18.5rem";
+        break;
+      }
+      case "xlarge6": {
+        reactslctw = "34rem";
         break;
       }
       default:

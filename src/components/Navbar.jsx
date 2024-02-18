@@ -73,7 +73,8 @@ const Navbar = () => {
         <ul
           className={`navtolinks ${isNavShowing ? "showtonav" : "hidetonav"}`}
         >
-          {links.map(({ name, path }, index) => {
+          {parseInt(loginDetails?.roleId) !==1?(
+          links.map(({ name, path }, index) => {
             return (
               <li key={index}>
                 <NavLink
@@ -85,7 +86,19 @@ const Navbar = () => {
                 </NavLink>
               </li>
             );
-          })}
+          })):( links.map(({ name, path,adminViewable }, index) => {
+            return (
+              <li key={index}>
+                <NavLink
+                  to={path}
+                  className={({ isActive }) => (isActive ? "active-nav" : "")}
+                  onClick={() => setIsNavShowing((prev) => !prev)}
+                >
+                  {adminViewable ? name : ""}
+                </NavLink>
+              </li>
+            );
+          }))}
           <li className="flex gap-4">
         
             <img

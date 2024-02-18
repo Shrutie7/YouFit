@@ -4,10 +4,12 @@ export const links = [
   {
     name: "Home",
     path: "/portal/home",
+    adminViewable: true,
   },
   {
     name:"Feed",
-    path:"/portal/feed"
+    path:"/portal/feed",
+    adminViewable: false,
   },
   // {
   //   name: "Gallery",
@@ -16,24 +18,30 @@ export const links = [
   {
     name: "Plans",
     path: "/portal/plans",
+    adminViewable: true,
+
   },
   {
     name: "Trainers",
     path: "/portal/trainers",
+    adminViewable: false,
   },
 
   {
     name: "Classes",
     path: "/portal/classes",
+    adminViewable: true,
   },
 
   {
     name: "Feedback",
     path: "/portal/feedback",
+    adminViewable: false,
   },
   {
     name: "Settings",
     path: "/portal/settings",
+    adminViewable: true,
   },
 ];
 

@@ -12,10 +12,12 @@ import NotFound from "../pages/notFound/NotFound";
 import Feed from "../pages/feed/Feed";
 import Setting from "../pages/settings/Setting";
 import PlanIndex from "../pages/plans/PlanIndex";
-import Classes from "../pages/classes/Classes";
+import Classes from "../pages/classes/ClassesIndex";
 import Interceptor from "../services/ApiInterceptor";
 
+
 const keycloakAuth = () => {
+
   return (
     <div className={kc.main}>
       <ReactKeycloakProvider
