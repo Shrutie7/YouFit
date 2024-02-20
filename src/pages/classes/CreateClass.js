@@ -11,7 +11,46 @@ const CreateClass = () => {
   const [options,setoptions] = useState([]);
   const nav = useNavigate();
   const classmasterlisturl = "class/master/list";
+  const timemasterlisturl = "class/time/details/list";
 
+  const [timedata,settimedata] = useState([]);
+
+  const gettimemasterlist = async () => {
+    try {
+      const res = await axiosInstance.get(timemasterlisturl);
+
+      if (res.status === 200) {
+        if (res.data.status) {
+          console.log(res)
+          // settimedata([...res?.data?.data?.timeList]);
+        } else {
+          // const l = { ...modalpopupdata };
+          //         l.show=true
+          //         l.errormsg=res.data.message
+          //         l.logout=false
+          //         setmodalpopupdata({...l})
+        }
+      } else if (res.response.status === 401) {
+        // const l = { ...modalpopupdata };
+        // l.show=true
+        // l.errormsg="Session Expired. Please login again..."
+        // l.logout=true
+        // setmodalpopupdata({...l})
+      } else {
+        // const l = { ...modalpopupdata };
+        // l.show=true
+        // l.errormsg="Unable to Connect.Please try again later"
+        // l.logout=false
+        // setmodalpopupdata({...l})
+      }
+    } catch (err) {
+      // const l = { ...modalpopupdata };
+      // l.show=true
+      // l.errormsg="Unable to Connect.Please try again later"
+      // l.logout=false
+      // setmodalpopupdata({...l})
+    }
+  };
 
   const getclassmasterlist = async () => {
     try {
@@ -104,7 +143,8 @@ const CreateClass = () => {
   };
 
   useEffect(()=>{
-    getclassmasterlist()
+    getclassmasterlist();
+    gettimemasterlist();
   },[])
   return (
     <>

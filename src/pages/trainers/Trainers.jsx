@@ -176,7 +176,7 @@ const Trainers = () => {
           {trainerdata.map((d, i) => (
             <Card className="trainer">
               <div className="trainertoimg">
-                <img src={logo} alt={d?.trainerName} />
+                <img src={"data:image/png;base64," + d?.image} alt={d?.trainerName} />
               </div>
               <div className="text-2xl font-semibold mt-8">
                 {d?.trainerName}

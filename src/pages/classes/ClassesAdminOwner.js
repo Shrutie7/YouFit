@@ -49,18 +49,10 @@ const ClassesAdminOwner = () => {
   }, []);
   return (
     <div class="flex mt-28">
-      <div class="bg-gray-200 w-11/12 mx-auto max-w-7xl bg-white py-10 px-12 lg:px-12 shadow-xl mb-12">
-        {classdata.map((ele) => (
-          <div class="bg-white shadow-xl rounded px-8 pt-6 pb-8 mb-4 flex flex-col">
-            <div className="text-black text-2xl text-center">
-              {ele?.className}
-            </div>
-          </div>
-        ))}
-
-        <div className="flex flex-col items-center justify-center">
+      <div class="w-11/12 mx-auto max-w-7xl bg-gray-300  shadow-xl mb-12 h-96 flex flex-col">
+      <div className="">
           <button
-            className={`p-2 m-2 h-12 cursor-pointer text-center w-80 text-xl font-semibold leading-8 rounded-lg bg-blue-600 hover:bg-blue-500`}
+            className={`p-2 m-2 h-12 cursor-pointer text-center float-right w-36 text-xl font-semibold leading-8 rounded-lg bg-blue-600 hover:bg-blue-500`}
           // onClick={()=>setaddflag(true)}
           onClick={()=>{setaddflag(true)}}
           >
@@ -69,13 +61,22 @@ const ClassesAdminOwner = () => {
 
 
         </div>
+        {classdata.map((ele) => (
+          <div class="bg-white shadow-xl rounded px-8 p-2 mb-4 flex flex-col m-3">
+            <div className="text-black text-2xl text-center">
+              {ele?.className}
+            </div>
+          </div>
+        ))}
+
+   
 
      
       </div>
 
       {
         addflag && <ClassesAdminModal
-        closeModal={() => setaddflag(false)}
+        closeModal={() => {setaddflag(false);getclassmasterlist()}}
 
         />
       }
