@@ -33,7 +33,7 @@ const Trainers = () => {
     setLoading(true)
     try {
       const res = await axiosInstance.post(gettrainerlisturl, {
-        ownerId: loginDetails.parentUserId,
+        gymId: loginDetails.gymId,
       });
 
       if (res.status === 200) {
@@ -183,7 +183,7 @@ const Trainers = () => {
               </div>
               <p className="text-lg font-semibold mt-2">{d?.categoryName}</p>
 
-              {d?.rating !== "" ? (
+              {d?.rating !== 0 ? (
                 <div className="flex items-center justify-center mt-2 mr-24">
                   
                     {/* {Math.round(d?.rating)}{" "} */}

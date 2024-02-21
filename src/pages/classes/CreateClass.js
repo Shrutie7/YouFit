@@ -5,6 +5,8 @@ import Select from "react-select";
 import { handleReactSelectCss } from "../../commonmodules/ReactSelectCss";
 import axiosInstance from "../../services/LocalAxiosInstance";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { CircularProgress } from "@material-ui/core";
 
 const CreateClass = () => {
   const currentDate = new Date();
@@ -12,8 +14,42 @@ const CreateClass = () => {
   const nav = useNavigate();
   const classmasterlisturl = "class/master/list";
   const timemasterlisturl = "class/time/details/list";
+  const classcraeteurl = "class/create";
 
-  const [timedata,settimedata] = useState([]);
+  const [flag,setflag] = useState(false);
+  const loginDetails = useSelector((e)=>e.logindetails.data)
+
+
+  let formdatajson ={
+    
+      "classMasterId":"",
+      "timeDetailsId":"", 
+      "weekDay":""
+  
+  }
+
+  let [formdata,setformdata] = useState({...formdatajson});
+
+  const handlechangeselect = (e,name,opt)=>{
+
+    let l = {...formdata};
+
+    if(name === "classMasterId"){
+      l.classMasterId = e.value;
+    }
+    if(name === "timeDetailsId"){
+      l.timeDetailsId = e.value;
+    }
+    if(name === "weekDay"){
+      l.weekDay = e.label;
+    }
+
+    setformdata({...l})
+
+
+  }
+
+  const [timeoptions,settimeoptions] = useState([]);
 
   const gettimemasterlist = async () => {
     try {
@@ -22,7 +58,13 @@ const CreateClass = () => {
       if (res.status === 200) {
         if (res.data.status) {
           console.log(res)
-          // settimedata([...res?.data?.data?.timeList]);
+          // settimedata([...res?.data?.data?.timeList])
+
+          let l = res.data.data.timeList.map((d) => ({
+            value: d.timeDetailsId,
+            label: d.timings
+          }));
+          settimeoptions([...l])
         } else {
           // const l = { ...modalpopupdata };
           //         l.show=true
@@ -139,8 +181,74 @@ const CreateClass = () => {
     const month = (date.getMonth());
 
     const year = date.getFullYear();
-    return `${day}-${months[month]}-${year}`;
+    return `${day} ${months[month]} ${year}`;
   };
+    const formatDate1 = date => {
+    const day = date.getDate().toString().padStart(2, '0');
+    // const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const month = (date.getMonth());
+
+    const year = date.getFullYear().toString().substring(2,4);
+    return `${day} ${months[month]} ${year}`;
+  };
+
+
+const createclassapi = async()=>{
+
+
+  setflag(false);
+const localjson = {};
+
+
+    localjson.classMasterId = formdata.classMasterId
+    localjson.startDate=formatDate1(startOfMonth)
+    localjson.endDate=formatDate1(endOfMonth)
+    localjson.timeDetailsId = formdata?.timeDetailsId
+    localjson.trainerId=parseInt(loginDetails?.userId)
+    localjson.gymId=parseInt(loginDetails?.gymId)
+    localjson.weekDay=formdata?.weekDay?.toString()?.toLowerCase()
+
+    try {
+      const res = await axiosInstance.post(classcraeteurl,localjson);
+
+      if (res.status === 200) {
+        if (res.data.status) {
+       
+          console.log(res)
+         
+        } else {
+          // const l = { ...modalpopupdata };
+          //         l.show=true
+          //         l.errormsg=res.data.message
+          //         l.logout=false
+          //         setmodalpopupdata({...l})
+        }
+      } else if (res.response.status === 401) {
+        // const l = { ...modalpopupdata };
+        // l.show=true
+        // l.errormsg="Session Expired. Please login again..."
+        // l.logout=true
+        // setmodalpopupdata({...l})
+      } else {
+        // const l = { ...modalpopupdata };
+        // l.show=true
+        // l.errormsg="Unable to Connect.Please try again later"
+        // l.logout=false
+        // setmodalpopupdata({...l})
+      }
+    } catch (err) {
+      // const l = { ...modalpopupdata };
+      // l.show=true
+      // l.errormsg="Unable to Connect.Please try again later"
+      // l.logout=false
+      // setmodalpopupdata({...l})
+    }
+
+ setflag(false);
+
+
+}
+
 
   useEffect(()=>{
     getclassmasterlist();
@@ -158,7 +266,7 @@ const CreateClass = () => {
 </div>
 </div> */}
 
-      <div class="flex mt-20">
+      <div class="flex mt-28">
         <div class="bg-gray-100 w-11/12 mx-auto max-w-7xl bg-white py-10 px-12 lg:px-12 shadow-xl mb-12">
           <div className="text-black text-lg font-semibold pb-3">
             Create Class for {months[month]} - {year}
@@ -240,9 +348,9 @@ const CreateClass = () => {
                   window.innerWidth>1500 ? handleReactSelectCss("xlarge6", false, true):handleReactSelectCss("xlarge5", false, true)
                     }
                   //   // onChange={(e) => handlegender(e)}
-                  //   onChange={(e) =>
-                  //     handlesingle(e, "planDuration", "planDurationName")
-                  //   }
+                    onChange={(e) =>
+                      handlechangeselect(e,"classMasterId")
+                    }
                   //   value={
                   //     formdatalocal?.planDuration
                   //       ? [
@@ -281,9 +389,9 @@ const CreateClass = () => {
 
                     }
                   //   // onChange={(e) => handlegender(e)}
-                  //   onChange={(e) =>
-                  //     handlesingle(e, "planDuration", "planDurationName")
-                  //   }
+                    onChange={(e) =>
+                      handlechangeselect(e,"timeDetailsId")
+                    }
                   //   value={
                   //     formdatalocal?.planDuration
                   //       ? [
@@ -296,7 +404,7 @@ const CreateClass = () => {
                   //   }
                   menuPortalTarget={document.body}
                   menuPosition={"fixed"}
-                  //   options={durationOptions}
+                    options={timeoptions}
                 />
               </div>
             </div>
@@ -322,7 +430,7 @@ const CreateClass = () => {
                     //     ? handleReactSelectCss("xlarge4", true, true):
                         window.innerWidth>1500 ? handleReactSelectCss("xlarge6", false, true):handleReactSelectCss("xlarge5", false, true)
                     }
-                    // onChange={(e) => handlemulti(e)}
+                    onChange={(e) => handlechangeselect(e,"weekDay")}
                     // value={
                     //   formdatalocal?.categoryId
                     //     ? [{ value: formdatalocal.category, label: data.gender }]
@@ -342,17 +450,17 @@ const CreateClass = () => {
               <div class="md:w-full px-3">
                 <button
                   class="md:w-full bg-gray-900 text-white font-bold py-2 px-4 border-b-4 hover:border-b-2 border-gray-500 hover:border-gray-100 rounded-full"
-                  //   onClick={() => postMainData(formdata)}
+                    onClick={() => createclassapi()}
                 >
                   Create Class &nbsp;&nbsp;&nbsp;
-                  {/* {flag ? (
+                  {flag ? (
                     <CircularProgress
                       color="inherit"
                       size={"20px"}
                     ></CircularProgress>
                   ) : (
                     <></>
-                  )} */}
+                  )}
                 </button>
               </div>
             </div>

@@ -240,6 +240,7 @@ const logindetailsapi = async (emailId) => {
     localjson.activeFlag = true;
     localjson.gymId = loginDetails?.gymId;
     localjson.image = userdetails?.image;
+    localjson.locationId = loginDetails?.locationDetails?.locationId;
 
     console.log(localjson);
     setflag(true);
@@ -687,8 +688,8 @@ if(tab==="planupdate"){
             <input class="mt-2 border-2 border-gray-200 px-3 py-2 block w-full rounded-lg text-base text-gray-900 focus:outline-none focus:border-indigo-500 dark:text-white" type="text" value={userdetails?.gender} readOnly/>
           </div>
           <div class="md:w-3/4 px-3 mb-6 md:mb-0">
-            <label for="name" class="text-sm text-gray-600">Trainer</label>
-            <input class="mt-2 border-2 border-gray-200 px-3 py-2 block w-full rounded-lg text-base text-gray-900 focus:outline-none focus:border-indigo-500 dark:text-white" type="text" value={userdetails?.gender} readOnly/>
+            <label for="name" class="text-sm text-gray-600">{parseInt(loginDetails?.roleId) === 3 ? "Owner":"Trainer"}</label>
+            <input class="mt-2 border-2 border-gray-200 px-3 py-2 block w-full rounded-lg text-base text-gray-900 focus:outline-none focus:border-indigo-500 dark:text-white" type="text" value={loginDetails?.parentUserDetails?.firstName + " " +loginDetails?.parentUserDetails?.lastName } readOnly/>
           </div>
          
           

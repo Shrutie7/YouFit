@@ -50,19 +50,22 @@ const Classes = () => {
     <>
       {/* <Header title="Classes" image={HeaderImage}></Header> */}
 
-      {parseInt(loginDetails.roleId) !==1 ? <div className="w-11/12 mx-auto max-w-7xl mt-20 h-screen pt-3">
-        <div className="flex justify-center items-center">
-          {parseInt(loginDetails?.roleId) !== 3 ? (
+      {parseInt(loginDetails.roleId) !==1 ? <div className="mx-auto mt-20 h-screen pt-2 p-3">
+        <div className="flex ml-1 justify-between">
+          {/* {parseInt(loginDetails?.roleId) !== 3 ? ( */}
+          <div className="flex ml-1">
+
+         
             <div
-              className={`p-2 m-2 h-12 cursor-pointer text-center w-80 text-xl font-semibold leading-8 rounded-lg ${
-                classtype === "My Classes" ? "bg-blue-300" : "bg-blue-600"
+              className={`p-2 m-0 h-12 cursor-pointer text-center w-80 text-xl font-semibold leading-8 rounded-tl-md border-white border-solid border-2 ${
+                classtype === "My Classes" ?"bg-[#38598b]": "bg-[#113f67]"
               }`}
               onClick={() => onClickhandlerclass("my")}
             >
               My Classes
             </div>
-          ) : (
-            <div
+          {/* ) : ( */}
+            {/* <div
               className={`p-2 m-2 h-12 cursor-pointer text-center w-80 text-xl font-semibold leading-8 rounded-lg ${
               classtype === "Create Class" ? "bg-blue-300" : "bg-blue-600"
             }`}
@@ -71,28 +74,39 @@ const Classes = () => {
             >
               Create Class
             </div>
-          )}
+          )} */}
 
           <div
-            className={`p-2 m-2 h-12 cursor-pointer text-center w-80 text-xl font-semibold leading-8 rounded-lg ${
-              classtype === "All Classes" ? "bg-blue-300" : "bg-blue-600"
+            className={`p-2 m-0 h-12 cursor-pointer text-center w-80 text-xl font-semibold leading-8 rounded-tr-md border-white border-solid border-2  ${
+              classtype === "All Classes" ? "bg-[#38598b]": "bg-[#113f67]"
             }`}
             onClick={() => onClickhandlerclass("all")}
           >
             All Classes
           </div>
+          </div>
+
+          {classtype==="My Classes" ? <div
+              className={`pt-1 m-1  h-9  cursor-pointer text-center w-60 text-xl font-semibold rounded-lg bg-[#38598b]`}
+              onClick={()=>{onClickhandlerclass("create");nav("/portal/classes/classcreate")}}
+           
+            >
+              Create Class
+            </div>:<></>}
+
+
         </div>
 
-        <div className="mt-4">
-          <div className="text-2xl font-bold text-white text-center bg-slate-800 rounded-xl p-2 ">
+        <div className="">
+          <div className="text-2xl font-bold text-white text-center bg-[#113f67] rounded-xl p-2 ">
             Classes For {months[month]} - {year}
           </div>
         </div>
 
         <div>
-          <div className="flex flex-col border border-solid border-black bg-gray-100 w-full max-h-96 lg:min-h-40 md:min-h-36 sm:min-h-36 sm:p-6 md:p-6 lg:p-8 mt-4">
+          <div className="flex flex-col border border-solid border-black bg-gray-100 w-full max-h-96 lg:min-h-40 md:min-h-36 sm:min-h-36 sm:p-6 md:p-6 lg:p-8 mt-2 rounded-xl">
             <div className="flex flex-row justify-between">
-              <div className="font-extrabold  sm:text-3xl md:text-3xl lg:text-6xl text-black pl-4">
+              <div className="font-extrabold font-oswald sm:text-3xl md:text-3xl lg:text-6xl text-black pl-4">
                 MONDAY
               </div>
               <div className="flex flex-col gap-y-4">
@@ -126,7 +140,7 @@ const Classes = () => {
             </div>
           </div>
 
-          <div className="flex flex-col border border-solid border-black bg-gray-100 w-full max-h-96 lg:min-h-40 md: min-h-28 sm:min-h-28 sm:p-6 md:p-6 lg:p-8 mt-6">
+          <div className="flex flex-col border border-solid border-black bg-gray-100 w-full max-h-96 lg:min-h-40 md: min-h-28 sm:min-h-28 sm:p-6 md:p-6 lg:p-8 mt-2 rounded-xl">
             <div className="flex flex-row justify-between">
               <div className="font-extrabold  sm:text-3xl md:text-3xl lg:text-6xl text-black pl-4">
                 TUESDAY

@@ -2,9 +2,11 @@ import { useState } from "react";
 import CloseIcon from "../../commonmodules/CloseIcon";
 import deleteicon from "../../assets/delete-64.png";
 import axiosInstance from "../../services/LocalAxiosInstance";
+import { CircularProgress } from "@material-ui/core";
 
 const ClassesAdminModal = ({ closeModal }) => {
   const classcreateurl = "class/master/create";
+  const [flag,setflag] = useState(false)
   let classesadd = [
     {
       classes: "",
@@ -31,6 +33,7 @@ const ClassesAdminModal = ({ closeModal }) => {
     setclassest([...l]);
   };
   const createclass = async () => {
+    setflag(true)
     let arr = [];
 
     classest.forEach((ele) => {
@@ -70,6 +73,7 @@ const ClassesAdminModal = ({ closeModal }) => {
       // l.logout=false
       // setmodalpopupdata({...l})
     }
+    setflag(false)
   };
 
   return (
@@ -118,6 +122,7 @@ const ClassesAdminModal = ({ closeModal }) => {
                         class="w-full bg-gray-200 text-black border border-gray-200 rounded py-2 px-4 mb-2"
                         id="company"
                         type="text"
+                        autoComplete="off"
                         placeholder={`Add Class ${ind + 1}`}
                         onChange={(e) => {
                           handlechange1(e, ind);
@@ -137,12 +142,27 @@ const ClassesAdminModal = ({ closeModal }) => {
                     </div>
                   ))}
                 </div>
+
+
+
+
+
+
+
+
+
+
+
                 <div className="pt-8">
                   <button
                     class="md:w-full bg-gray-900 text-white font-bold py-2 px-4 border-b-4 hover:border-b-2 border-gray-500 hover:border-gray-100 rounded-full"
                     onClick={() => createclass()}
                   >
                     Submit
+                    &nbsp;&nbsp;&nbsp;
+                    {
+                      flag ?<CircularProgress color="inherit" size={"20px"}></CircularProgress>:<></>
+                    }
                   </button>
                 </div>
               </div>

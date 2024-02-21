@@ -3,7 +3,12 @@ module.exports = {
   content: ['./src/**/*.{js,jsx,ts,tsx}'],
   // darkmode:'className',
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        poppins: ["Poppins", "sans-serif"],
+        oswald: ["Oswald", "sans-serif"],
+      }
+    },
   },
   plugins: [require("daisyui")],
   daisyui: {
