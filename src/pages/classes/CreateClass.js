@@ -7,6 +7,8 @@ import axiosInstance from "../../services/LocalAxiosInstance";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { CircularProgress } from "@material-ui/core";
+import { ToastContainer, toast } from "react-toastify";
+
 
 const CreateClass = () => {
   const currentDate = new Date();
@@ -196,7 +198,7 @@ const CreateClass = () => {
 const createclassapi = async()=>{
 
 
-  setflag(false);
+  setflag(true);
 const localjson = {};
 
 
@@ -214,7 +216,24 @@ const localjson = {};
       if (res.status === 200) {
         if (res.data.status) {
        
-          console.log(res)
+          console.log(res);
+
+          setformdata({...formdatajson})
+          toast(`Class Created Successfully`, {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            onClose: () => {
+              nav("/portal/classes");
+            },
+          });
+
+
          
         } else {
           // const l = { ...modalpopupdata };
@@ -267,7 +286,7 @@ const localjson = {};
 </div> */}
 
       <div class="flex mt-28">
-        <div class="bg-gray-100 w-11/12 mx-auto max-w-7xl bg-white py-10 px-12 lg:px-12 shadow-xl mb-12">
+        <div class="bg-gray-100 w-11/12 mx-auto max-w-7xl bg-white py-10 px-12 lg:px-12 shadow-2xl mb-12">
           <div className="text-black text-lg font-semibold pb-3">
             Create Class for {months[month]} - {year}
           </div>
@@ -328,44 +347,41 @@ const localjson = {};
               </div>
             </div>
             <div class="-mx-3 md:flex mb-6">
-              <div class="md:w-1/2 px-3 mb-6 md:mb-0">
+            <div class="md:w-1/2 px-3 mb-6 md:mb-0">
                 <label
                   class="uppercase tracking-wide text-black text-xs font-bold mb-2"
-                  for="company"
+                  for="department"
                 >
-                  Class*
+                  DAY*
                 </label>
-
-                <Select
-                  id="class"
-                  name="class"
-                  className="mt-1"
-                  placeholder="Class"
+                {console.log(window.innerWidth)}
+                <div>
+                  <Select
+                    id="day"
+                    name="day"
+                    className="mt-1"
+                    placeholder="Day"
+                    
                     styles={
-                  //     mandatoryData.includes("planDuration") &&
-                  //       !formdata?.planDuration
-                  //       ? handleReactSelectCss("xlarge1", true, true):
-                  window.innerWidth>1500 ? handleReactSelectCss("xlarge6", false, true):handleReactSelectCss("xlarge5", false, true)
+                    //   mandatoryData.includes("day") &&
+                    //     formdata?.categoryId?.length === 0
+                    //     ? handleReactSelectCss("xlarge4", true, true):
+                        // window.innerWidth>1500 ? handleReactSelectCss("xlarge6", false, true):handleReactSelectCss("xlarge5", false, true)
+                        handleReactSelectCss("xlarge6", false, true)
                     }
-                  //   // onChange={(e) => handlegender(e)}
-                    onChange={(e) =>
-                      handlechangeselect(e,"classMasterId")
-                    }
-                  //   value={
-                  //     formdatalocal?.planDuration
-                  //       ? [
-                  //         {
-                  //           value: formdatalocal.planDuration,
-                  //           label: formdatalocal.planDurationName,
-                  //         },
-                  //       ]
-                  //       : []
-                  //   }
-                  menuPortalTarget={document.body}
-                  menuPosition={"fixed"}
-                    options={options}
-                />
-              
+                    onChange={(e) => handlechangeselect(e,"weekDay")}
+                    // value={
+                    //   formdatalocal?.categoryId
+                    //     ? [{ value: formdatalocal.category, label: data.gender }]
+                    //     : []
+                    // }
+
+                    // onMenuOpen={() => getcategory()}
+                    menuPortalTarget={document.body}
+                    menuPosition={"fixed"}
+                    options={dayOptions}
+                  />
+                </div>
               </div>
 
               <div class="md:w-1/2 px-3 mb-6 md:mb-0">
@@ -385,7 +401,8 @@ const localjson = {};
                   //     mandatoryData.includes("planDuration") &&
                   //       !formdata?.planDuration
                   //       ? handleReactSelectCss("xlarge1", true, true):
-                  window.innerWidth>1500 ? handleReactSelectCss("xlarge6", false, true):handleReactSelectCss("xlarge5", false, true)
+                  // window.innerWidth>1500 ? handleReactSelectCss("xlarge6", false, true):handleReactSelectCss("xlarge5", false, true)
+                  handleReactSelectCss("xlarge6", false, true)
 
                     }
                   //   // onChange={(e) => handlegender(e)}
@@ -409,40 +426,49 @@ const localjson = {};
               </div>
             </div>
             <div class="-mx-3 md:flex mb-6">
-              <div class="md:w-1/2 px-3">
+
+
+
+              <div class="md:w-1/2 px-3 mb-6 md:mb-0">
                 <label
                   class="uppercase tracking-wide text-black text-xs font-bold mb-2"
-                  for="department"
+                  for="company"
                 >
-                  DAY*
+                  Class*
                 </label>
-                {console.log(window.innerWidth)}
-                <div>
-                  <Select
-                    id="day"
-                    name="day"
-                    className="mt-1"
-                    placeholder="Day"
-                    
-                    styles={
-                    //   mandatoryData.includes("day") &&
-                    //     formdata?.categoryId?.length === 0
-                    //     ? handleReactSelectCss("xlarge4", true, true):
-                        window.innerWidth>1500 ? handleReactSelectCss("xlarge6", false, true):handleReactSelectCss("xlarge5", false, true)
-                    }
-                    onChange={(e) => handlechangeselect(e,"weekDay")}
-                    // value={
-                    //   formdatalocal?.categoryId
-                    //     ? [{ value: formdatalocal.category, label: data.gender }]
-                    //     : []
-                    // }
 
-                    // onMenuOpen={() => getcategory()}
-                    menuPortalTarget={document.body}
-                    menuPosition={"fixed"}
-                    options={dayOptions}
-                  />
-                </div>
+                <Select
+                  id="class"
+                  name="class"
+                  className="mt-1"
+                  placeholder="Class"
+                    styles={
+                  //     mandatoryData.includes("planDuration") &&
+                  //       !formdata?.planDuration
+                  //       ? handleReactSelectCss("xlarge1", true, true):
+                  // window.innerWidth>1500 ? handleReactSelectCss("xlarge6", false, true):handleReactSelectCss("xlarge5", false, true)
+
+                  handleReactSelectCss("xlarge6", false, true)
+                    }
+                  //   // onChange={(e) => handlegender(e)}
+                    onChange={(e) =>
+                      handlechangeselect(e,"classMasterId")
+                    }
+                  //   value={
+                  //     formdatalocal?.planDuration
+                  //       ? [
+                  //         {
+                  //           value: formdatalocal.planDuration,
+                  //           label: formdatalocal.planDurationName,
+                  //         },
+                  //       ]
+                  //       : []
+                  //   }
+                  menuPortalTarget={document.body}
+                  menuPosition={"fixed"}
+                    options={options}
+                />
+              
               </div>
             </div>
 
@@ -472,6 +498,20 @@ const localjson = {};
             Back
           </button>
         </div>
+        <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        className="toast"
+      />
+
       </div>
     </>
   );
