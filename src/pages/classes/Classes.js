@@ -2,18 +2,20 @@ import React, { useEffect, useState } from "react";
 import Header from "../../components/Header";
 import HeaderImage from "../../images/header_bg_3.jpg";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import axiosInstance from "../../services/LocalAxiosInstance";
 import ClassesAdminOwner from "./ClassesAdminOwner";
+import { addloc } from '../../store/location';
 const Classes = () => {
   const loginDetails = useSelector((e) => e.logindetails.data);
   const [classtype, setclasstype] = useState("All Classes");
-
+const dispatch = useDispatch();
   const [allclasslist,setallclasslist] = useState([]);
   const [myclasslisttrainer,setmyclasslisttrainer] = useState([])
 
   const classdetailslisturl = "class/list";
   const classdetailstrainerlisturl = "class/list/trainer";
+  const classleaveurl = "class/user/leave";
   const classdetailslist = async () => {
     try {
       const res = await axiosInstance.post(classdetailslisturl, {userId:loginDetails?.userId,gymId:loginDetails?.gymId});
@@ -55,7 +57,7 @@ const Classes = () => {
   };
   const classdetailstrainerlist = async () => {
     try {
-      const res = await axiosInstance.post(classdetailstrainerlisturl, {gymId:1});
+      const res = await axiosInstance.post(classdetailstrainerlisturl, {trainerId:loginDetails?.userId});
 
       if (res.status === 200) {
         if (res.data.status) {
@@ -92,6 +94,45 @@ const Classes = () => {
     }
 
   };
+
+  const handleleave = async()=>{
+    try {
+      const res = await axiosInstance.post(classleaveurl, {userClassMappingId:1,userId:loginDetails?.userId});
+
+      if (res.status === 200) {
+        if (res.data.status) {
+
+          console.log(res?.data?.data);
+         
+       
+        } else {
+          // const l = { ...modalpopupdata };
+          //         l.show=true
+          //         l.errormsg=res.data.message
+          //         l.logout=false
+          //         setmodalpopupdata({...l})
+        }
+      } else if (res.response.status === 401) {
+        // const l = { ...modalpopupdata };
+        // l.show=true
+        // l.errormsg="Session Expired. Please login again..."
+        // l.logout=true
+        // setmodalpopupdata({...l})
+      } else {
+        // const l = { ...modalpopupdata };
+        // l.show=true
+        // l.errormsg="Unable to Connect.Please try again later"
+        // l.logout=false
+        // setmodalpopupdata({...l})
+      }
+    } catch (err) {
+      // const l = { ...modalpopupdata };
+      // l.show=true
+      // l.errormsg="Unable to Connect.Please try again later"
+      // l.logout=false
+      // setmodalpopupdata({...l})
+    }
+  }
   useEffect(()=>{
     if(classtype === "All Classes"){
       classdetailslist();
@@ -170,7 +211,7 @@ const Classes = () => {
           </div>
           </div>
 
-          {classtype==="My Classes" ? <div
+          {classtype==="My Classes" && parseInt(loginDetails?.roleId) === 3 ? <div
               className={`pt-1 m-1  h-9  cursor-pointer text-center w-60 text-xl font-semibold rounded-lg bg-[#38598b]`}
               onClick={()=>{nav("/portal/classes/classcreate")}}
            
@@ -187,15 +228,20 @@ const Classes = () => {
           </div>
         </div>
 
-{allclasslist && allclasslist?.map((ele)=>(
+        {console.log(allclasslist?.slice(0,1))}
+
+{classtype === "All Classes"?
+(allclasslist && allclasslist?.map((ele)=>(
     <div>
     <div className="flex flex-col border border-solid border-black bg-gray-100 w-full max-h-96 lg:min-h-40 md:min-h-36 sm:min-h-36 sm:p-6 md:p-6 lg:p-8 mt-2 rounded-xl">
     <div className="flex flex-row justify-between">
       <div className="font-extrabold font-oswald sm:text-3xl md:text-3xl lg:text-6xl text-black pl-4">
         {ele.weekDay?.toString()?.toUpperCase()}
       </div>
-      {ele?.classes?.map((subele)=><div className="flex flex-col gap-y-4">
-        <div className="flex flex-col pr-6 gap-y-4">
+      <div className="flex flex-col gap-3">
+
+      {ele?.classes?.slice(0,2)?.map((subele)=>(<div className="flex flex-col gap-y-4">
+        <div className="flex flex-col pr-6 gap-y-3">
           <div className="sm:text-lg md:text-lg lg:text-2xl font-extrabold text-black">
            {subele?.className} {subele?.timings}
           </div>
@@ -208,92 +254,105 @@ const Classes = () => {
             </div>:<></>}
           </div>
         </div>
-        <button
-          className="sm:w-24 md:w-36 sm:text-md m-1 p-2 border border-2 border-solid border-black text-black rounded-full lg:text-lg font-semibold lg:w-40 bg-gray-300 hover:bg-black hover:text-white"
+    
+      </div>))}
+      <div className="flex gap-x-4">
+
+      <button
+          className="sm:w-28 md:w-44 sm:text-md m-1 p-2 border border-2 border-solid border-black text-black rounded-full lg:text-lg font-semibold lg:w-44 bg-gray-300 hover:bg-black hover:text-white"
           onClick={() => nav("/portal/classes/classesbook")}
         >
-          Show Classes
+          Show All Classes
         </button>
-      </div>)}
+
+        {/* {classtype==="My Classes" && parseInt(loginDetails?.roleId) === 3 ?<button
+          className="sm:w-28 md:w-44 sm:text-md m-1 p-2 border border-2 border-solid border-black text-black rounded-full lg:text-lg font-semibold lg:w-44 bg-gray-300 hover:bg-black hover:text-white"
+          onClick={() => nav("/portal/classes/editClass")}
+        >
+         Edit Class
+        </button>:<></>} */}
+
+
+        {parseInt(loginDetails?.roleId) === 4 ?<button
+          className="sm:w-28 md:w-44 sm:text-md m-1 p-2 border border-2 border-solid border-black text-black rounded-full lg:text-lg font-semibold lg:w-44 bg-red-500 hover:bg-red-400 hover:text-white"
+          onClick={() => handleleave()}
+        >
+         Leave Class
+        </button>:<></>}
+        </div>
+      </div>
+
     </div>
   </div>
   </div>
-  ))
+  ))):(
+   myclasslisttrainer && myclasslisttrainer.map((ele)=>(
+    <div>
+    <div className="flex flex-col border border-solid border-black bg-gray-100 w-full max-h-96 lg:min-h-40 md:min-h-36 sm:min-h-36 sm:p-6 md:p-6 lg:p-8 mt-2 rounded-xl">
+    <div className="flex flex-row justify-between">
+      <div className="font-extrabold font-oswald sm:text-3xl md:text-3xl lg:text-6xl text-black pl-4">
+        {ele.weekDay?.toString()?.toUpperCase()}
+      </div>
+      <div className="flex flex-col gap-3">
+
+      {ele?.classes?.slice(0,2)?.map((subele)=>(<div className="flex flex-col gap-y-4">
+        <div className="flex flex-col pr-6 gap-y-3">
+          <div className="sm:text-lg md:text-lg lg:text-2xl font-extrabold text-black">
+           {subele?.className} {subele?.timings}
+          </div>
+          <div className="flex flex-col gap-y-2">
+            <div className="sm:text-base lg:text-lg font-semibold text-black">
+              INSTRUCTOR: {subele?.trainerDetails?.trainerName}
+            </div>
+            {subele?.trainerDetails?.rating!==0 ?<div className="sm:text-base lg:text-lg font-semibold text-black">
+              RATING: {subele?.trainerDetails?.rating}
+            </div>:<></>}
+          </div>
+        </div>
+
+        {parseInt(loginDetails?.roleId) === 3 ?<button
+          className="sm:w-28 md:w-44 sm:text-md m-1 p-2 border border-2 border-solid border-black text-black rounded-full lg:text-lg font-semibold lg:w-44 bg-gray-300 hover:bg-black hover:text-white"
+          onClick={() => {nav("/portal/classes/editClass");dispatch(addloc({
+            state:{
+              classDetailsId:subele?.classDetailsId
+            }
+          }))}}
+        >
+         Edit Class
+        </button>:<></>}
+    
+      </div>))}
+      <div className="flex gap-x-4">
+{/* 
+      <button
+          className="sm:w-28 md:w-44 sm:text-md m-1 p-2 border border-2 border-solid border-black text-black rounded-full lg:text-lg font-semibold lg:w-44 bg-gray-300 hover:bg-black hover:text-white"
+          onClick={() => nav("/portal/classes/classesbook")}
+        >
+          Show All Classes
+        </button> */}
+
+    
+
+
+        {parseInt(loginDetails?.roleId) === 4 ?<button
+          className="sm:w-28 md:w-44 sm:text-md m-1 p-2 border border-2 border-solid border-black text-black rounded-full lg:text-lg font-semibold lg:w-44 bg-red-500 hover:bg-red-400 hover:text-white"
+          onClick={() => handleleave()}
+        >
+         Leave Class
+        </button>:<></>}
+        </div>
+      </div>
+
+    </div>
+  </div>
+  </div>
+
+
+   ))
+  )
 }
 
-        {/* <div> */}
-          {/* <div className="flex flex-col border border-solid border-black bg-gray-100 w-full max-h-96 lg:min-h-40 md:min-h-36 sm:min-h-36 sm:p-6 md:p-6 lg:p-8 mt-2 rounded-xl">
-            <div className="flex flex-row justify-between">
-              <div className="font-extrabold font-oswald sm:text-3xl md:text-3xl lg:text-6xl text-black pl-4">
-                MONDAY
-              </div>
-              <div className="flex flex-col gap-y-4">
-                <div className="flex flex-col pr-6 gap-y-4">
-                  <div className="sm:text-lg md:text-lg lg:text-2xl font-extrabold text-black">
-                    BOXING 4-5 PM
-                  </div>
-                  <div className="flex flex-col gap-y-2">
-                    <div className="sm:text-base lg:text-lg font-semibold text-black">
-                      INSTRUCTOR: AARON HUGHES
-                    </div>
-                  </div>
-                </div>
-                <div className="flex flex-col pr-6 gap-y-4">
-                  <div className="sm:text-lg md:text-lg lg:text-2xl font-extrabold text-black">
-                    ZUMBA 5-6 PM
-                  </div>
-                  <div className="flex flex-col gap-y-2">
-                    <div className="sm:text-base lg:text-lg font-semibold text-black">
-                      INSTRUCTOR: AARON HUGHES
-                    </div>
-                  </div>
-                </div>
-                <button
-                  className="sm:w-24 md:w-36 sm:text-md m-1 p-2 border border-2 border-solid border-black text-black rounded-full lg:text-lg font-semibold lg:w-40 bg-gray-300 hover:bg-black hover:text-white"
-                  onClick={() => nav("/portal/classes/classesbook")}
-                >
-                  Show Classes
-                </button>
-              </div>
-            </div>
-          </div> */}
-
-          {/* <div className="flex flex-col border border-solid border-black bg-gray-100 w-full max-h-96 lg:min-h-40 md: min-h-28 sm:min-h-28 sm:p-6 md:p-6 lg:p-8 mt-2 rounded-xl">
-            <div className="flex flex-row justify-between">
-              <div className="font-extrabold  sm:text-3xl md:text-3xl lg:text-6xl text-black pl-4">
-                TUESDAY
-              </div>
-              <div className="flex flex-col gap-y-4">
-                <div className="flex flex-col pr-6 gap-y-4">
-                  <div className="sm:text-lg md:text-lg lg:text-2xl font-extrabold text-black">
-                    BOXING 4-5 PM
-                  </div>
-                  <div className="flex flex-col gap-y-2">
-                    <div className="sm:text-base lg:text-lg font-semibold text-black">
-                      INSTRUCTOR: AARON HUGHES
-                    </div>
-                  </div>
-                </div>
-                <div className="flex flex-col pr-6 gap-y-4">
-                  <div className="sm:text-lg md:text-lg lg:text-2xl font-extrabold text-black">
-                    ZUMBA 5-6 PM
-                  </div>
-                  <div className="flex flex-col gap-y-2">
-                    <div className="sm:text-base lg:text-lg font-semibold text-black">
-                      INSTRUCTOR: AARON HUGHES
-                    </div>
-                  </div>
-                </div>
-                <button
-                  className="sm:w-24 md:w-36 sm:text-md m-1 p-2 border border-2 border-solid border-black text-black rounded-full lg:text-lg font-semibold lg:w-40 bg-gray-300 hover:bg-black hover:text-white"
-                  onClick={() => nav("/portal/classes/classesbook")}
-                >
-                  Show Classes
-                </button>
-              </div>
-            </div>
-          </div> */}
-        {/* </div> */}
+     
       </div>:
       <ClassesAdminOwner/>
       }

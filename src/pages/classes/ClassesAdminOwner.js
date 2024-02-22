@@ -3,10 +3,24 @@ import axiosInstance from "../../services/LocalAxiosInstance";
 import ClassesAdminModal from "./ClassesAdminModal";
 import deleteicon from "../../assets/delete-64.png";
 
-
 const ClassesAdminOwner = () => {
   const classmasterlisturl = "class/master/list";
-  const classdeleteurl = "class/master/delete"
+  const classdeleteurl = "class/master/delete";
+  const currentDate = new Date();
+    let months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
 
   const [deletemodal, setdeletemodal] = useState(false);
   const [addflag,setaddflag] = useState(false);
@@ -88,16 +102,26 @@ getclassmasterlist();
       // setmodalpopupdata({...l})
     }
   };
+  const formatDate = (date) => {
+    const parsedDate = new Date(date)
+    const day = parsedDate.getDate().toString().padStart(2, '0');
+    // const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const month = (parsedDate.getMonth());
+
+    const year = parsedDate.getFullYear();
+    return `${day} ${months[month]} ${year}`;
+  };
+
 
   useEffect(() => {
     getclassmasterlist();
   }, []);
   return (
     <div class="flex mt-28">
-      <div class="w-11/12 mx-auto max-w-7xl bg-white  shadow-xl mb-6 h-[38rem] flex flex-col">
+      <div class="w-[100%] mx-auto max-w-7xl bg-white  shadow-xl mb-6 h-[38rem] flex flex-col rounded-lg">
       <div className="">
           <button
-            className={`p-2 m-2 h-12 cursor-pointer text-center float-right w-36 text-xl font-semibold leading-8 rounded-lg bg-blue-600 hover:bg-blue-500`}
+            className={`p-1 m-2 mr-4 h-10 cursor-pointer text-center float-right w-36 text-xl font-semibold leading-8 rounded-lg bg-blue-500 hover:bg-blue-400`}
           // onClick={()=>setaddflag(true)}
           onClick={()=>{setaddflag(true)}}
           >
@@ -135,15 +159,15 @@ getclassmasterlist();
                         <tr className="select-none ">
                          
                         
-                            <td className="h-11 text-white bg-blue-300 text-md font-semibold font-sans rounded-l-xl">{i + 1}</td>
+                            <td className="h-11 text-white bg-blue-400 text-md font-semibold font-sans rounded-l-xl">{i + 1}</td>
                         
-                            <td className="h-11 text-white bg-blue-300 text-md font-semibold font-sans">{d?.className}</td>
+                            <td className="h-11 text-white bg-blue-400 text-md font-semibold font-sans">{d?.className}</td>
 
-                            <td className="h-11 text-white bg-blue-300 text-md font-semibold font-sans rounded-r-xl flex items-center justify-around">
+                            <td className="h-11 text-white bg-blue-400 text-md font-semibold font-sans rounded-r-xl flex items-center justify-between">
 
-                          <div className="text-center">{d?.createdOn}</div>
+                          <div className="text-center mx-auto">{formatDate(d?.createdOn)}</div>
                           <img src={deleteicon} alt="delete" title="delete class" onClick={()=>{    setdeletemodal(true);
-                                  setdatadel(d?.classId);}} className="h-5 w-5 cursor-pointer float-right"/>
+                                  setdatadel(d?.classId);}} className="h-5 w-5 cursor-pointer mr-4"/>
 
 
                             

@@ -3,10 +3,12 @@ import CloseIcon from "../../commonmodules/CloseIcon";
 import deleteicon from "../../assets/delete-64.png";
 import axiosInstance from "../../services/LocalAxiosInstance";
 import { CircularProgress } from "@material-ui/core";
+import { Addrowerror } from "../../commonmodules/Addrowerror";
 
 const ClassesAdminModal = ({ closeModal }) => {
   const classcreateurl = "class/master/create";
-  const [flag,setflag] = useState(false)
+  const [flag,setflag] = useState(false);
+  const [mandatorydata,setmandatorydata] = useState(false);
   let classesadd = [
     {
       classes: "",
@@ -30,50 +32,78 @@ const ClassesAdminModal = ({ closeModal }) => {
     let l = [...classest];
     l[ind].classes = e.target.value;
 
+      // Set mandatorydata to true if the current input is empty
+  setmandatorydata(l[ind].classes === "");
+
     setclassest([...l]);
   };
+
+  const checkfun = ()=>{
+
+    let flagz = false;
+
+    classest.forEach((ele)=>{
+      console.log(ele)
+      if(ele.classes===""){
+        flagz = true
+      }
+    })
+
+
+    return flagz;
+  }
   const createclass = async () => {
-    setflag(true)
-    let arr = [];
 
-    classest.forEach((ele) => {
-      arr.push(ele?.classes);
-    });
-    console.log(arr);
-    try {
-      const res = await axiosInstance.post(classcreateurl, { classList: arr });
+    if(checkfun()){
 
-      if (res.status === 200) {
-        if (res.data.status) {
-          closeModal();
-        } else {
-          // const l = { ...modalpopupdata };
-          //         l.show=true
-          //         l.errormsg=res.data.message
-          //         l.logout=false
-          //         setmodalpopupdata({...l})
-        }
-      } else if (res.response.status === 401) {
-        // const l = { ...modalpopupdata };
-        // l.show=true
-        // l.errormsg="Session Expired. Please login again..."
-        // l.logout=true
-        // setmodalpopupdata({...l})
+      setmandatorydata(true)
+    }
+else{
+  setmandatorydata(false)
+  setflag(true)
+  let arr = [];
+
+  classest.forEach((ele) => {
+    arr.push(ele?.classes);
+  });
+  console.log(arr);
+  try {
+    const res = await axiosInstance.post(classcreateurl, { classList: arr });
+
+    if (res.status === 200) {
+      if (res.data.status) {
+        closeModal();
       } else {
         // const l = { ...modalpopupdata };
-        // l.show=true
-        // l.errormsg="Unable to Connect.Please try again later"
-        // l.logout=false
-        // setmodalpopupdata({...l})
+        //         l.show=true
+        //         l.errormsg=res.data.message
+        //         l.logout=false
+        //         setmodalpopupdata({...l})
       }
-    } catch (err) {
+    } else if (res.response.status === 401) {
+      // const l = { ...modalpopupdata };
+      // l.show=true
+      // l.errormsg="Session Expired. Please login again..."
+      // l.logout=true
+      // setmodalpopupdata({...l})
+    } else {
       // const l = { ...modalpopupdata };
       // l.show=true
       // l.errormsg="Unable to Connect.Please try again later"
       // l.logout=false
       // setmodalpopupdata({...l})
     }
-    setflag(false)
+  } catch (err) {
+    // const l = { ...modalpopupdata };
+    // l.show=true
+    // l.errormsg="Unable to Connect.Please try again later"
+    // l.logout=false
+    // setmodalpopupdata({...l})
+  }
+  setflag(false)
+}
+
+ 
   };
 
   return (
@@ -127,6 +157,7 @@ const ClassesAdminModal = ({ closeModal }) => {
                         onChange={(e) => {
                           handlechange1(e, ind);
                         }}
+                        style={mandatorydata && classest[ind].classes === "" ? {border:"2px solid red"}:{}}
                         // value={formdata?.features?.at(ind)}
                       />
                       {classest.length !== 1 ? (
@@ -142,17 +173,6 @@ const ClassesAdminModal = ({ closeModal }) => {
                     </div>
                   ))}
                 </div>
-
-
-
-
-
-
-
-
-
-
-
                 <div className="pt-8">
                   <button
                     class="md:w-full bg-gray-900 text-white font-bold py-2 px-4 border-b-4 hover:border-b-2 border-gray-500 hover:border-gray-100 rounded-full"
