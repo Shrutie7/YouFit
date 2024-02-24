@@ -146,7 +146,7 @@ const[flag,setflag] = useState(false);
   const getTrainerList = async () => {
     try {
       const res = await axiosInstance.post(trainerurl, {
-        ownerId: formdata.ownerId,
+        gymId: formdata?.gymId,
       });
 
       if (res.status === 200) {

@@ -1,30 +1,29 @@
+import { CircularProgress } from '@material-ui/core';
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import Select from "react-select";
 import { handleReactSelectCss } from "../../commonmodules/ReactSelectCss";
 import axiosInstance from "../../services/LocalAxiosInstance";
-
+import { ToastContainer, toast } from "react-toastify";
 
 
 const EditClass = () => {
   const currentDate = new Date();
   const classmasterlisturl = "class/master/list";
+  const [stri,setstri] = useState("")
   const classediturl = "class/update";
   const loc = useSelector((e)=>e.location.state);
   console.log(loc?.state)
   const [options,setoptions] = useState([]);
+  const [flag,setflag] = useState(false)
   const nav = useNavigate();
   const [timeoptions,settimeoptions] = useState([]);
-
+const [updateflag,setupdateflag] = useState(false);
+const [formtimeid,setformtimeid] = useState(false)
   const getediturl = "class/get"
-  let formdatajson ={
-    
-    "classMasterId":"",
-    "timeDetailsId":"", 
-    "weekDay":""
 
-}
+  const [timechangeflag,settimechangeflag] = useState(false)
 
 let [formdata,setformdata] = useState({});
 
@@ -32,15 +31,17 @@ const handlechangeselect = (e,name,opt)=>{
 
   let l = {...formdata};
 
-  if(name === "classMasterId"){
-    l.classMasterId = e.value;
-  }
+  // if(name === "classMasterId"){
+  //   l.classMasterId = e.value;
+  // }
   if(name === "timeDetailsId"){
+    settimechangeflag(true);
+    setupdateflag(true)
     l.timeDetailsId = e.value;
   }
-  if(name === "weekDay"){
-    l.weekDay = e.label;
-  }
+  // if(name === "weekDay"){
+  //   l.weekDay = e.label;
+  // }
 
   setformdata({...l})
 
@@ -64,6 +65,7 @@ const handlechangeselect = (e,name,opt)=>{
     fd.startDate = res?.data?.data?.startDate;
     fd.endDate = res?.data?.data?.endDate;
 
+    setformtimeid(res?.data?.data?.timeDetailsId)
 setformdata({...fd})
 
         } else {
@@ -95,6 +97,66 @@ setformdata({...fd})
     }
   };
 
+
+  const updateapi = async (str) => {
+    let localjson = {};
+    setflag(true)
+    localjson.classDetailsId = loc?.state?.classDetailsId;
+    localjson.activeFlag = str === "cancelclass" ? false:true;
+    localjson.tempCancelFlag = str === "cancelnextclass" ? true:false;
+    localjson.tempChangeFlag = str === "update" ? true : false;
+    localjson.tempTimeId = formdata?.timeDetailsId;
+    try {
+      const res = await axiosInstance.post(classediturl,localjson);
+
+      if (res.status === 200) {
+        if (res.data.status) {
+      
+    console.log(res?.data?.data)
+
+    toast(res?.data?.message, {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+      onClose: () => {
+        // setnavflag(true);
+        nav("/portal/classes");
+      },
+    });
+        } else {
+          // const l = { ...modalpopupdata };
+          //         l.show=true
+          //         l.errormsg=res.data.message
+          //         l.logout=false
+          //         setmodalpopupdata({...l})
+        }
+      } else if (res.response.status === 401) {
+        // const l = { ...modalpopupdata };
+        // l.show=true
+        // l.errormsg="Session Expired. Please login again..."
+        // l.logout=true
+        // setmodalpopupdata({...l})
+      } else {
+        // const l = { ...modalpopupdata };
+        // l.show=true
+        // l.errormsg="Unable to Connect.Please try again later"
+        // l.logout=false
+        // setmodalpopupdata({...l})
+      }
+    } catch (err) {
+      // const l = { ...modalpopupdata };
+      // l.show=true
+      // l.errormsg="Unable to Connect.Please try again later"
+      // l.logout=false
+      // setmodalpopupdata({...l})
+    }
+    setflag(false)
+  };
   const getclassmasterlist = async () => {
     try {
       const res = await axiosInstance.get(classmasterlisturl);
@@ -244,7 +306,7 @@ setformdata({...fd})
  return m1;
 
 
-
+ 
   }
   useEffect(()=>{
 geteditapi();
@@ -256,7 +318,7 @@ getclassmasterlist();
 
   return (
 <>
-<div class="flex mt-28">
+<div class="flex mt-32">
         <div class="bg-gray-100 w-11/12 mx-auto max-w-7xl bg-white py-10 px-12 lg:px-12 shadow-2xl mb-12">
           <div className="text-black text-lg font-semibold pb-3">
             Edit Class for {months[month]} - {year}
@@ -355,6 +417,7 @@ getclassmasterlist();
                     menuPortalTarget={document.body}
                     menuPosition={"fixed"}
                     options={dayOptions}
+                    isDisabled
                   />
                 </div>
               </div>
@@ -418,6 +481,7 @@ getclassmasterlist();
                   name="class"
                   className="mt-1"
                   placeholder="Class"
+                  isDisabled
                     styles={
                   //     mandatoryData.includes("planDuration") &&
                   //       !formdata?.planDuration
@@ -426,10 +490,10 @@ getclassmasterlist();
 
                   handleReactSelectCss("xlarge6", false, true)
                     }
-                  //   // onChange={(e) => handlegender(e)}
-                    onChange={(e) =>
-                      handlechangeselect(e,"classMasterId")
-                    }
+                
+                    // onChange={(e) =>
+                    //   handlechangeselect(e,"classMasterId")
+                    // }
                   //   value={
                   //     formdatalocal?.planDuration
                   //       ? [
@@ -452,12 +516,6 @@ getclassmasterlist();
 
 
           </div>
-          {/* <button
-            onClick={() => nav("/portal/classes")}
-            class="md:w-1/5 lg:-ml-11 text-black italic font-bold border-b-4 hover:border-b-2 hover:text-blue-600 hover:underline border-gray-500 hover:border-gray-100 rounded-lg"
-          >
-            Back
-          </button> */}
           <div class="ml-4 md:flex mt-6 justify-end">
               <div class="md:w-[60%] sm:w-[40%] flex gap-3">
               <button
@@ -465,63 +523,68 @@ getclassmasterlist();
                     onClick={() => nav("/portal/classes")}
                 >
                   Back 
-                  {/* {flag ? (
-                    <CircularProgress
-                      color="inherit"
-                      size={"20px"}
-                    ></CircularProgress>
-                  ) : (
-                    <></>
-                  )} */}
+              
                 </button>
              
                 <button
                   class="lg:w-44 sm:w-20 p-2 px-4 bg-gray-900  text-lg text-white font-semibold  border-b-4 hover:border-b-2 border-gray-500 hover:border-gray-100 rounded-lg hover:bg-gray-800"
-                    // onClick={() => createclassapi()}
+                    onClick={() =>{setstri("cancelclass") ;updateapi("cancelclass")}}
                 >
                   Cancel Class 
-                  {/* {flag ? (
+                  {flag && stri === "cancelclass" ? (
                     <CircularProgress
                       color="inherit"
                       size={"20px"}
                     ></CircularProgress>
                   ) : (
                     <></>
-                  )} */}
+                  )}
                 </button>
                 <button
                   class="lg:w-52 sm:w-20 p-2 bg-gray-900 text-center text-lg text-white font-semibold  border-b-4 hover:border-b-2 border-gray-500 hover:border-gray-100 rounded-lg hover:bg-gray-800"
-                    // onClick={() => createclassapi()}
+                    onClick={() =>{setstri("cancelnextclass") ;updateapi("cancelnextclass")}}
                 >
                   Cancel Next Class 
-                  {/* {flag ? (
+                  {flag && stri === "cancelnextclass" ? (
                     <CircularProgress
                       color="inherit"
                       size={"20px"}
                     ></CircularProgress>
                   ) : (
                     <></>
-                  )} */}
+                  )}
                 </button>
                 <button
-                  class="lg:w-36 sm:w-20 p-2 bg-gray-900 text-center text-lg text-white font-semibold  px-4 border-b-4 hover:border-b-2 border-gray-500 hover:border-gray-100 rounded-lg hover:bg-gray-800"
-                    // onClick={() => createclassapi()}
+                  class={`lg:w-36 sm:w-20 md:w-32 p-2 ${updateflag && formdata.timeDetailsId!==formtimeid ? "bg-gray-900":"bg-gray-900 pointer-events-none opacity-60"}  text-center text-lg text-white font-semibold  px-4 border-b-4 hover:border-b-2 border-gray-500 hover:border-gray-100 rounded-lg hover:bg-gray-800`}
+                    onClick={() =>{setstri("update") ;updateapi("update")}}
                 >
                   Update 
-                  {/* {flag ? (
+                  {flag && stri ==="update" ? (
                     <CircularProgress
                       color="inherit"
                       size={"20px"}
                     ></CircularProgress>
                   ) : (
                     <></>
-                  )} */}
+                  )}
                 </button>
               </div>
             </div>
         </div>
    
-
+        <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        className="toast"
+      />
       </div>
 </>
   )
