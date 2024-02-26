@@ -12,6 +12,21 @@ import { ToastContainer, toast } from "react-toastify";
 
 const CreateClass = () => {
   const currentDate = new Date();
+
+  const classesdata = useSelector((e)=>e.classesstore.data.data);
+
+  // let json = {
+  //   weekday:"",
+  //   classCount:"",
+  //   timings:"",
+  //   tempTimings:""
+  // }
+  let [jsondata,setjsondata]=useState([])
+
+
+
+  
+  console.log(classesdata);
   const [options,setoptions] = useState([]);
   const nav = useNavigate();
   const classmasterlisturl = "class/master/list";
@@ -59,14 +74,54 @@ const CreateClass = () => {
 
       if (res.status === 200) {
         if (res.data.status) {
-          console.log(res)
-          // settimedata([...res?.data?.data?.timeList])
-
           let l = res.data.data.timeList.map((d) => ({
             value: d.timeDetailsId,
             label: d.timings
           }));
-          settimeoptions([...l])
+
+          let arr7 = []
+          let arr8 = [];
+          let arr = [];
+          let json = {};
+      classesdata?.forEach((ele)=>{
+        json.weekday = ele?.weekDay ; 
+        json.classCount = ele?.classCount;
+        ele?.classes?.forEach((subele)=>{
+          json.timings = subele?.timings;
+          json.tempTimings = subele?.tempTimings;
+          json.tempChangeFlag = subele?.tempChangeFlag;
+          arr.push({...json})
+        })
+      
+      })
+          console.log(arr)
+          arr.forEach((ele)=>{
+            console.log((formdata?.weekDay?.charAt(0)?.toLowerCase() + formdata?.weekDay?.slice(1)) ,"jkjhkj", ele?.weekday)
+            if(!ele?.tempChangeFlag && (formdata?.weekDay?.charAt(0)?.toLowerCase() + formdata?.weekDay?.slice(1)) === ele?.weekday)
+            {
+               arr7.push(ele?.timings)
+            }
+             if(ele?.tempChangeFlag &&(formdata?.weekDay?.charAt(0)?.toLowerCase() + formdata?.weekDay?.slice(1)) === ele?.weekday){
+              arr7.push(ele?.tempTimings)
+            }
+        
+            arr8 = [...arr7];
+          })
+          
+          console.log(arr8)
+         
+          let arr2 = []
+
+          l?.forEach((ele)=>{
+            console.log(arr8.includes(ele.label),"kik")
+            if(!arr8.includes(ele.label))
+            {
+               arr2.push({label:ele.label,value:ele.value })
+            }
+          })
+          console.log(arr2)
+
+          settimeoptions([...arr2])
         } else {
           // const l = { ...modalpopupdata };
           //         l.show=true
@@ -147,6 +202,33 @@ const CreateClass = () => {
     { value: "7", label: "Sunday" },
   ];
 
+  const getoptions = ()=>{
+let m1 = classesdata?.filter((ele)=>parseInt(ele.classCount)>=2);
+console.log(m1);
+let arr2 = []
+m1.forEach((ele)=>{
+  arr2.push(ele.weekDay)
+})
+console.log(arr2);
+let arr7 = []
+dayOptions.forEach((subele)=>{
+  if(!arr2.includes(subele.label?.charAt(0)?.toLowerCase() + subele.label?.slice(1)))
+  {
+    arr7.push({label:subele.label,value:subele.value })
+  }
+
+})
+
+console.log(arr7)
+
+
+return arr7;
+
+
+
+
+
+  }
   // Set the start date to the first day of the current month
   const startOfMonth = new Date(
     currentDate.getFullYear(),
@@ -271,8 +353,37 @@ const localjson = {};
 
   useEffect(()=>{
     getclassmasterlist();
-    gettimemasterlist();
+  
+      // gettimemasterlist();
+ 
+
+    let arr = [];
+    let json = {};
+classesdata?.forEach((ele)=>{
+  json.weekday = ele?.weekDay ; 
+  json.classCount = ele?.classCount;
+  ele?.classes?.forEach((subele)=>{
+    json.timings = subele?.timings;
+    json.tempTimings = subele?.tempTimings;
+    json.tempChangeFlag = subele?.tempChangeFlag;
+    arr.push({...json})
+  })
+
+})
+console.log(arr)
+
+
+setjsondata([...arr])
+
+
+
   },[])
+  console.log(jsondata)
+
+
+
+
+
   return (
     <>
       {/* <Header title="Classes" image={HeaderImage}></Header> */}
@@ -379,7 +490,7 @@ const localjson = {};
                     // onMenuOpen={() => getcategory()}
                     menuPortalTarget={document.body}
                     menuPosition={"fixed"}
-                    options={dayOptions}
+                    options={getoptions()}
                   />
                 </div>
               </div>
@@ -405,6 +516,7 @@ const localjson = {};
                   handleReactSelectCss("xlarge6", false, true)
 
                     }
+                    isDisabled = {formdata.weekDay===""}
                   //   // onChange={(e) => handlegender(e)}
                     onChange={(e) =>
                       handlechangeselect(e,"timeDetailsId")
@@ -419,6 +531,7 @@ const localjson = {};
                   //       ]
                   //       : []
                   //   }
+                  onMenuOpen={()=>gettimemasterlist()}
                   menuPortalTarget={document.body}
                   menuPosition={"fixed"}
                     options={timeoptions}

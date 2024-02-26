@@ -7,6 +7,7 @@ import axiosInstance from "../../services/LocalAxiosInstance";
 import ClassesAdminOwner from "./ClassesAdminOwner";
 import { addloc } from '../../store/location';
 import LoadingPopup from "../../commonmodules/Loading";
+import { addclassdata } from "../../store/classesstore";
 const Classes = () => {
   const loginDetails = useSelector((e) => e.logindetails.data);
   const [classtype, setclasstype] = useState("All Classes");
@@ -16,7 +17,7 @@ let [loading, setLoading] = useState(false);
   const [myclasslisttrainer,setmyclasslisttrainer] = useState([]);
   const [userclasslist,setuserclasslist] = useState([])
 const [leavemodal,setleavemodal] = useState(false);
-const [classmasterid,setclassmasterid] = useState()
+const [userClassMappingId,setuserClassMappingId] = useState()
   const classdetailslisturl = "class/list";
   const classdetailstrainerlisturl = "class/list/trainer";
   const classdetailsuserlisturl = "class/user/data/list"
@@ -73,6 +74,7 @@ const [classmasterid,setclassmasterid] = useState()
           setuserclasslist([...res?.data?.data?.classList])
        
         } else {
+          setuserclasslist([])
           // const l = { ...modalpopupdata };
           //         l.show=true
           //         l.errormsg=res.data.message
@@ -110,9 +112,12 @@ const [classmasterid,setclassmasterid] = useState()
         if (res.data.status) {
 
           console.log(res?.data?.data);
-          setmyclasslisttrainer([...res?.data?.data?.classListTrainer])
+          setmyclasslisttrainer([...res?.data?.data?.classListTrainer]);
+          dispatch(addclassdata({data : [...res?.data?.data?.classListTrainer]}));
        
         } else {
+          setmyclasslisttrainer([]);
+          dispatch(addclassdata({data:[]}))
           // const l = { ...modalpopupdata };
           //         l.show=true
           //         l.errormsg=res.data.message
@@ -239,7 +244,7 @@ setLoading(false);
     <>
       {/* <Header title="Classes" image={HeaderImage}></Header> */}
 
-      {parseInt(loginDetails.roleId) !==1 ? <div className="mx-auto mt-20 h-screen pt-2 p-3">
+      {parseInt(loginDetails.roleId) !==1 ? <div className="mx-auto mt-20 h-screen pt-2 p-8">
         <div className="flex ml-1 justify-between">
 
           <div className="flex ml-1">
@@ -276,7 +281,7 @@ setLoading(false);
         </div>
 
         <div className="">
-          <div className="text-2xl font-bold text-white text-center bg-[#113f67] rounded-xl p-2 ">
+          <div className="text-2xl font-bold text-white text-center bg-[#113f67] rounded-xl p-2 sticky ">
             Classes For {months[month]} - {year}
           </div>
         </div>
@@ -284,7 +289,8 @@ setLoading(false);
         {console.log(allclasslist?.slice(0,1))}
 
 {classtype === "All Classes"?
-(allclasslist && allclasslist?.map((ele)=>(
+<div className="h-[86%] overflow-auto">
+{allclasslist && allclasslist?.map((ele)=>(
     <div>
     <div className="flex flex-col border border-solid border-black bg-gray-100 w-full max-h-96 lg:min-h-40 md:min-h-36 sm:min-h-36 sm:p-6 md:p-6 lg:p-8 mt-2 rounded-xl">
     <div className="flex flex-row justify-between">
@@ -305,6 +311,16 @@ setLoading(false);
             {subele?.trainerDetails?.rating!==0 ?<div className="sm:text-base lg:text-lg font-semibold text-black">
               RATING: {subele?.trainerDetails?.rating}
             </div>:<></>}
+            {subele?.tempChangeFlag ? <div>
+<p className="italic text-sm text-black"> This class is temporarily changed from {subele?.timings} to {subele?.tempTimings}  </p>
+            </div>:
+          
+            <></>}
+            {subele?.tempCancelFlag ? <div>
+<p className="italic text-sm text-black"> Next Class is temporarily cancelled </p> 
+            </div>:
+          
+            <></>}
           </div>
         </div>
     
@@ -312,7 +328,7 @@ setLoading(false);
       <div className="flex gap-x-4">
 
       <button
-          className="sm:w-28 md:w-44 sm:text-md m-1 p-2 border border-2 border-solid border-black text-black rounded-full lg:text-lg font-semibold lg:w-44 bg-gray-300 hover:bg-black hover:text-white"
+          className="sm:w-28 md:w-44 sm:text-md m-1 p-2  border-2 border-solid border-black text-black rounded-full lg:text-lg font-semibold lg:w-44 bg-gray-300 hover:bg-black hover:text-white"
           onClick={() => {nav("/portal/classes/classesbook");dispatch(addloc({
             state:{
               classes : ele?.classes,
@@ -325,23 +341,18 @@ setLoading(false);
         </button>
 
 
-
-        {/* {parseInt(loginDetails?.roleId) === 4 ?<button
-          className="sm:w-28 md:w-44 sm:text-md m-1 p-2 border border-2 border-solid border-black text-black rounded-full lg:text-lg font-semibold lg:w-44 bg-red-500 hover:bg-red-400 hover:text-white"
-          onClick={() => handleleave()}
-        >
-         Leave Class
-        </button>:<></>} */}
         </div>
       </div>
 
     </div>
   </div>
   </div>
-  ))):(
-   parseInt(loginDetails?.roleId) === 3  ? (myclasslisttrainer && myclasslisttrainer.map((ele)=>(
-    <div>
-    <div className="flex flex-col border border-solid border-black bg-gray-100 w-full max-h-96 lg:min-h-40 md:min-h-36 sm:min-h-36 sm:p-6 md:p-6 lg:p-8 mt-2 rounded-xl">
+  ))}</div>:(
+   parseInt(loginDetails?.roleId) === 3  ? 
+   <div className="h-[86%] overflow-auto">
+   {myclasslisttrainer && myclasslisttrainer.map((ele)=>(
+
+    <div className="flex flex-col border border-solid border-black bg-gray-100 w-full lg:min-h-40 md:min-h-36 sm:min-h-36 sm:p-6 md:p-6 lg:p-8 mt-2 rounded-xl">
     <div className="flex flex-row justify-between">
       <div className="font-extrabold font-oswald sm:text-3xl md:text-3xl lg:text-6xl text-black pl-4">
         {ele.weekDay?.toString()?.toUpperCase()}
@@ -360,11 +371,25 @@ setLoading(false);
             {subele?.trainerDetails?.rating!==0 ?<div className="sm:text-base lg:text-lg font-semibold text-black">
               RATING: {subele?.trainerDetails?.rating}
             </div>:<></>}
+
+            {subele?.tempChangeFlag ? <div>
+<p className="italic text-sm text-black"> This class is temporarily changed from {subele?.timings} to {subele?.tempTimings} </p>
+            </div>:
+          
+            <></>}
+            {subele?.tempCancelFlag ? <div>
+<p className="italic text-sm text-black"> Next Class is temporarily cancelled </p> 
+            </div>:
+          
+            <></>}
+
+
           </div>
         </div>
 
         <button
-          className="sm:w-28 md:w-44 sm:text-md m-1 p-2 border border-2 border-solid border-black text-black rounded-full lg:text-lg font-semibold lg:w-44 bg-gray-300 hover:bg-black hover:text-white"
+          className={`sm:w-28 md:w-44 sm:text-md m-1 p-2 border-2 border-solid border-black text-black rounded-full lg:text-lg font-semibold lg:w-44 bg-gray-300 hover:bg-black hover:text-white ${subele?.tempChangeFlag || subele?.tempCancelFlag ? "pointer-events-none opacity-50":""}`}
+          title={subele?.tempCancelFlag ? "Next Class is temporarily cancelled": subele?.tempChangeFlag ? "Class Timings are temporarily changed":""}
           onClick={() => {nav("/portal/classes/editClass");dispatch(addloc({
             state:{
               classDetailsId:subele?.classDetailsId
@@ -375,23 +400,16 @@ setLoading(false);
         </button>
     
       </div>))}
-      {/* <div className="flex gap-x-4">
-        {parseInt(loginDetails?.roleId) === 4 ?<button
-          className="sm:w-28 md:w-44 sm:text-md m-1 p-2 border border-2 border-solid border-black text-black rounded-full lg:text-lg font-semibold lg:w-44 bg-red-500 hover:bg-red-400 hover:text-white"
-          onClick={() => handleleave()}
-        >
-         Leave Class
-        </button>:<></>}
-        </div> */}
+
       </div>
 
     </div>
   </div>
-  </div>
+ 
 
 
    ))
-  ):(
+        }</div>:(
     userclasslist && userclasslist.map((ele)=>(
       <div>
       <div className="flex flex-col border border-solid border-black bg-gray-100 w-full max-h-96 lg:min-h-40 md:min-h-36 sm:min-h-36 sm:p-6 md:p-6 lg:p-8 mt-2 rounded-xl">
@@ -427,20 +445,13 @@ setLoading(false);
            Edit Class
           </button>:<button
             className="sm:w-28 md:w-44 sm:text-md m-1 p-2 border border-2 border-solid border-black text-black rounded-full lg:text-lg font-semibold lg:w-44 bg-red-500 hover:bg-red-400 hover:text-white"
-            onClick={() => {setclassmasterid(subele?.classDetailsId);setleavemodal(true)}}
+            onClick={() => {setuserClassMappingId(subele?.userClassMappingId);setleavemodal(true)}}
           >
            Leave Class
           </button>}
       
         </div>))}
-        {/* <div className="flex gap-x-4">
-          {parseInt(loginDetails?.roleId) === 4 ?<button
-            className="sm:w-28 md:w-44 sm:text-md m-1 p-2 border border-2 border-solid border-black text-black rounded-full lg:text-lg font-semibold lg:w-44 bg-red-500 hover:bg-red-400 hover:text-white"
-            onClick={() => handleleave()}
-          >
-           Leave Class
-          </button>:<></>}
-          </div> */}
+ 
         </div>
   
       </div>
@@ -513,7 +524,7 @@ setLoading(false);
                   data-modal-hide="popup-modal"
                   type="button"
                   class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center me-2"
-                  onClick={() => handleleave(classmasterid)}
+                  onClick={() => handleleave(userClassMappingId)}
                 >
                   Yes, I'm sure
                 </button>

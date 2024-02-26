@@ -1,4 +1,4 @@
-export const handleReactSelectCss = (name,error, flag, type,settings) => {
+export const handleReactSelectCss = (name,error, flag, type,settings,opacityflag) => {
     var pointers = "fill";
     var pointer1 = "";
     if (type === "view") {
@@ -65,13 +65,13 @@ export const handleReactSelectCss = (name,error, flag, type,settings) => {
         ...styles,
         width: reactslctw,
         // overflowY: "auto",
-        height: flag===true ?"49px" :"35px",
-        maxHeight: flag===true ?"49px" :"35px",
+        height: flag===true ?"49px":opacityflag ? "49px" :"35px",
+        maxHeight: flag===true ?"49px" :opacityflag ? "49px" :"35px",
         borderRadius:"5px",
         fontSize: "16px",
         marginTop: "-2px",
         border: error?"2px solid red !important":state.isFocused ? "none" : "none",
-        backgroundColor:flag===true ?" rgb(229 231 235 / var(--tw-bg-opacity))":settings===true?"#3b3b3b":"white",
+        backgroundColor:flag===true ?" rgb(229 231 235 / var(--tw-bg-opacity))":settings===true?"#3b3b3b": opacityflag === true ? "rgb(229 231 235 / 0.4)" :"white",
         // outline: state.isFocused?"none !important":"none",
         // filter: state.isFocused
         //   ? "drop-shadow(5px 5px 2px black) !important"

@@ -105,7 +105,7 @@ setformdata({...fd})
     localjson.activeFlag = str === "cancelclass" ? false:true;
     localjson.tempCancelFlag = str === "cancelnextclass" ? true:false;
     localjson.tempChangeFlag = str === "update" ? true : false;
-    localjson.tempTimeId = formdata?.timeDetailsId;
+    localjson.tempTimeId = str === "update" ?formdata?.timeDetailsId:null;
     try {
       const res = await axiosInstance.post(classediturl,localjson);
 
@@ -387,7 +387,7 @@ getclassmasterlist();
                 >
                   DAY*
                 </label>
-                {console.log(window.innerWidth)}
+            
                 <div>
                   <Select
                     id="day"
@@ -400,7 +400,7 @@ getclassmasterlist();
                     //     formdata?.categoryId?.length === 0
                     //     ? handleReactSelectCss("xlarge4", true, true):
                         // window.innerWidth>1500 ? handleReactSelectCss("xlarge6", false, true):handleReactSelectCss("xlarge5", false, true)
-                        handleReactSelectCss("xlarge6", false, true)
+                        handleReactSelectCss("xlarge6", false, false,false,false,true)
                     }
                     onChange={(e) => handlechangeselect(e,"weekDay")}
                     // value={
@@ -488,7 +488,7 @@ getclassmasterlist();
                   //       ? handleReactSelectCss("xlarge1", true, true):
                   // window.innerWidth>1500 ? handleReactSelectCss("xlarge6", false, true):handleReactSelectCss("xlarge5", false, true)
 
-                  handleReactSelectCss("xlarge6", false, true)
+                  handleReactSelectCss("xlarge6", false, false,false,false,true)
                     }
                 
                     // onChange={(e) =>

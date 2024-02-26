@@ -30,7 +30,7 @@ const loginDetails = useSelector((e)=>e.logindetails.data)
 const loc = useSelector((e)=>e.location.state);
 const [tabclass,settabclass] = useState(false);
 console.log(loc.state.classes);
-
+const [userClassMappingId,setuserClassMappingId] = useState()
 const bookclassapi = async(classdetailsid)=>{
 
   setid(classdetailsid);
@@ -113,6 +113,7 @@ const classdetailsuserlist = async() =>{
         setuserclasslist([...res?.data?.data?.classList])
 
       } else {
+        setuserclasslist([])
         // const l = { ...modalpopupdata };
         //         l.show=true
         //         l.errormsg=res.data.message
@@ -196,6 +197,7 @@ const classesuserlistapi = async(id) =>{
 setallclassesdata(res?.data?.data?.usersList)
        
       } else {
+        setallclassesdata([])
         // const l = { ...modalpopupdata };
         //         l.show=true
         //         l.errormsg=res.data.message
@@ -241,7 +243,7 @@ useEffect(()=>{
    <ul class="flex border-b border-gray-300 text-sm font-medium text-gray-600 mt-3 px-6 md:px-6">
      {/* {parseInt(loginDetails?.roleId) !== 1 ?  <li class="mr-8 text-gray-900 border-b-2 border-gray-800"><a href="#_" class= {`${tab==="profileinfo" ? "underline":"no-underline"} py-4 inline-block text-black text-base font-sans font-semibold`} onClick={()=>settab("profileinfo")}>Profile Info</a></li>:<></>} */}
       <li class="mr-8 hover:text-gray-900"><a href='#_' class={`${tab==="bookclasses" ? "underline":"no-underline"} py-4 inline-block text-black text-base font-sans font-semibold hover:cursor-pointer`}  onClick={()=>{settab("bookclasses");settabclass(false)}}>{parseInt(loginDetails?.roleId===4)?"Book Classes":"Edit Classes"}</a></li>
-      {parseInt(loginDetails?.roleId) === 4 ? <li class="mr-8 hover:text-gray-900"><a href='#_' class={`${tab==="joinedclasses" ? "underline":"no-underline"} py-4 inline-block text-black text-base font-sans font-semibold hover:cursor-pointer`}  onClick={()=>settab("joinedclasses")}>Joined Classes</a></li>:<></>}
+      {parseInt(loginDetails?.roleId) === 4 ? <li class="mr-8 hover:text-gray-900"><a href='#_' class={`${tab==="joinedclasses" ? "underline":"no-underline"} py-4 inline-block text-black text-base font-sans font-semibold hover:cursor-pointer`}  onClick={()=>{settab("joinedclasses");settabclass(false)}}>Joined Classes</a></li>:<></>}
      {tabclass? <li class="mr-8 hover:text-gray-900"><a href='#_' class={`${tab==="allclasses" ? "underline":"no-underline"} py-4 inline-block text-black text-base font-sans font-semibold hover:cursor-pointer`}  onClick={()=>settab("allclasses")}> Users Joined </a></li>:<></>}
     </ul>
 
@@ -374,7 +376,7 @@ tab==="allclasses"?
            Edit Class
           </button>:<button
             className="sm:w-28 md:w-44 sm:text-md m-1 p-2 border border-2 border-solid border-black text-black rounded-full lg:text-lg font-semibold lg:w-44 bg-red-500 hover:bg-red-400 hover:text-white"
-            onClick={() => {setclassmasterid(subele?.classDetailsId);setleavemodal(true)}}
+            onClick={() => {setuserClassMappingId(subele?.userClassMappingId);setleavemodal(true)}}
           >
            Leave Class
           </button>}
@@ -407,7 +409,7 @@ tab==="allclasses"?
         <p class="float-left text-xs text-gray-500 tracking-tight mt-1">Changed your mind go back and review more classes</p>
         {/* <input type="submit" class="bg-indigo-500 text-white text-sm font-medium px-6 py-2 rounded float-right uppercase cursor-pointer mb-2" value="Save"/> */}
 
-        <button className='sm:-mt-4 md:-mt-4 bg-indigo-500 text-white text-sm font-medium px-6 py-2 rounded float-right uppercase cursor-pointer -mt-4 hover:bg-indigo-400' onClick={()=>nav("/portal/classes")}>Back</button>
+        <button className='sm:-mt-4 md:-mt-4 bg-indigo-500 text-white text-sm font-medium px-6 py-2 rounded float-right uppercase cursor-pointer -mt-4 hover:bg-indigo-400' onClick={()=>{ settabclass(false) ; tab === "allclasses" ? settab("bookclasses"): nav("/portal/classes")}}>Back</button>
       </div>
 </div>
 {leavemodal ? (
@@ -464,7 +466,7 @@ tab==="allclasses"?
                   data-modal-hide="popup-modal"
                   type="button"
                   class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center me-2"
-                  onClick={() => handleleave(classmasterid)}
+                  onClick={() => handleleave(userClassMappingId)}
                 >
                   Yes, I'm sure
                 </button>
