@@ -163,7 +163,7 @@ const Testimonails = () => {
           <div className="testimonailstoavatar">
             <img src={"data:image/png;base64,"+feedbackdata[index]?.image} alt="" />
           </div>
-          <div className="flex items-center justify-center mr-20">{getrating(Math.round(feedbackdata[index]?.rating))}</div>
+          <div className="flex items-center justify-center mr-28">{getrating(Math.round(feedbackdata[index]?.rating))}</div>
           <p className="testimonailstoquote">{feedbackdata[index]?.message}</p>
           <div className="text-base">{feedbackdata[index]?.userName}</div>
           {/* <small className="testimonailstotitle">{job}</small> */}

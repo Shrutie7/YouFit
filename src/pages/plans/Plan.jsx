@@ -116,15 +116,15 @@ const onClickhandlerplan = (name)=>{
               
               {
                 planlist.map((ele)=>(
-                    <div class="flex flex-col p-6 mx-auto max-w-96 min-w-96 text-center text-gray-900 bg-white rounded-lg border border-gray-100 shadow dark:border-gray-600 xl:p-8 dark:bg-gray-800    dark:text-white">
+                    <div class="flex flex-col p-6 mx-auto max-w-96 min-w-96 text-center text-gray-900 bg-white rounded-lg border border-gray-100 shadow dark:border-gray-600 xl:p-8 dark:bg-[#808080]    dark:text-black">
               
-              <h3 class="mb-4 text-2xl font-semibold text-white">{ele?.PlanName}</h3>
-              <p class="font-light text-gray-500 sm:text-lg dark:text-gray-400">
+              <h3 class="mb-4 text-3xl font-semibold text-white">{ele?.PlanName}</h3>
+              <p class="font-light text-black sm:text-lg dark:text-white">
                {ele?.planDescription}
               </p>
               <div class="flex justify-center items-baseline my-8">
                 <span class="mr-2 text-4xl font-extrabold">{ele.planPrice}</span>
-                <span class="text-gray-500 dark:text-gray-400 text-2xl font-extrabold">/{ele.planDuration}months</span>
+                <span class="text-black dark:text-black text-2xl font-extrabold">/{ele.planDuration}months</span>
               </div>
               <ul role="list" class="mb-8 space-y-4 text-left">
                 {
@@ -148,7 +148,7 @@ const onClickhandlerplan = (name)=>{
                 }
               </ul>
               <button
-                className={` text-white font-bold py-2 px-4 rounded ${loginDetails?.planDetails?.planId==="N/A" ?"bg-blue-500 hover:bg-blue-700":"bg-blue-500 opacity-50 pointer-events-none" }`}
+                className={` text-white font-bold py-2 px-4 rounded ${loginDetails?.planDetails?.planId==="N/A" ?"bg-black hover:bg-white hover:text-black":"bg-black opacity-50 pointer-events-none" }`}
                 onClick={() => {nav("checkout");dispatch(addloc({state:{"planId":ele?.planId}}))}}
               >
                 Buy Now

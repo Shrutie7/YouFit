@@ -252,7 +252,7 @@ setLoading(false);
          
             <div
               className={`p-2 m-0 h-12 cursor-pointer text-center sm:w-36 md:w-40 lg:w-80 text-xl font-semibold leading-8 rounded-tl-md border-white border-solid border-2 ${
-                classtype === "My Classes" ?"bg-[#38598b]": "bg-[#113f67]"
+                classtype === "My Classes" ?"bg-zinc-600": "bg-zinc-800"
               }`}
               onClick={() => onClickhandlerclass("my")}
             >
@@ -261,7 +261,7 @@ setLoading(false);
   
           <div
             className={`p-2 m-0 h-12 cursor-pointer text-center sm:w-36 md:w-40 lg:w-80 text-xl font-semibold leading-8 rounded-tr-md border-white border-solid border-2  ${
-              classtype === "All Classes" ? "bg-[#38598b]": "bg-[#113f67]"
+              classtype === "All Classes" ? "bg-zinc-600": "bg-zinc-800"
             }`}
             onClick={() => onClickhandlerclass("all")}
           >
@@ -270,7 +270,7 @@ setLoading(false);
           </div>
 
           {classtype==="My Classes" && parseInt(loginDetails?.roleId) === 3 ? <div
-              className={`pt-1 m-1  h-9  cursor-pointer text-center sm:w-32 md:40 lg:w-60 text-xl font-semibold rounded-lg bg-[#38598b]`}
+              className={`pt-1 m-1  h-9  cursor-pointer text-center sm:w-32 md:40 lg:w-60 text-xl font-semibold rounded-lg bg-white text-black hover:bg-black hover:text-white select-none`}
               onClick={()=>{nav("/portal/classes/classcreate")}}
            
             >
@@ -281,7 +281,7 @@ setLoading(false);
         </div>
 
         <div className="">
-          <div className="text-2xl font-bold text-white text-center bg-[#113f67] rounded-xl p-2 sticky ">
+          <div className="text-2xl font-bold text-white text-center bg-[#808080b5] rounded-xl p-2 sticky border-solid border-white border-2">
             Classes For {months[month]} - {year}
           </div>
         </div>
