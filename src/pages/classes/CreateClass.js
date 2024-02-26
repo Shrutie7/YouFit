@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { CircularProgress } from "@material-ui/core";
 import { ToastContainer, toast } from "react-toastify";
+import { Addrowerror } from "../../commonmodules/Addrowerror";
 
 
 const CreateClass = () => {
@@ -44,7 +45,14 @@ const CreateClass = () => {
       "weekDay":""
   
   }
+  const [mandatoryData, setMandatoryData] = useState([]);
 
+  const lableMandatoryData = [
+    "classMasterId",
+    "timeDetailsId", 
+    "weekDay"
+
+  ];
   let [formdata,setformdata] = useState({...formdatajson});
 
   const handlechangeselect = (e,name,opt)=>{
@@ -278,6 +286,14 @@ return arr7;
 
 
 const createclassapi = async()=>{
+  let res = Addrowerror(lableMandatoryData, formdata);
+
+  if (res?.length > 0) {
+    setMandatoryData([...res]);
+
+  } else{
+
+  
 
 
   setflag(true);
@@ -312,6 +328,8 @@ const localjson = {};
             theme: "light",
             onClose: () => {
               nav("/portal/classes");
+              setformdata({...formdatajson});
+              setMandatoryData([])
             },
           });
 
@@ -346,7 +364,7 @@ const localjson = {};
     }
 
  setflag(false);
-
+  }
 
 }
 
@@ -474,11 +492,15 @@ setjsondata([...arr])
                     placeholder="Day"
                     
                     styles={
+                      mandatoryData.includes("weekDay") &&
+                      !formdata?.weekDay
+                      ? handleReactSelectCss("xlarge6", true, true)
+                      : handleReactSelectCss("xlarge6", false, true)
                     //   mandatoryData.includes("day") &&
                     //     formdata?.categoryId?.length === 0
                     //     ? handleReactSelectCss("xlarge4", true, true):
                         // window.innerWidth>1500 ? handleReactSelectCss("xlarge6", false, true):handleReactSelectCss("xlarge5", false, true)
-                        handleReactSelectCss("xlarge6", false, true)
+                        // handleReactSelectCss("xlarge6", false, true)
                     }
                     onChange={(e) => handlechangeselect(e,"weekDay")}
                     // value={
@@ -509,11 +531,15 @@ setjsondata([...arr])
                   className="mt-1"
                   placeholder="Time"
                     styles={
+                      mandatoryData.includes("timeDetailsId") &&
+                      !formdata?.timeDetailsId
+                      ? handleReactSelectCss("xlarge6", true, true)
+                      : handleReactSelectCss("xlarge6", false, true)
                   //     mandatoryData.includes("planDuration") &&
                   //       !formdata?.planDuration
                   //       ? handleReactSelectCss("xlarge1", true, true):
                   // window.innerWidth>1500 ? handleReactSelectCss("xlarge6", false, true):handleReactSelectCss("xlarge5", false, true)
-                  handleReactSelectCss("xlarge6", false, true)
+                  // handleReactSelectCss("xlarge6", false, true)
 
                     }
                     isDisabled = {formdata.weekDay===""}
@@ -556,12 +582,16 @@ setjsondata([...arr])
                   className="mt-1"
                   placeholder="Class"
                     styles={
+                      mandatoryData.includes("classMasterId") &&
+                      !formdata?.classMasterId
+                      ? handleReactSelectCss("xlarge6", true, true)
+                      : handleReactSelectCss("xlarge6", false, true)
                   //     mandatoryData.includes("planDuration") &&
                   //       !formdata?.planDuration
                   //       ? handleReactSelectCss("xlarge1", true, true):
                   // window.innerWidth>1500 ? handleReactSelectCss("xlarge6", false, true):handleReactSelectCss("xlarge5", false, true)
 
-                  handleReactSelectCss("xlarge6", false, true)
+                  // handleReactSelectCss("xlarge6", false, true)
                     }
                   //   // onChange={(e) => handlegender(e)}
                     onChange={(e) =>
