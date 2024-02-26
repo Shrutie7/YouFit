@@ -6,10 +6,12 @@ import { useDispatch, useSelector } from "react-redux";
 import axiosInstance from "../../services/LocalAxiosInstance";
 import ClassesAdminOwner from "./ClassesAdminOwner";
 import { addloc } from '../../store/location';
+import LoadingPopup from "../../commonmodules/Loading";
 const Classes = () => {
   const loginDetails = useSelector((e) => e.logindetails.data);
   const [classtype, setclasstype] = useState("All Classes");
 const dispatch = useDispatch();
+let [loading, setLoading] = useState(false);
   const [allclasslist,setallclasslist] = useState([]);
   const [myclasslisttrainer,setmyclasslisttrainer] = useState([]);
   const [userclasslist,setuserclasslist] = useState([])
@@ -20,6 +22,7 @@ const [classmasterid,setclassmasterid] = useState()
   const classdetailsuserlisturl = "class/user/data/list"
   const classleaveurl = "class/user/leave";
   const classdetailslist = async () => {
+    setLoading(true)
     try {
       const res = await axiosInstance.post(classdetailslisturl, {userId:loginDetails?.userId,gymId:loginDetails?.gymId});
 
@@ -56,10 +59,10 @@ const [classmasterid,setclassmasterid] = useState()
       // l.logout=false
       // setmodalpopupdata({...l})
     }
-
+    setLoading(false)
   };
   const classdetailsuserlist = async () => {
-
+    setLoading(true)
     try {
       const res = await axiosInstance.post(classdetailsuserlisturl, {userId:loginDetails?.userId});
 
@@ -96,9 +99,10 @@ const [classmasterid,setclassmasterid] = useState()
       // l.logout=false
       // setmodalpopupdata({...l})
     }
-
+    setLoading(false)
   };
   const classdetailstrainerlist = async () => {
+    setLoading(true)
     try {
       const res = await axiosInstance.post(classdetailstrainerlisturl, {trainerId:loginDetails?.userId});
 
@@ -135,10 +139,11 @@ const [classmasterid,setclassmasterid] = useState()
       // l.logout=false
       // setmodalpopupdata({...l})
     }
-
+setLoading(false);
   };
 
   const handleleave = async(mappingid)=>{
+    
     try {
       const res = await axiosInstance.post(classleaveurl, {userClassMappingId:mappingid,userId:loginDetails?.userId});
 
@@ -288,7 +293,7 @@ const [classmasterid,setclassmasterid] = useState()
       </div>
       <div className="flex flex-col gap-3">
 
-      {ele?.classes?.slice(0,2)?.map((subele)=>(<div className="flex flex-col gap-y-4">
+      {ele?.classes?.slice(0,2)?.map((subele)=>(<div className="flex flex-col gap-y-4  w-[30rem]">
         <div className="flex flex-col pr-6 gap-y-3">
           <div className="sm:text-lg md:text-lg lg:text-2xl font-extrabold text-black">
            {subele?.className} {subele?.timings}
@@ -343,7 +348,7 @@ const [classmasterid,setclassmasterid] = useState()
       </div>
       <div className="flex flex-col gap-3">
 
-      {ele?.classes?.slice(0,2)?.map((subele)=>(<div className="flex flex-col gap-y-4">
+      {ele?.classes?.slice(0,2)?.map((subele)=>(<div className="flex flex-col gap-y-4  w-[30rem]">
         <div className="flex flex-col pr-6 gap-y-3">
           <div className="sm:text-lg md:text-lg lg:text-2xl font-extrabold text-black">
            {subele?.className} {subele?.timings}
@@ -396,7 +401,7 @@ const [classmasterid,setclassmasterid] = useState()
         </div>
         <div className="flex flex-col gap-3">
   
-        {ele?.classes?.slice(0,2)?.map((subele)=>(<div className="flex flex-col gap-y-4">
+        {ele?.classes?.slice(0,2)?.map((subele)=>(<div className="flex flex-col gap-y-4  w-[30rem]">
           <div className="flex flex-col pr-6 gap-y-3">
             <div className="sm:text-lg md:text-lg lg:text-2xl font-extrabold text-black">
              {subele?.className} {subele?.timings}
@@ -526,6 +531,12 @@ const [classmasterid,setclassmasterid] = useState()
         </div>
       ) : (
         <></>
+      )}
+
+
+
+      {loading && (
+        <LoadingPopup state={loading} message="Loading... Please Wait" />
       )}
     </>
   );

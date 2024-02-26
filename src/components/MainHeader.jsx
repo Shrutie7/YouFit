@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import Image from "../images/main_header.png"
 import post from "../assets/post/1.jpeg"
 import backgroundvideo1 from "../assets/video1.mp4"
@@ -8,6 +8,7 @@ import Carousel from "./Carousel"
 
 const MainHeader = () => {
 
+  const nav = useNavigate();
   const slides = [backgroundvideo1, backgroundvideo2, backgroundvideo3];
   return (
     <div className="pt-[30%] bg-black md:pt-0 ">
@@ -21,7 +22,7 @@ const MainHeader = () => {
 
       <div className="flex my-5 md:m-0">
         <div className="flex ">
-          <button className="bg-white text-black text-xl flex rounded-md hover:bg-opacity-80 py-2 md:py-3 px-9">
+          <button className="bg-white text-black text-xl flex rounded-md hover:bg-opacity-80 py-2 md:py-3 px-9" onClick={()=>nav("/portal/plans")}>
             
             Get Started
           </button>

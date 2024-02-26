@@ -7,6 +7,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { CircularProgress } from '@material-ui/core';
 import Card from '../../UI/Card';
 import noavatar from "../../assets/person/noAvatar.png"
+import LoadingPopup from '../../commonmodules/Loading';
 
 const ClassesBook = () => {
 
@@ -14,6 +15,7 @@ const ClassesBook = () => {
   const classbookurl = "class/user/mapping";
   const classuserdatalisturl ="class/user/data/list";
   const classuserlisturl = "class/users/list";
+  let [loading, setLoading] = useState(false);
  let [allclassesdata,setallclassesdata] = useState([])
  let [userclasslist,setuserclasslist] = useState([])
  const [classmasterid,setclassmasterid] =useState()
@@ -180,7 +182,7 @@ const handleleave = async(mappingid)=>{
   }
 }
 const classesuserlistapi = async(id) =>{
-
+  setLoading(true)
   const localjson = {};
 
   localjson.classDetailsId = id
@@ -220,6 +222,7 @@ setallclassesdata(res?.data?.data?.usersList)
     // l.logout=false
     // setmodalpopupdata({...l})
   }
+  setLoading(false)
 
 }
 
@@ -238,7 +241,7 @@ useEffect(()=>{
    <ul class="flex border-b border-gray-300 text-sm font-medium text-gray-600 mt-3 px-6 md:px-6">
      {/* {parseInt(loginDetails?.roleId) !== 1 ?  <li class="mr-8 text-gray-900 border-b-2 border-gray-800"><a href="#_" class= {`${tab==="profileinfo" ? "underline":"no-underline"} py-4 inline-block text-black text-base font-sans font-semibold`} onClick={()=>settab("profileinfo")}>Profile Info</a></li>:<></>} */}
       <li class="mr-8 hover:text-gray-900"><a href='#_' class={`${tab==="bookclasses" ? "underline":"no-underline"} py-4 inline-block text-black text-base font-sans font-semibold hover:cursor-pointer`}  onClick={()=>{settab("bookclasses");settabclass(false)}}>{parseInt(loginDetails?.roleId===4)?"Book Classes":"Edit Classes"}</a></li>
-      <li class="mr-8 hover:text-gray-900"><a href='#_' class={`${tab==="joinedclasses" ? "underline":"no-underline"} py-4 inline-block text-black text-base font-sans font-semibold hover:cursor-pointer`}  onClick={()=>settab("joinedclasses")}>Joined Classes</a></li>
+      {parseInt(loginDetails?.roleId) === 4 ? <li class="mr-8 hover:text-gray-900"><a href='#_' class={`${tab==="joinedclasses" ? "underline":"no-underline"} py-4 inline-block text-black text-base font-sans font-semibold hover:cursor-pointer`}  onClick={()=>settab("joinedclasses")}>Joined Classes</a></li>:<></>}
      {tabclass? <li class="mr-8 hover:text-gray-900"><a href='#_' class={`${tab==="allclasses" ? "underline":"no-underline"} py-4 inline-block text-black text-base font-sans font-semibold hover:cursor-pointer`}  onClick={()=>settab("allclasses")}> Users Joined </a></li>:<></>}
     </ul>
 
@@ -493,6 +496,9 @@ tab==="allclasses"?
         theme="light"
         className="toast"
       />
+            {loading && (
+        <LoadingPopup state={loading} message="Loading... Please Wait" />
+      )}
     </div>
     
 

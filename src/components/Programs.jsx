@@ -9,7 +9,7 @@ const Programs = () => {
   return (
     <section className="programs">
       <div className="container programstocontainer">
-        <SectionHead icon={<FaCrown />} title="Programs" />
+        <SectionHead icon={<FaCrown />} title="Classes" />
         <div className="programstowrapper">
           {
             programs.map(({ id, icon, title, info, path }) => {
