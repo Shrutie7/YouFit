@@ -111,7 +111,7 @@ const onClickhandlerplan = (name)=>{
             
           </div>
           {/* <button onClick={()=>nav("plancreate")}>Create Plan</button> */}
-          <div class="mt-4 space-y-10 lg:grid lg:grid-cols-3 lg:gap-24 xl:grid-cols-3 sm:gap-6 xl:gap-28 lg:space-y-0">
+          <div class="mt-4 space-y-10 lg:grid lg:grid-cols-3 lg:gap-24 xl:grid-cols-4 sm:gap-6 xl:gap-28 lg:space-y-0">
          
               
               {
@@ -148,7 +148,7 @@ const onClickhandlerplan = (name)=>{
                 }
               </ul>
               <button
-                className={` text-white font-bold py-2 px-4 rounded ${loginDetails?.planDetails?.planId==="" ?"bg-blue-500 hover:bg-blue-700":"bg-blue-500 opacity-50 pointer-events-none" }`}
+                className={` text-white font-bold py-2 px-4 rounded ${loginDetails?.planDetails?.planId==="N/A" ?"bg-blue-500 hover:bg-blue-700":"bg-blue-500 opacity-50 pointer-events-none" }`}
                 onClick={() => {nav("checkout");dispatch(addloc({state:{"planId":ele?.planId}}))}}
               >
                 Buy Now

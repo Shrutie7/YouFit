@@ -153,7 +153,7 @@ const[flag,setflag] = useState(false);
         if (res.data.status) {
           let l = res.data.data.listOfTrainers.map((d) => ({
             value: d.userId,
-            label: d.trainerName,
+            label: d.trainerName +" - "+ d.categoryName,
           }));
           setoptions6([...l]);
         } else {

@@ -10,6 +10,7 @@ import { ToastContainer, toast } from "react-toastify";
 
 const EditClass = () => {
   const currentDate = new Date();
+  const classesdata = useSelector((e)=>e.classesstore.data.data);
   const classmasterlisturl = "class/master/list";
   const [stri,setstri] = useState("")
   const classediturl = "class/update";
@@ -114,7 +115,7 @@ setformdata({...fd})
       
     console.log(res?.data?.data)
 
-    toast(res?.data?.message, {
+    toast(`${str === "cancelnextclass" ? "Next Class cancelled successfully": str==="update" ? "Next Class updated successfully":"Class cancelled successfully"}`, {
       position: "top-right",
       autoClose: 5000,
       hideProgressBar: false,
@@ -210,7 +211,51 @@ setformdata({...fd})
             value: d.timeDetailsId,
             label: d.timings
           }));
-          settimeoptions([...l])
+
+          let arr7 = []
+          let arr8 = [];
+          let arr = [];
+          let json = {};
+          console.log(classesdata)
+      classesdata?.forEach((ele)=>{
+        json.weekday = ele?.weekDay ; 
+        json.classCount = ele?.classCount;
+        ele?.classes?.forEach((subele)=>{
+          json.timings = subele?.timings;
+          json.tempTimings = subele?.tempTimings;
+          json.tempChangeFlag = subele?.tempChangeFlag;
+          arr.push({...json})
+        })
+      
+      })
+          console.log(arr)
+          arr.forEach((ele)=>{
+            console.log((formdata?.weekDay?.charAt(0)?.toLowerCase() + formdata?.weekDay?.slice(1)) ,"jkjhkj", ele?.weekday,ele?.timings)
+            if(!ele?.tempChangeFlag && (formdata?.weekDay?.charAt(0)?.toLowerCase() + formdata?.weekDay?.slice(1)) === ele?.weekday)
+            {
+               arr7.push(ele?.timings)
+            }
+             if(ele?.tempChangeFlag &&(formdata?.weekDay?.charAt(0)?.toLowerCase() + formdata?.weekDay?.slice(1)) === ele?.weekday){
+              arr7.push(ele?.tempTimings)
+            }
+        
+            arr8 = [...arr7];
+          })
+          
+          console.log(arr8)
+         
+          let arr2 = []
+
+          l?.forEach((ele)=>{
+            console.log(arr8.includes(ele.label),"kik")
+            if(!arr8.includes(ele.label))
+            {
+               arr2.push({label:ele.label,value:ele.value })
+            }
+          })
+          console.log(arr2)
+
+          settimeoptions([...arr2])
         } else {
           // const l = { ...modalpopupdata };
           //         l.show=true
@@ -457,6 +502,7 @@ getclassmasterlist();
                   //       ]
                   //       : []
                   //   }
+                  onMenuOpen={()=>gettimemasterlist()}
                   value= {getvalues(timeoptions,"timeDetailsId")}
                   menuPortalTarget={document.body}
                   menuPosition={"fixed"}

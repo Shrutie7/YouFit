@@ -11,10 +11,10 @@ const Footer = () => {
           <Link to="/" className="logo">
             <img src={Logo} alt="Footer Logo" />
           </Link>
-          <p>
+          {/* <p>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
             Sit amet justo donec enim diam. Enim nulla aliquet porttitor lacus.
-          </p>
+          </p> */}
           <div className="footertosocials">
             <a href="https://linkedin.com" target="_blank" rel="noreferrer noopener"><FaLinkedin /></a>
             <a href="https://facebook.com" target="_blank" rel="noreferrer noopener"><FaFacebookF /></a>
@@ -24,24 +24,22 @@ const Footer = () => {
         </article>
         <article>
           <h4>Permalinks</h4>
-          <Link to="/about">About</Link>
-          <Link to="/plans">Plans</Link>
-          <Link to="/trainers">Trainers</Link>
-          <Link to="/gallery">Gallery</Link>
-          <Link to="/contact">Contact</Link>
+          
+          <Link to="/portal/plans">Plans</Link>
+          <Link to="/portal/trainers">Trainers</Link>
+          <Link to="/portal/feedback">Feedback</Link>
+          <Link to="/portal/feed">Feed</Link>
         </article>
         <article>
-          <h4>Insight</h4>
-          <Link to="/s">Blog</Link>
-          <Link to="/s">Case Studies</Link>
-          <Link to="/s">Events</Link>
-          <Link to="/s">Communities</Link>
-          <Link to="/s">FAQs</Link>
+          <h4>Schedules</h4>
+          <Link to="/portal/classes">Classes</Link>
+          <Link to="/portal/feed">Feed</Link> 
+          <Link to="/portal/home">FAQs</Link>
         </article>
         <article>
-          <h4>Get In Touch</h4>
-          <Link to="/contact">Contact Us</Link>
-          <Link to="/s">Support</Link>
+          <h4>Settings</h4>
+          <Link to="/portal/settings">User Settings</Link>
+          
         </article>
       </div>
       <div className="footertocopyright">

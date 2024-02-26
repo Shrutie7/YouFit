@@ -272,7 +272,7 @@ useEffect(()=>{
             <div className='italic text-sm text-black cursor-pointer hover:underline' onClick={()=>{settabclass(true);settab("allclasses");classesuserlistapi(ele?.classDetailsId)}}>Show All users in this class</div>
           </div>
         </div>
-        {parseInt(loginDetails?.roleId) === 3 ?<button
+        {parseInt(loginDetails?.roleId) === 3 && parseInt(loginDetails?.userId) === parseInt(ele?.trainerDetails?.trainerId) ?<button
           className="sm:w-28 md:w-44 sm:text-md m-1 p-2  border-2 border-solid border-black text-black rounded-full lg:text-lg font-semibold lg:w-44 bg-gray-300 hover:bg-black hover:text-white"
           onClick={() => {nav("/portal/classes/editClass");dispatch(addloc({
             state:{
@@ -284,11 +284,11 @@ useEffect(()=>{
         </button>
         
         :
-        <button
-        className="sm:w-28 md:w-44 sm:text-md m-1 p-2  border-2 border-solid border-black text-black rounded-full lg:text-lg font-semibold lg:w-44 bg-gray-300 hover:bg-black hover:text-white"
+      <button
+        className={`sm:w-28 md:w-44 sm:text-md m-1 p-2  border-2 border-solid border-black text-black rounded-full lg:text-lg font-semibold lg:w-44  ${!ele?.userMappingFlag ?"bg-gray-300  hover:bg-black hover:text-white":"bg-gray-300 opacity-60 " } ? `}
         onClick={() => {bookclassapi(ele?.classDetailsId)}}
       >
-       Book Class
+       {ele?.userMappingFlag?"Joined":"Book Class"}
        {flag && ele?.classDetailsId === id ? (
                     <CircularProgress
                       color="inherit"

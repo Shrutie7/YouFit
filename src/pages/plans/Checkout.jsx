@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import upi from "../../assets/upi1.png"
+import upi from "../../assets/upi1.png";
+import cards from "../../assets/cards.png"
 
 
 import {useNavigate} from "react-router-dom"
@@ -24,13 +25,13 @@ const nav = useNavigate();
             <div class="px-2">
                 <label for="type1" class="flex items-center cursor-pointer">
                     <input type="radio" class="form-radio h-5 w-5 text-indigo-500" name="type" id="type1" checked/>
-                    <img src="https://leadershipmemphis.org/wp-content/uploads/2020/08/780370.png" class="h-8 ml-3"/>
+                    <img src={cards} class="h-12 ml-3"/>
                 </label>
             </div>
             <div class="px-2">
                 <label for="type2" class="flex items-center cursor-pointer">
                     <input type="radio" class="form-radio h-5 w-5 text-indigo-500" name="type" id="type2"/>
-                    <img src={upi} class="h-24 ml-3"/>
+                    <img src={upi} class="h-12 w-32 ml-3"/>
                 </label>
             </div>
         </div>

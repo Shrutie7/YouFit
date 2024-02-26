@@ -158,7 +158,7 @@ const Trainers = () => {
       {/* <Header title="Our Trainers" image={HeaderImage}> */}
 
       {/* </Header> */}
-      <section className="trainers ">
+      <section className="trainers lg:-ml-28 sm:ml-0 md:ml-0">
         <div className="container trainerstocontainer">
 
 

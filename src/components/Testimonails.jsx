@@ -158,10 +158,10 @@ const Testimonails = () => {
   return (
     <section className="testimonails">
       <div className="container testimonialstocontainer">
-        <SectionHead icon={<ImQuotesLeft />} title="Testimonails" className="testimonailstohead" />
+        <SectionHead icon={<ImQuotesLeft />} title="Testimonials" className="testimonailstohead" />
         <Card className="testimonail">
           <div className="testimonailstoavatar">
-            <img src={avatar} alt="" />
+            <img src={"data:image/png;base64,"+feedbackdata[index]?.image} alt="" />
           </div>
           <div className="flex items-center justify-center mr-20">{getrating(Math.round(feedbackdata[index]?.rating))}</div>
           <p className="testimonailstoquote">{feedbackdata[index]?.message}</p>
