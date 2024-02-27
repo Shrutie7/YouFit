@@ -5,7 +5,7 @@ import { MdEmail } from "react-icons/md";
 import { BsMessenger } from "react-icons/bs";
 import { BsLine } from "react-icons/bs";
 import axiosInstance from "../../services/LocalAxiosInstance";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { handleReactSelectCss } from "../../commonmodules/ReactSelectCss";
 import Select from "react-select";
 import { useSelector } from "react-redux";
@@ -230,7 +230,22 @@ const Contact = () => {
       }
     } catch (error) {}
   };
+  useEffect(() => {
+    // Scroll to the top whenever the component mounts or tab changes
+    window.scrollTo(0, 0);
 
+    // If you're using React Router, you can listen for route changes
+    const handleRouteChange = () => {
+      window.scrollTo(0, 0);
+    };
+
+    // Attach the event listener for route changes
+    // Remove the listener on component unmount to avoid memory leaks
+    window.addEventListener('hashchange', handleRouteChange);
+    return () => {
+      window.removeEventListener('hashchange', handleRouteChange);
+    };
+  }, []); // Empty dependency array ensures this effect runs only once
   const handleradiostar = (e)=>{
     console.log(e.target.value)
     let l = {...feedbackdata};

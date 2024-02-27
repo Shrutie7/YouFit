@@ -135,7 +135,22 @@ const Feed = () => {
   const [commentList, setcommentList] = useState([]);
   const [replyemailid, setreplyemailid] = useState("");
   const [parentcommentid, setparentcommentid] = useState("");
+  useEffect(() => {
+    // Scroll to the top whenever the component mounts or tab changes
+    window.scrollTo(0, 0);
 
+    // If you're using React Router, you can listen for route changes
+    const handleRouteChange = () => {
+      window.scrollTo(0, 0);
+    };
+
+    // Attach the event listener for route changes
+    // Remove the listener on component unmount to avoid memory leaks
+    window.addEventListener('hashchange', handleRouteChange);
+    return () => {
+      window.removeEventListener('hashchange', handleRouteChange);
+    };
+  }, []); // Empty dependency array ensures this effect runs only once
   const onChangeComment = (e) => {
     setcommententered(e.target.value);
 
