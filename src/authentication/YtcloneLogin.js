@@ -8,6 +8,7 @@ import axiosInstance from "../services/LocalAxiosInstance";
 import { useLocation, useNavigate } from "react-router-dom";
 import InitialUserUI from "../components/InitialUserUI";
 import InitialOwnerUI from "../components/InitialOwnerUI";
+import InitialPending from "../components/InitialPending";
 
 // import Head from "../components/Head";
 
@@ -136,7 +137,7 @@ const data = async () => {
     <>
 {/* {tokenavailability  ? <Home></Home> :<></>} */}
 {
-   
+   loginDetails?.activeFlag === false && loginDetails.worklistDetails.length === 0 ?<InitialPending/>:
   !navflag&&tokenavailability && loginDetails?.parentUserId==="" && parseInt(loginDetails?.roleId)===parseInt(4)?<InitialUserUI setnavflag={setnavflag} navflag={navflag} />: !navflag && tokenavailability && loginDetails?.parentUserId===""&& parseInt(loginDetails?.roleId)===parseInt(2) ?<InitialOwnerUI setnavflag={setnavflag} navflag={navflag}/> :tokenavailability  ? <Home></Home> :<></>
 }
 {/* 

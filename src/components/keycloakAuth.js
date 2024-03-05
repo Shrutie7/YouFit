@@ -14,6 +14,7 @@ import Setting from "../pages/settings/Setting";
 import PlanIndex from "../pages/plans/PlanIndex";
 import Classes from "../pages/classes/ClassesIndex";
 import Interceptor from "../services/ApiInterceptor";
+import Worklist from "../pages/worklist/Worklist";
 
 
 const keycloakAuth = () => {
@@ -35,6 +36,7 @@ const keycloakAuth = () => {
             <Route path="settings/*" element={<Setting />} />
             <Route path="plans/*" exact element={<PlanIndex />} />
             <Route path="trainers/*" element={<Trainers />} />
+            <Route path ="worklist/*" exact element={<Worklist />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>

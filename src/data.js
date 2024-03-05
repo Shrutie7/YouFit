@@ -11,10 +11,10 @@ export const links = [
     path:"/portal/feed",
     adminViewable: false,
   },
-  // {
-  //   name: "Gallery",
-  //   path: "/portal/gallery",
-  // },
+  {
+    name: "Worklist",
+    path: "/portal/worklist",
+  },
   {
     name: "Plans",
     path: "/portal/plans",
