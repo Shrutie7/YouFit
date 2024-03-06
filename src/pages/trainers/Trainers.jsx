@@ -15,6 +15,7 @@ import halfstar from "../../assets/halfstar.png";
 import fullstar from "../../assets/fullstar.png";
 import logo from "../../assets/logotrainer.png";
 import LoadingPopup from "../../commonmodules/Loading";
+import noAvatar from "../../assets/person/noAvatar.png";
 const Trainers = () => {
   let gettrainerlisturl = "users/trainerlist";
   let loginDetails = useSelector((e) => e.logindetails.data);
@@ -180,7 +181,7 @@ const Trainers = () => {
           {trainerdata.map((d, i) => (
             <Card className="trainer">
               <div className="trainertoimg">
-                <img src={"data:image/png;base64," + d?.image} alt={d?.trainerName} />
+                <img src={d?.image ? "data:image/png;base64," + d?.image: noAvatar} alt={d?.trainerName} />
               </div>
               <div className="text-2xl font-semibold mt-8">
                 {d?.trainerName}

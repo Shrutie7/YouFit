@@ -662,6 +662,9 @@ if(tab==="planupdate"){
      {parseInt(loginDetails?.roleId) !== 1 ?  <li class="mr-8 text-gray-900 border-b-2 border-gray-800"><a href="#_" class= {`${tab==="profileinfo" ? "underline":"no-underline"} py-4 inline-block text-black text-base font-sans font-semibold`} onClick={()=>settab("profileinfo")}>Profile Info</a></li>:<></>}
       <li class="mr-8 hover:text-gray-900"><a href="#_" class={`${tab==="passwordupdate" ? "underline":"no-underline"} py-4 inline-block text-black text-base font-sans font-semibold`} onClick={()=>settab("passwordupdate")}>Password Update</a></li>
       {parseInt(loginDetails?.roleId)===4 ?<li class="mr-8 hover:text-gray-900"><a href="#_" class={`${tab==="planupdate" ? "underline":"no-underline"} py-4 inline-block text-black text-base font-sans font-semibold`} onClick={()=>settab("planupdate")}>Plan Details</a></li>:<></>}
+       
+    
+    
     </ul>
      <div class="w-full bg-white rounded-lg mx-auto mt-8 flex h-[72%] overflow-y-auto rounded-b-none">
         <div class="w-1/3 bg-gray-100 p-8 hidden md:inline-block">
